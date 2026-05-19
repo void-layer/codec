@@ -1,0 +1,24 @@
+{
+  "name": "@void-layer/types",
+  "version": "0.0.0",
+  "description": "@void-layer manual TypeScript types — zero runtime deps",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" }
+  },
+  "files": ["dist/", "README.md", "LICENSE"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/void-layer/codec.git",
+    "directory": "packages/types"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "echo 'Phase 1 stub — type-level tests land Phase 2'",
+    "lint": "echo 'Phase 1 stub'"
+  },
+  "engines": { "node": ">=24" }
+}
