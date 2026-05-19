@@ -1,0 +1,18 @@
+name: Release
+on:
+  push:
+    branches: [main]
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+jobs:
+  validate-oidc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: |
+          echo "Phase 1: release.yml plumbing reserved. Publish job lands Phase 3."
+          echo "OIDC token presence: $([ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ] && echo yes || echo no)"
