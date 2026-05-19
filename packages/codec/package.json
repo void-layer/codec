@@ -1,0 +1,30 @@
+{
+  "name": "@void-layer/codec",
+  "version": "0.0.0",
+  "description": "Canonical Invoice codec — TLV + Brotli wire format. v1 schema LOCKED.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./pkg/codec.js",
+      "require": "./cjs/index.js",
+      "types": "./pkg/codec.d.ts"
+    },
+    "./types": "./pkg/codec.d.ts"
+  },
+  "files": ["pkg/", "cjs/", "README.md", "LICENSE", "REGISTRY.md"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/void-layer/codec.git",
+    "directory": "packages/codec"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "echo 'Phase 1 stub — wasm-pack invocation lands Phase 2'",
+    "test": "echo 'Phase 1 stub — Cargo+vitest land Phase 2'",
+    "lint": "echo 'Phase 1 stub'"
+  },
+  "peerDependencies": {
+    "brotli-wasm": "^3.0.1"
+  },
+  "engines": { "node": ">=24" }
+}

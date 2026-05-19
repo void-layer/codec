@@ -1,0 +1,10 @@
+# Source and build artifacts — excluded from npm package
+src/
+Cargo.toml
+Cargo.lock
+target/
+vectors/
+docs/
+.cargo/
+
+# Included in published package: pkg/, cjs/, README.md, LICENSE, REGISTRY.md

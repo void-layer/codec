@@ -1,0 +1,21 @@
+[package]
+name = "void-layer-codec"
+version = "0.0.0"
+edition = "2024"
+license = "MIT"
+description = "Canonical Invoice codec — TLV + Brotli wire format"
+repository = "https://github.com/void-layer/codec"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# Phase 2 adds: wasm-bindgen, serde, serde-wasm-bindgen, tsify, thiserror, phf, tiny-keccak
+
+[profile.release]
+opt-level = "z"
+lto = "fat"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"
+incremental = false
