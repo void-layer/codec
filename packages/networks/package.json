@@ -1,0 +1,27 @@
+{
+  "name": "@void-layer/networks",
+  "version": "0.0.0",
+  "description": "Chain configs + token list for @void-layer ecosystem. NO RPC keys.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" }
+  },
+  "files": ["dist/", "README.md", "LICENSE"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/void-layer/codec.git",
+    "directory": "packages/networks"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@void-layer/types": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "echo 'Phase 1 stub'",
+    "lint": "echo 'Phase 1 stub'"
+  },
+  "engines": { "node": ">=24" }
+}
