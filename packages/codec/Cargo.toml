@@ -1,6 +1,6 @@
 [package]
 name = "void-layer-codec"
-version = "0.0.0"
+version = "0.0.1"
 edition = "2024"
 license = "MIT"
 description = "Canonical Invoice codec — TLV + Brotli wire format"
