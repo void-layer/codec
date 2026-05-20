@@ -6,6 +6,7 @@ pub use error::CodecError;
 
 pub(crate) mod varint;
 pub(crate) mod tlv;
+pub(crate) mod dict;
 
 pub fn hello() -> &'static str {
     "void-layer-codec phase 1"
