@@ -24,6 +24,7 @@ dlmalloc = { version = "0.2", features = ["global"] }
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
 js-sys = "0.3"
+serde_json = "1"
 
 # proptest pulls getrandom 0.3 / wait-timeout which don't build for wasm32 — see spec 056 plan-2c C8.
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]

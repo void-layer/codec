@@ -28,6 +28,27 @@ jobs:
           for dir in packages/codec packages/types packages/networks; do
             (cd "$dir" && npm pack --dry-run)
           done
+  vector-parity:
+    needs: [lint-and-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.24.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with: { rustflags: "" }
+      - uses: Swatinem/rust-cache@v2
+      - run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack 0.14.1
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | WASM_PACK_VERSION=v0.14.1 sh
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -C packages/codec build
+      - name: TS/JS parity (vitest)
+        run: pnpm -C packages/codec exec vitest run tests/parity.test.ts
+      - name: Rust parity (cargo)
+        run: cargo test --manifest-path packages/codec/Cargo.toml --test parity
   macos-sanity:
     runs-on: macos-latest
     steps:
