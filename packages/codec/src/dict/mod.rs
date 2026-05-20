@@ -9,19 +9,27 @@ pub(crate) mod chain;
 mod tests {
     use super::app::APP_DICT;
     use super::chain::CHAIN_DICT;
+    use std::fmt::Write as _;
     use tiny_keccak::{Hasher, Keccak};
 
     // Two-commit pattern: run tests once with <TBD>, capture actual hashes from
     // failure output, then paste them here and commit again.
-    const APP_DICT_HASH: &str = "<TBD-RUN-FIRST-then-paste>";
-    const CHAIN_DICT_HASH: &str = "<TBD-RUN-FIRST-then-paste>";
+    const APP_DICT_HASH: &str = "8abb746c2f968c2bde2b450aee01ce88aabe9df4bb8938bd6d02b587b4954b2e";
+    const CHAIN_DICT_HASH: &str = "6ddf0a04233a8b0b6dffe4658782eb5bd13391b37d202894e4da66efc5b388da";
+
+    fn to_hex(bytes: &[u8]) -> String {
+        bytes.iter().fold(String::new(), |mut acc, b| {
+            let _ = write!(acc, "{b:02x}");
+            acc
+        })
+    }
 
     fn keccak256_hex(data: &[u8]) -> String {
         let mut k = Keccak::v256();
         let mut out = [0u8; 32];
         k.update(data);
         k.finalize(&mut out);
-        out.iter().map(|b| format!("{b:02x}")).collect()
+        to_hex(&out)
     }
 
     /// Hash all APP_DICT entries: for each entry iterate sorted keys,
@@ -36,7 +44,7 @@ mod tests {
         }
         let mut out = [0u8; 32];
         k.finalize(&mut out);
-        out.iter().map(|b| format!("{b:02x}")).collect()
+        to_hex(&out)
     }
 
     /// Hash all CHAIN_DICT entries: iterate sorted keys,
@@ -51,7 +59,7 @@ mod tests {
         }
         let mut out = [0u8; 32];
         k.finalize(&mut out);
-        out.iter().map(|b| format!("{b:02x}")).collect()
+        to_hex(&out)
     }
 
     #[test]
