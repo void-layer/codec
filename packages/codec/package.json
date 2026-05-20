@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "description": "Canonical Invoice codec — TLV + Brotli wire format. v1 schema LOCKED.",
   "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./pkg/codec.js",
-      "require": "./cjs/index.js",
-      "types": "./pkg/codec.d.ts"
-    },
-    "./types": "./pkg/codec.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
-  "files": ["pkg/", "cjs/", "README.md", "LICENSE", "REGISTRY.md"],
+  "files": ["dist/", "pkg/", "README.md", "LICENSE", "REGISTRY.md"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/void-layer/codec.git",
@@ -19,12 +20,25 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "echo 'Phase 1 stub — wasm-pack invocation lands Phase 2'",
-    "test": "echo 'Phase 1 stub — Cargo+vitest land Phase 2'",
-    "lint": "echo 'Phase 1 stub'"
+    "build": "wasm-pack build --target bundler --release --out-dir pkg && rm -f pkg/.gitignore && tsc",
+    "build:wasm": "wasm-pack build --target bundler --release --out-dir pkg && rm -f pkg/.gitignore",
+    "build:web": "wasm-pack build --target web --release --out-dir pkg-web",
+    "build:nodejs": "wasm-pack build --target nodejs --release --out-dir pkg-node",
+    "test": "vitest run",
+    "test:rust": "cargo test --manifest-path Cargo.toml",
+    "test:wasm": "wasm-pack test --node",
+    "lint": "cargo clippy --all-targets --all-features --locked -- -D warnings && cargo fmt --manifest-path Cargo.toml -- --check",
+    "size": "ls -la pkg/void_layer_codec_bg.wasm"
   },
   "peerDependencies": {
     "brotli-wasm": "^3.0.1"
+  },
+  "devDependencies": {
+    "brotli-wasm": "^3.0.1",
+    "typescript": "^5.9.3",
+    "vite-plugin-top-level-await": "^1.4.4",
+    "vite-plugin-wasm": "^3.4.1",
+    "vitest": "^3.0.0"
   },
   "engines": { "node": ">=24" }
 }
