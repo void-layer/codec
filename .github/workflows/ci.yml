@@ -24,6 +24,9 @@ jobs:
       - run: pnpm -r build
       - run: cargo build --manifest-path packages/codec/Cargo.toml --release
       - run: cargo test --manifest-path packages/codec/Cargo.toml
+      - name: Assert size budgets
+        run: bash scripts/assert-size.sh
+        working-directory: packages/codec
       - run: |
           for dir in packages/codec packages/types packages/networks; do
             (cd "$dir" && npm pack --dry-run)
@@ -56,3 +59,16 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: Swatinem/rust-cache@v2
       - run: cargo test --manifest-path packages/codec/Cargo.toml
+  test-wasm-node:
+    needs: [lint-and-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with: { rustflags: "" }
+      - uses: Swatinem/rust-cache@v2
+      - run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack 0.14.1
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | WASM_PACK_VERSION=v0.14.1 sh
+      - name: Run wasm-pack test --node (AC-9 boundary tests)
+        run: wasm-pack test --node packages/codec
