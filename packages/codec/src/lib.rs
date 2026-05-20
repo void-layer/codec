@@ -8,6 +8,9 @@ pub(crate) mod varint;
 pub(crate) mod tlv;
 pub(crate) mod dict;
 
+pub(crate) mod hash;
+pub use hash::compute_content_hash;
+
 pub fn hello() -> &'static str {
     "void-layer-codec phase 1"
 }
