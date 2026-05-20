@@ -8,7 +8,6 @@
 // - Config B (.serialize_large_number_types_as_bigints(true)): u64 becomes JS BigInt. Exact.
 // - Codec decision: amounts stored as decimal strings — safe under both configs.
 
-use js_sys;
 use serde::Serialize;
 use wasm_bindgen::JsValue;
 use wasm_bindgen_test::*;
