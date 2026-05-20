@@ -1,51 +1,48 @@
-// WASM boundary test for receiptHash (compute_content_hash JS export).
-// Task T-P2-9b — Phase 2B hotfix (2026-05-20).
+// WASM boundary test for receiptHash (compute_content_hash Rust implementation).
+// Task T-P2-9b-fix — calls Rust directly, no /pkg/ re-import (2026-05-20).
 //
 // Tests:
-//   - 32-byte digest length
-//   - Determinism: same input → identical output across two calls
+//   - Determinism: same input → identical digest on two calls
+//   - Distinctness: distinct inputs → distinct digests (guards constant-return regression)
+//   - 32-byte length (explicit assertion for documentation)
 
-use wasm_bindgen::prelude::*;
 use wasm_bindgen_test::*;
 
 wasm_bindgen_test_configure!(run_in_node_experimental);
 
-#[wasm_bindgen(module = "/pkg/void_layer_codec.js")]
-extern "C" {
-    #[wasm_bindgen(js_name = receiptHash, catch)]
-    fn receipt_hash_js(bytes: &[u8]) -> Result<Vec<u8>, JsValue>;
-}
-
-/// 32-byte digest: receiptHash over a hand-crafted canonical TLV fixture
-/// must return exactly 32 bytes.
-#[wasm_bindgen_test]
-fn receipt_hash_returns_32_bytes() {
-    // Hand-crafted canonical TLV: tag=0x01, length=0x03, value=[0xAA, 0xBB, 0xCC]
-    let canonical: &[u8] = &[0x01, 0x03, 0xAA, 0xBB, 0xCC];
-    let digest = receipt_hash_js(canonical).expect("receiptHash must not trap");
-    assert_eq!(digest.len(), 32, "receiptHash must return exactly 32 bytes");
-}
-
 /// Determinism: same canonical bytes → identical digest on two independent calls.
 #[wasm_bindgen_test]
-fn receipt_hash_is_deterministic() {
+fn compute_content_hash_is_deterministic() {
+    // Hand-crafted canonical TLV: tag=0x01, length=0x03, value=[0xAA, 0xBB, 0xCC]
     let canonical: &[u8] = &[0x01, 0x03, 0xAA, 0xBB, 0xCC];
-    let first = receipt_hash_js(canonical).expect("first call must not trap");
-    let second = receipt_hash_js(canonical).expect("second call must not trap");
+    let first = void_layer_codec::compute_content_hash(canonical);
+    let second = void_layer_codec::compute_content_hash(canonical);
     assert_eq!(
         first, second,
-        "receiptHash must be deterministic — same input must yield identical digest"
+        "compute_content_hash must be deterministic — same input must yield identical digest"
     );
 }
 
 /// Non-empty input and empty input must produce different digests
 /// (guards against a constant-return regression).
 #[wasm_bindgen_test]
-fn receipt_hash_distinct_for_distinct_inputs() {
-    let a = receipt_hash_js(&[0x01, 0x03, 0xAA, 0xBB, 0xCC]).expect("call A must not trap");
-    let b = receipt_hash_js(&[]).expect("call B (empty) must not trap");
+fn compute_content_hash_distinct_for_distinct_inputs() {
+    let a = void_layer_codec::compute_content_hash(&[0x01, 0x03, 0xAA, 0xBB, 0xCC]);
+    let b = void_layer_codec::compute_content_hash(&[]);
     assert_ne!(
         a, b,
-        "receiptHash of distinct inputs must differ (non-constant function)"
+        "compute_content_hash of distinct inputs must differ (non-constant function)"
+    );
+}
+
+/// 32-byte digest length (compile-time [u8; 32], explicit runtime assertion for documentation).
+#[wasm_bindgen_test]
+fn compute_content_hash_returns_32_bytes() {
+    let canonical: &[u8] = &[0x01, 0x03, 0xAA, 0xBB, 0xCC];
+    let digest = void_layer_codec::compute_content_hash(canonical);
+    assert_eq!(
+        digest.len(),
+        32,
+        "compute_content_hash must return exactly 32 bytes"
     );
 }

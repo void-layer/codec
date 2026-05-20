@@ -4,7 +4,15 @@ import {
   decodeInvoiceCanonical,
   encodeInvoiceWire,
   decodeInvoiceWire,
+  receiptHash,
 } from './index.js'
+
+interface DecodedInvoice {
+  invoice_id: string
+  currency: string
+  total: string
+  decimals: number
+}
 
 const MINIMAL_INVOICE = {
   invoice_id: 'INV-001',
@@ -52,7 +60,7 @@ describe('encodeInvoiceCanonical + decodeInvoiceCanonical (WASM pass-through)', 
 
   it('roundtrips through canonical encode → decode', () => {
     const bytes = encodeInvoiceCanonical(MINIMAL_INVOICE)
-    const decoded = decodeInvoiceCanonical(bytes)
+    const decoded = decodeInvoiceCanonical(bytes) as DecodedInvoice
     expect(decoded.invoice_id).toBe('INV-001')
     expect(decoded.currency).toBe('USDC')
     expect(decoded.total).toBe('1000000')
@@ -77,7 +85,7 @@ describe('encodeInvoiceWire', () => {
     const wire = await encodeInvoiceWire(MINIMAL_INVOICE)
     expect(wire[1]! & 0x80).toBe(0)
     // and it must still roundtrip through decodeInvoiceWire
-    const decoded = await decodeInvoiceWire(wire)
+    const decoded = (await decodeInvoiceWire(wire)) as DecodedInvoice
     expect(decoded.invoice_id).toBe('INV-001')
   })
 })
@@ -85,7 +93,7 @@ describe('encodeInvoiceWire', () => {
 describe('decodeInvoiceWire', () => {
   it('roundtrips through wire encode → decode', async () => {
     const wire = await encodeInvoiceWire(MINIMAL_INVOICE)
-    const decoded = await decodeInvoiceWire(wire)
+    const decoded = (await decodeInvoiceWire(wire)) as DecodedInvoice
     expect(decoded.invoice_id).toBe('INV-001')
     expect(decoded.currency).toBe('USDC')
     expect(decoded.total).toBe('1000000')
@@ -98,7 +106,20 @@ describe('decodeInvoiceWire', () => {
     // Verify flag is NOT set on canonical output
     expect(canonical[1]! & 0x80).toBe(0)
     // decodeInvoiceWire should pass through to canonical decode
-    const decoded = await decodeInvoiceWire(canonical)
+    const decoded = (await decodeInvoiceWire(canonical)) as DecodedInvoice
     expect(decoded.invoice_id).toBe('INV-001')
+  })
+})
+
+describe('receiptHash (JS export coverage)', () => {
+  // Hand-crafted canonical TLV: tag=0x01, length=0x03, value=[0xAA, 0xBB, 0xCC]
+  const CANONICAL_FIXTURE = new Uint8Array([0x01, 0x03, 0xaa, 0xbb, 0xcc])
+
+  it('returns a 32-byte Uint8Array and is deterministic', () => {
+    const first = receiptHash(CANONICAL_FIXTURE)
+    const second = receiptHash(CANONICAL_FIXTURE)
+    expect(first).toBeInstanceOf(Uint8Array)
+    expect(first).toHaveLength(32)
+    expect(first).toEqual(second)
   })
 })
