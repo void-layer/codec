@@ -10,7 +10,13 @@ repository = "https://github.com/void-layer/codec"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-# Phase 2 adds: wasm-bindgen, serde, serde-wasm-bindgen, tsify, thiserror, phf, tiny-keccak
+wasm-bindgen = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+js-sys = "0.3"
 
 [profile.release]
 opt-level = "z"
