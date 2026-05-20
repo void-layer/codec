@@ -9,12 +9,11 @@ use std::collections::BTreeMap;
 
 use crate::dict::chain::CHAIN_DICT;
 use crate::encode::{
-    COMPRESSED_FLAG, MAGIC, TLV_CHAIN_ID, TLV_CLIENT_ADDRESS, TLV_CLIENT_EMAIL,
-    TLV_CLIENT_NAME, TLV_CLIENT_PHONE, TLV_CLIENT_TAX_ID, TLV_CLIENT_WALLET, TLV_CURRENCY,
-    TLV_DECIMALS, TLV_DISCOUNT, TLV_DUE_AT, TLV_DOMAIN_SEPARATOR, TLV_FROM_ADDRESS,
-    TLV_FROM_EMAIL, TLV_FROM_NAME, TLV_FROM_PHONE, TLV_FROM_TAX_ID, TLV_FROM_WALLET,
-    TLV_INVOICE_ID, TLV_ISSUED_AT, TLV_ITEMS, TLV_NOTES, TLV_SALT, TLV_TAX,
-    TLV_TOKEN_ADDRESS, TLV_TOTAL, VERSION,
+    COMPRESSED_FLAG, MAGIC, TLV_CHAIN_ID, TLV_CLIENT_ADDRESS, TLV_CLIENT_EMAIL, TLV_CLIENT_NAME,
+    TLV_CLIENT_PHONE, TLV_CLIENT_TAX_ID, TLV_CLIENT_WALLET, TLV_CURRENCY, TLV_DECIMALS,
+    TLV_DISCOUNT, TLV_DOMAIN_SEPARATOR, TLV_DUE_AT, TLV_FROM_ADDRESS, TLV_FROM_EMAIL,
+    TLV_FROM_NAME, TLV_FROM_PHONE, TLV_FROM_TAX_ID, TLV_FROM_WALLET, TLV_INVOICE_ID, TLV_ISSUED_AT,
+    TLV_ITEMS, TLV_NOTES, TLV_SALT, TLV_TAX, TLV_TOKEN_ADDRESS, TLV_TOTAL, VERSION,
 };
 use crate::error::CodecError;
 use crate::hash::keccak256;
@@ -134,13 +133,13 @@ static CURRENCY_CODE_TO_SYMBOL: &[(u8, &str)] = &[
 /// Token dict code → lowercase address (mirrors TOKEN_DICT_REVERSE in tlv-map.ts). Static: zero per-call alloc.
 /// Code 43 = Base WETH (same address as Optimism code 24, different chain context).
 static TOKEN_CODE_TO_ADDRESS: &[(u8, &str)] = &[
-    (1,  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"),
-    (2,  "0xdac17f958d2ee523a2206206994597c13d831ec7"),
-    (3,  "0x6b175474e89094c44da98b954eedeac495271d0f"),
-    (4,  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"),
-    (5,  "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"),
-    (6,  "0x1abaea1f7c830bd89acc67ec4af516284b1bc33c"),
-    (7,  "0x6c96de32cea08842dcc4058c14d3aaad7fa41dee"),
+    (1, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"),
+    (2, "0xdac17f958d2ee523a2206206994597c13d831ec7"),
+    (3, "0x6b175474e89094c44da98b954eedeac495271d0f"),
+    (4, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"),
+    (5, "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"),
+    (6, "0x1abaea1f7c830bd89acc67ec4af516284b1bc33c"),
+    (7, "0x6c96de32cea08842dcc4058c14d3aaad7fa41dee"),
     (10, "0xaf88d065e77c8cc2239327c5edb3a432268e5831"),
     (11, "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"),
     (12, "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"),
@@ -404,7 +403,8 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
     // decode_invoice_canonical is the identity-boundary function; it only accepts raw canonical bytes.
     if version_byte & COMPRESSED_FLAG != 0 {
         return Err(CodecError::CompressionFailed(
-            "unexpected compressed input in decode_invoice_canonical — decompress first".to_string(),
+            "unexpected compressed input in decode_invoice_canonical — decompress first"
+                .to_string(),
         ));
     }
     if version_byte != VERSION {
@@ -479,10 +479,9 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
     let decimals_bytes = records
         .get(&TLV_DECIMALS)
         .ok_or(CodecError::Truncated { needed: 1, had: 0 })?;
-    let decimals = *decimals_bytes.first().ok_or(CodecError::Truncated {
-        needed: 1,
-        had: 0,
-    })?;
+    let decimals = *decimals_bytes
+        .first()
+        .ok_or(CodecError::Truncated { needed: 1, had: 0 })?;
 
     let from_wallet_bytes = records
         .get(&TLV_FROM_WALLET)
@@ -597,15 +596,14 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
         None
     };
 
-    let discount = if let Some(v) = records.get(&TLV_DISCOUNT) {
-        Some(
-            String::from_utf8(v.clone()).map_err(|_| {
+    let discount =
+        if let Some(v) = records.get(&TLV_DISCOUNT) {
+            Some(String::from_utf8(v.clone()).map_err(|_| {
                 CodecError::CompressionFailed("invalid UTF-8 in discount".to_string())
-            })?,
-        )
-    } else {
-        None
-    };
+            })?)
+        } else {
+            None
+        };
 
     Ok(Invoice {
         invoice_id,

@@ -73,8 +73,8 @@ fn address_to_bytes(address: &str) -> Result<[u8; 20], CodecError> {
     }
     let mut out = [0u8; 20];
     for i in 0..20 {
-        out[i] = u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16)
-            .map_err(|_| CodecError::BadMagic)?;
+        out[i] =
+            u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16).map_err(|_| CodecError::BadMagic)?;
     }
     Ok(out)
 }
@@ -200,11 +200,11 @@ static TOKEN_ADDRESS_TO_CODE: &[(&str, u8)] = &[
 
 /// Chain ID → (code_min, code_max) range for token dict validation.
 static CHAIN_CODE_RANGES: &[(u32, u8, u8)] = &[
-    (1,     1,  9),
+    (1, 1, 9),
     (42161, 10, 19),
-    (10,    20, 29),
-    (137,   30, 39),
-    (8453,  40, 49),
+    (10, 20, 29),
+    (137, 30, 39),
+    (8453, 40, 49),
 ];
 
 /// Encode currency per spec §5.1:
@@ -212,7 +212,10 @@ static CHAIN_CODE_RANGES: &[(u32, u8, u8)] = &[
 ///   0x01 <utf8>  — raw UTF-8
 fn encode_currency(currency: &str) -> Vec<u8> {
     let upper = currency.to_uppercase();
-    if let Some(&(_, code)) = CURRENCY_SYMBOL_TO_CODE.iter().find(|&&(k, _)| k == upper.as_str()) {
+    if let Some(&(_, code)) = CURRENCY_SYMBOL_TO_CODE
+        .iter()
+        .find(|&&(k, _)| k == upper.as_str())
+    {
         vec![0x00, code]
     } else {
         let mut val = vec![0x01];
@@ -227,16 +230,18 @@ fn encode_currency(currency: &str) -> Vec<u8> {
 fn encode_token_address(address: &str, network_id: u32) -> Result<Vec<u8>, CodecError> {
     let addr_lower = address.to_lowercase();
 
-    if let Some(&(_, code)) = TOKEN_ADDRESS_TO_CODE.iter().find(|&&(k, _)| k == addr_lower.as_str()) {
+    if let Some(&(_, code)) = TOKEN_ADDRESS_TO_CODE
+        .iter()
+        .find(|&&(k, _)| k == addr_lower.as_str())
+    {
         // WETH at 0x4200…0006 is shared by Optimism (code 24) and Base (code 43).
         // On Base, override to 43 so the decoder resolves the correct chain context.
-        let effective_code = if addr_lower == "0x4200000000000000000000000000000000000006"
-            && network_id == 8453
-        {
-            43u8
-        } else {
-            code
-        };
+        let effective_code =
+            if addr_lower == "0x4200000000000000000000000000000000000006" && network_id == 8453 {
+                43u8
+            } else {
+                code
+            };
 
         let in_range = CHAIN_CODE_RANGES
             .iter()

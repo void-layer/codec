@@ -20,7 +20,10 @@ fn unknown_extension_displays_type() {
 
 #[test]
 fn dictionary_mismatch_displays_expected_and_actual() {
-    let err = CodecError::DictionaryMismatch { expected: 1, actual: 2 };
+    let err = CodecError::DictionaryMismatch {
+        expected: 1,
+        actual: 2,
+    };
     assert_eq!(err.to_string(), "dictionary mismatch: expected 1, actual 2");
 }
 

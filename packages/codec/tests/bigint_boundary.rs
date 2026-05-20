@@ -75,8 +75,8 @@ fn config_a_u64_max_returns_err() {
 
 #[wasm_bindgen_test]
 fn config_b_above_2_53_is_bigint() {
-    let serializer = serde_wasm_bindgen::Serializer::new()
-        .serialize_large_number_types_as_bigints(true);
+    let serializer =
+        serde_wasm_bindgen::Serializer::new().serialize_large_number_types_as_bigints(true);
     let js_val = Probe::new().above_2_53.serialize(&serializer).unwrap();
     assert!(
         js_val.is_bigint(),
@@ -86,10 +86,13 @@ fn config_b_above_2_53_is_bigint() {
 
 #[wasm_bindgen_test]
 fn config_b_u64_max_is_exact_bigint() {
-    let serializer = serde_wasm_bindgen::Serializer::new()
-        .serialize_large_number_types_as_bigints(true);
+    let serializer =
+        serde_wasm_bindgen::Serializer::new().serialize_large_number_types_as_bigints(true);
     let js_val = Probe::new().u64_max.serialize(&serializer).unwrap();
-    assert!(js_val.is_bigint(), "Config B: u64::MAX must serialize as JS BigInt");
+    assert!(
+        js_val.is_bigint(),
+        "Config B: u64::MAX must serialize as JS BigInt"
+    );
     let bigint = js_sys::BigInt::from(js_val);
     let bigint_str = String::from(bigint.to_string(10).unwrap());
     assert_eq!(
@@ -100,8 +103,8 @@ fn config_b_u64_max_is_exact_bigint() {
 
 #[wasm_bindgen_test]
 fn config_b_safe_53_is_still_bigint() {
-    let serializer = serde_wasm_bindgen::Serializer::new()
-        .serialize_large_number_types_as_bigints(true);
+    let serializer =
+        serde_wasm_bindgen::Serializer::new().serialize_large_number_types_as_bigints(true);
     let js_val = Probe::new().safe_53.serialize(&serializer).unwrap();
     assert!(
         js_val.is_bigint(),
@@ -115,23 +118,25 @@ fn config_b_safe_53_is_still_bigint() {
 fn string_amount_survives_config_a() {
     let serializer = serde_wasm_bindgen::Serializer::new();
     let js_val = Probe::new().string_amount.serialize(&serializer).unwrap();
-    let back = js_val.as_string().expect("String amount must round-trip as JS string");
+    let back = js_val
+        .as_string()
+        .expect("String amount must round-trip as JS string");
     assert_eq!(
-        back,
-        "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+        back, "115792089237316195423570985008687907853269984665640564039457584007913129639935",
         "String amount (uint256::MAX) must survive Config A unchanged"
     );
 }
 
 #[wasm_bindgen_test]
 fn string_amount_survives_config_b() {
-    let serializer = serde_wasm_bindgen::Serializer::new()
-        .serialize_large_number_types_as_bigints(true);
+    let serializer =
+        serde_wasm_bindgen::Serializer::new().serialize_large_number_types_as_bigints(true);
     let js_val = Probe::new().string_amount.serialize(&serializer).unwrap();
-    let back = js_val.as_string().expect("String amount must round-trip as JS string under Config B");
+    let back = js_val
+        .as_string()
+        .expect("String amount must round-trip as JS string under Config B");
     assert_eq!(
-        back,
-        "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+        back, "115792089237316195423570985008687907853269984665640564039457584007913129639935",
         "String amount (uint256::MAX) must survive Config B unchanged"
     );
 }
@@ -148,7 +153,11 @@ fn zod_refine_accepts_valid_integer_strings() {
     ];
     for s in &valid {
         let result = js_sys::BigInt::new(&JsValue::from_str(s));
-        assert!(result.is_ok(), "Zod refine: '{}' must be accepted by BigInt(v)", s);
+        assert!(
+            result.is_ok(),
+            "Zod refine: '{}' must be accepted by BigInt(v)",
+            s
+        );
     }
 }
 
@@ -158,6 +167,10 @@ fn zod_refine_rejects_invalid_strings() {
     let invalid = ["1e18", "abc", "1.5"];
     for s in &invalid {
         let result = js_sys::BigInt::new(&JsValue::from_str(s));
-        assert!(result.is_err(), "Zod refine: '{}' must be rejected by BigInt(v)", s);
+        assert!(
+            result.is_err(),
+            "Zod refine: '{}' must be rejected by BigInt(v)",
+            s
+        );
     }
 }

@@ -100,7 +100,10 @@ pub(crate) fn write_bigint_varint(value: &[u8], out: &mut Vec<u8>) {
 /// Errors:
 /// - `CodecError::Truncated` if buffer ends mid-varint.
 /// - `CodecError::VarintOverflow` if continuation bytes exceed `MAX_BYTES`.
-pub(crate) fn read_bigint_varint(buf: &[u8], offset: usize) -> Result<(Vec<u8>, usize), CodecError> {
+pub(crate) fn read_bigint_varint(
+    buf: &[u8],
+    offset: usize,
+) -> Result<(Vec<u8>, usize), CodecError> {
     // Collect LEB128 bytes, then reconstruct the big integer.
     let mut le_chunks: Vec<u8> = Vec::new(); // 7-bit chunks, little-endian order
     let mut bytes_read: usize = 0;
@@ -252,7 +255,11 @@ mod tests {
         write_bigint_varint(&uint256_max, &mut buf);
         let (decoded, bytes_consumed) = read_bigint_varint(&buf, 0).unwrap();
         assert_eq!(decoded, uint256_max, "roundtrip value mismatch");
-        assert_eq!(bytes_consumed, buf.len(), "bytes_consumed must equal full buffer");
+        assert_eq!(
+            bytes_consumed,
+            buf.len(),
+            "bytes_consumed must equal full buffer"
+        );
     }
 
     #[test]

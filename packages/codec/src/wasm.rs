@@ -13,7 +13,7 @@ use serde::Serialize;
 use serde_wasm_bindgen::Serializer;
 use wasm_bindgen::prelude::*;
 
-use crate::{decode_invoice_canonical, encode_invoice_canonical, Invoice};
+use crate::{Invoice, decode_invoice_canonical, encode_invoice_canonical};
 
 /// BigInt-safe serializer: amounts like `u64::MAX` come back as JS BigInt, not lossy f64.
 /// Required per D-B11 (BigInt boundary discipline).
@@ -29,8 +29,8 @@ fn ts_serializer() -> Serializer {
 /// Feed the output to `compute_content_hash()` for ERC-3009 nonce binding.
 #[wasm_bindgen(js_name = encodeInvoiceCanonical)]
 pub fn encode_invoice_canonical_js(invoice: JsValue) -> Result<Vec<u8>, JsError> {
-    let invoice: Invoice = serde_wasm_bindgen::from_value(invoice)
-        .map_err(|e| JsError::new(&e.to_string()))?;
+    let invoice: Invoice =
+        serde_wasm_bindgen::from_value(invoice).map_err(|e| JsError::new(&e.to_string()))?;
     encode_invoice_canonical(&invoice).map_err(|e| JsError::new(&e.to_string()))
 }
 

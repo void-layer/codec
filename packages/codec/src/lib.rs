@@ -21,19 +21,19 @@
 pub mod error;
 pub mod invoice;
 
-pub(crate) mod varint;
-pub(crate) mod tlv;
-pub(crate) mod dict;
-pub(crate) mod hash;
-pub(crate) mod encode;
 pub(crate) mod decode;
+pub(crate) mod dict;
+pub(crate) mod encode;
+pub(crate) mod hash;
+pub(crate) mod tlv;
+pub(crate) mod varint;
 
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
 // --- Canonical public surface ---
-pub use error::CodecError;
-pub use invoice::{Invoice, InvoiceClient, InvoiceFrom, InvoiceItem};
-pub use encode::encode_invoice_canonical;
 pub use decode::decode_invoice_canonical;
+pub use encode::encode_invoice_canonical;
+pub use error::CodecError;
 pub use hash::compute_content_hash;
+pub use invoice::{Invoice, InvoiceClient, InvoiceFrom, InvoiceItem};

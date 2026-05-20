@@ -15,7 +15,8 @@ mod tests {
     // Two-commit pattern: run tests once with <TBD>, capture actual hashes from
     // failure output, then paste them here and commit again.
     const APP_DICT_HASH: &str = "8abb746c2f968c2bde2b450aee01ce88aabe9df4bb8938bd6d02b587b4954b2e";
-    const CHAIN_DICT_HASH: &str = "6ddf0a04233a8b0b6dffe4658782eb5bd13391b37d202894e4da66efc5b388da";
+    const CHAIN_DICT_HASH: &str =
+        "6ddf0a04233a8b0b6dffe4658782eb5bd13391b37d202894e4da66efc5b388da";
 
     fn to_hex(bytes: &[u8]) -> String {
         bytes.iter().fold(String::new(), |mut acc, b| {
@@ -95,7 +96,11 @@ mod tests {
 
     #[test]
     fn chain_dict_entry_count() {
-        assert_eq!(CHAIN_DICT.len(), 5, "CHAIN_DICT must have exactly 5 entries");
+        assert_eq!(
+            CHAIN_DICT.len(),
+            5,
+            "CHAIN_DICT must have exactly 5 entries"
+        );
     }
 
     #[test]
@@ -108,9 +113,9 @@ mod tests {
 
     #[test]
     fn chain_dict_spot_check() {
-        assert_eq!(CHAIN_DICT.get(&1u32), Some(&0x01u8));       // Ethereum
-        assert_eq!(CHAIN_DICT.get(&42161u32), Some(&0x02u8));   // Arbitrum
-        assert_eq!(CHAIN_DICT.get(&8453u32), Some(&0x05u8));    // Base
+        assert_eq!(CHAIN_DICT.get(&1u32), Some(&0x01u8)); // Ethereum
+        assert_eq!(CHAIN_DICT.get(&42161u32), Some(&0x02u8)); // Arbitrum
+        assert_eq!(CHAIN_DICT.get(&8453u32), Some(&0x05u8)); // Base
     }
 
     #[test]

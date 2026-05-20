@@ -1,6 +1,6 @@
 use void_layer_codec::{
-    decode_invoice_canonical, encode_invoice_canonical, CodecError, Invoice, InvoiceClient,
-    InvoiceFrom, InvoiceItem,
+    CodecError, Invoice, InvoiceClient, InvoiceFrom, InvoiceItem, decode_invoice_canonical,
+    encode_invoice_canonical,
 };
 
 // ---------------------------------------------------------------------------
@@ -234,7 +234,10 @@ fn tlv_count_byte_matches_actual_tlv_count() {
     let invoice = minimal_invoice();
     let bytes = encode_invoice_canonical(&invoice).expect("encode failed");
     let tlv_count = bytes[2] as usize;
-    assert!(tlv_count >= 13, "minimal invoice should have at least 13 TLV records, got {tlv_count}");
+    assert!(
+        tlv_count >= 13,
+        "minimal invoice should have at least 13 TLV records, got {tlv_count}"
+    );
 }
 
 // ---------------------------------------------------------------------------
