@@ -3,7 +3,7 @@ name = "void-layer-codec"
 version = "0.0.1"
 edition = "2024"
 license = "MIT"
-description = "Canonical Invoice codec — TLV + Brotli wire format"
+description = "Canonical Invoice codec — TLV wire format, Brotli via JS shim"
 repository = "https://github.com/void-layer/codec"
 
 [lib]
@@ -18,7 +18,6 @@ tsify = { version = "0.4", features = ["js"] }
 thiserror = "2"
 phf = { version = "0.11", features = ["macros"] }
 tiny-keccak = { version = "2", features = ["keccak"] }
-brotli-decompressor = "4"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 dlmalloc = { version = "0.2", features = ["global"] }
