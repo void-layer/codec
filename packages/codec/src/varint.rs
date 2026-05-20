@@ -180,7 +180,7 @@ fn shr7_le(le: &mut Vec<u8>) {
         carry = val & 0x7F;
     }
     // Trim trailing zero bytes (which are the most-significant in LE).
-    while le.len() > 1 && *le.last().unwrap() == 0 {
+    while le.len() > 1 && le[le.len() - 1] == 0 {
         le.pop();
     }
 }
