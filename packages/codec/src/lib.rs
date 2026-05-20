@@ -1,6 +1,9 @@
 //! @void-layer/codec — Phase 1 scaffolding. Real impl lands Phase 2.
 //! See spec 056 in voidpay-ai for full design.
 
+pub mod error;
+pub use error::CodecError;
+
 pub fn hello() -> &'static str {
     "void-layer-codec phase 1"
 }
