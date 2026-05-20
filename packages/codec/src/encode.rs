@@ -93,28 +93,30 @@ fn varint_bytes(value: u64) -> Vec<u8> {
 
 /// Encode a decimal integer string (BigInt) as mantissa + trailing-zeros.
 /// Mirrors `writeMantissa` from varint.ts.
+/// Amount domain is U256 — matches the on-chain uint256 domain and the TS BigInt reference.
 fn mantissa_bytes(value_str: &str) -> Result<Vec<u8>, CodecError> {
-    // Parse as u128 — enough for USDC/ETH amounts in atomic units
-    let value: u128 = value_str
-        .parse()
-        .map_err(|_| CodecError::CompressionFailed(format!("invalid amount: {value_str}")))?;
+    use ruint::aliases::U256;
+
+    let value: U256 = U256::from_str_radix(value_str, 10)
+        .map_err(|_| CodecError::InvalidAmount(value_str.to_string()))?;
 
     let mut buf = Vec::new();
-    if value == 0 {
+    if value == U256::ZERO {
         // mantissa = 0 (single 0x00 byte), zeros = 0
         write_bigint_varint(&[0], &mut buf);
         buf.push(0);
         return Ok(buf);
     }
 
+    let ten = U256::from(10u64);
     let mut mantissa = value;
     let mut zeros: u8 = 0;
-    while mantissa % 10 == 0 {
-        mantissa /= 10;
+    while mantissa % ten == U256::ZERO {
+        mantissa /= ten;
         zeros += 1;
     }
     // Write mantissa as big-endian bytes via bigint_varint
-    let mantissa_be = mantissa.to_be_bytes();
+    let mantissa_be: [u8; 32] = mantissa.to_be_bytes();
     write_bigint_varint(&mantissa_be, &mut buf);
     buf.push(zeros);
     Ok(buf)
@@ -526,6 +528,19 @@ fn hex_decode_salt(hex: &str) -> Result<Vec<u8>, CodecError> {
 }
 
 // ---------------------------------------------------------------------------
+// Test helpers (pub only under #[cfg(test)])
+// ---------------------------------------------------------------------------
+
+#[cfg(test)]
+pub(crate) mod tests_pub {
+    use super::*;
+
+    pub(crate) fn mantissa_bytes_pub(s: &str) -> Result<Vec<u8>, crate::error::CodecError> {
+        mantissa_bytes(s)
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
@@ -629,5 +644,60 @@ mod tests {
     fn apply_dict_no_match_passthrough() {
         let result = apply_dict("Hello world");
         assert_eq!(result, b"Hello world");
+    }
+
+    // --- U256 amount domain tests ---
+
+    #[test]
+    fn mantissa_bytes_u128_max() {
+        // u128::MAX = 340282366920938463463374607431768211455
+        // Must produce byte-identical output to the old u128 path.
+        let s = u128::MAX.to_string();
+        let b = mantissa_bytes(&s).unwrap();
+        // Verify encode→decode roundtrip produces the same string.
+        // Spot-check: no trailing zeros, so zeros byte = 0.
+        assert_eq!(*b.last().unwrap(), 0u8, "u128::MAX has no trailing zeros");
+    }
+
+    #[test]
+    fn mantissa_bytes_u256_max_roundtrips() {
+        // 2^256 - 1 as decimal
+        let uint256_max =
+            "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+        let b = mantissa_bytes(uint256_max).unwrap();
+        // Last byte = trailing zeros count (should be 0 — u256::MAX is odd)
+        assert_eq!(*b.last().unwrap(), 0u8);
+        // Verify the encoded bytes decode back (via decode_mantissa)
+        let decoded = crate::decode::tests_pub::decode_mantissa_pub(&b).unwrap();
+        assert_eq!(decoded, uint256_max);
+    }
+
+    #[test]
+    fn mantissa_bytes_large_round_value() {
+        // 10^30 — large round value well above u128::MAX range in theory but fits U256
+        let s = "1".to_string() + &"0".repeat(30);
+        let b = mantissa_bytes(&s).unwrap();
+        // mantissa = 1, zeros = 30
+        assert_eq!(*b.last().unwrap(), 30u8);
+    }
+
+    #[test]
+    fn mantissa_bytes_above_u256_errors() {
+        // 2^256 — one above U256::MAX
+        let over = "115792089237316195423570985008687907853269984665640564039457584007913129639936";
+        let err = mantissa_bytes(over).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::InvalidAmount(_)),
+            "expected InvalidAmount, got {err:?}"
+        );
+    }
+
+    #[test]
+    fn mantissa_bytes_non_numeric_errors() {
+        let err = mantissa_bytes("not_a_number").unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::InvalidAmount(_)),
+            "expected InvalidAmount, got {err:?}"
+        );
     }
 }

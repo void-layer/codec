@@ -231,14 +231,21 @@ fn decode_mantissa(bytes: &[u8]) -> Result<String, CodecError> {
         )));
     }
 
-    // Reconstruct value: mantissa_bytes is big-endian
-    // Convert big-endian bytes → u128 (sufficient for USDC/ETH amounts)
-    let mut mantissa: u128 = 0;
-    for b in &mantissa_bytes {
-        mantissa = mantissa.checked_shl(8).unwrap_or(u128::MAX) | (*b as u128);
+    // Reconstruct value: mantissa_bytes is big-endian → U256
+    use ruint::aliases::U256;
+    if mantissa_bytes.len() > 32 {
+        return Err(CodecError::InvalidAmount(format!(
+            "mantissa varint too large: {} bytes exceeds U256",
+            mantissa_bytes.len()
+        )));
     }
-    let scale: u128 = 10u128.pow(zeros);
-    let value = mantissa.saturating_mul(scale);
+    let mut be32 = [0u8; 32];
+    be32[32 - mantissa_bytes.len()..].copy_from_slice(&mantissa_bytes);
+    let mantissa = U256::from_be_bytes(be32);
+    let scale = U256::from(10u64).pow(U256::from(zeros));
+    let value = mantissa
+        .checked_mul(scale)
+        .ok_or_else(|| CodecError::InvalidAmount("amount overflow U256".to_string()))?;
     Ok(value.to_string())
 }
 
@@ -306,11 +313,21 @@ fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> {
             )));
         }
 
-        let mut mantissa: u128 = 0;
-        for b in &mantissa_be {
-            mantissa = mantissa.checked_shl(8).unwrap_or(u128::MAX) | (*b as u128);
+        use ruint::aliases::U256;
+        if mantissa_be.len() > 32 {
+            return Err(CodecError::InvalidAmount(format!(
+                "item {i} rate mantissa varint too large: {} bytes exceeds U256",
+                mantissa_be.len()
+            )));
         }
-        let rate = mantissa.saturating_mul(10u128.pow(zeros)).to_string();
+        let mut be32 = [0u8; 32];
+        be32[32 - mantissa_be.len()..].copy_from_slice(&mantissa_be);
+        let mantissa = U256::from_be_bytes(be32);
+        let scale = U256::from(10u64).pow(U256::from(zeros));
+        let rate = mantissa
+            .checked_mul(scale)
+            .ok_or_else(|| CodecError::InvalidAmount(format!("item {i} rate overflow U256")))?
+            .to_string();
 
         items.push(InvoiceItem {
             description,
@@ -639,6 +656,19 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
 }
 
 // ---------------------------------------------------------------------------
+// Test helpers (pub only under #[cfg(test)])
+// ---------------------------------------------------------------------------
+
+#[cfg(test)]
+pub(crate) mod tests_pub {
+    use super::*;
+
+    pub(crate) fn decode_mantissa_pub(bytes: &[u8]) -> Result<String, CodecError> {
+        decode_mantissa(bytes)
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
@@ -714,5 +744,53 @@ mod tests {
     fn reverse_dict_passthrough() {
         let result = reverse_dict(b"Hello world").unwrap();
         assert_eq!(result, "Hello world");
+    }
+
+    // --- U256 mantissa decode tests ---
+
+    #[test]
+    fn decode_mantissa_u256_max_roundtrip() {
+        // Encode u256::MAX via encode path then decode — end-to-end parity check.
+        use crate::encode::tests_pub::mantissa_bytes_pub;
+        let uint256_max =
+            "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+        let encoded = mantissa_bytes_pub(uint256_max).unwrap();
+        let decoded = decode_mantissa(&encoded).unwrap();
+        assert_eq!(decoded, uint256_max);
+    }
+
+    #[test]
+    fn decode_mantissa_large_value_above_u128() {
+        // A value between u128::MAX and u256::MAX — old code would silently saturate.
+        use crate::encode::tests_pub::mantissa_bytes_pub;
+        // u128::MAX * 1000 (well above u128 range)
+        let large = "340282366920938463463374607431768211455000";
+        let encoded = mantissa_bytes_pub(large).unwrap();
+        let decoded = decode_mantissa(&encoded).unwrap();
+        assert_eq!(decoded, large);
+    }
+
+    #[test]
+    fn decode_mantissa_wire_payload_exceeding_u256_errors() {
+        // Craft a wire payload whose mantissa varint decodes to 33 bytes (> 32) — must error
+        // cleanly, never silently saturate (the old u128 saturation bug).
+        // A 33-byte all-0xFF big-endian value encoded as LEB128 exceeds MAX_BYTES (37 × 7-bit
+        // chunks = 259 bits > 256 bits) so the varint layer returns VarintOverflow before the
+        // 32-byte U256 guard fires.  Both VarintOverflow and InvalidAmount are CodecError
+        // variants — either satisfies the "no silent saturation" requirement.
+        use crate::varint::write_bigint_varint;
+        let oversized_mantissa = vec![0xFFu8; 33]; // 33 bytes > U256 max 32 bytes
+        let mut payload = Vec::new();
+        write_bigint_varint(&oversized_mantissa, &mut payload);
+        payload.push(0u8); // zeros = 0
+
+        let err = decode_mantissa(&payload).unwrap_err();
+        assert!(
+            matches!(
+                err,
+                CodecError::InvalidAmount(_) | CodecError::VarintOverflow(_)
+            ),
+            "expected InvalidAmount or VarintOverflow for oversized mantissa, got {err:?}"
+        );
     }
 }

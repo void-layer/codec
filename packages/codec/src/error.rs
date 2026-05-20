@@ -21,4 +21,6 @@ pub enum CodecError {
     ChecksumMismatch,
     #[error("compression failed: {0}")]
     CompressionFailed(String),
+    #[error("invalid amount: {0}")]
+    InvalidAmount(String),
 }
