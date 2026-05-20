@@ -12,7 +12,13 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist/", "pkg/", "README.md", "LICENSE", "REGISTRY.md"],
+  "files": [
+    "dist/",
+    "pkg/",
+    "README.md",
+    "LICENSE",
+    "REGISTRY.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/void-layer/codec.git",
@@ -27,6 +33,7 @@
     "test": "vitest run",
     "test:rust": "cargo test --manifest-path Cargo.toml",
     "test:wasm": "wasm-pack test --node",
+    "generate-vectors": "vitest run --config scripts/generate-vectors.config.ts",
     "lint": "cargo clippy --all-targets --all-features --locked -- -D warnings && cargo fmt --manifest-path Cargo.toml -- --check",
     "size": "ls -la pkg/void_layer_codec_bg.wasm"
   },
@@ -34,11 +41,14 @@
     "brotli-wasm": "^3.0.1"
   },
   "devDependencies": {
+    "@types/node": "25.9.1",
     "brotli-wasm": "^3.0.1",
     "typescript": "^5.9.3",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-plugin-wasm": "^3.4.1",
     "vitest": "^3.0.0"
   },
-  "engines": { "node": ">=24" }
+  "engines": {
+    "node": ">=24"
+  }
 }

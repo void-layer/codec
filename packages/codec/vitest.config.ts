@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig, configDefaults } from 'vitest/config'
 import wasm from 'vite-plugin-wasm'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import { createRequire } from 'node:module'
@@ -9,6 +9,9 @@ export default defineConfig({
   plugins: [wasm(), topLevelAwait()],
   test: {
     environment: 'node',
+    // Exclude the generator wrapper from the default test run — regeneration
+    // is an explicit manual step, not something that should run on every pnpm test.
+    exclude: [...configDefaults.exclude, 'scripts/**'],
   },
   resolve: {
     alias: {

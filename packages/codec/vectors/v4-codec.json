@@ -1,0 +1,438 @@
+{
+  "schema_version": 1,
+  "generated_by": "@void-layer/codec v0.0.0",
+  "generated_at": "2026-05-20",
+  "vectors": [
+    {
+      "name": "minimal-single-tlv",
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be5",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be5",
+      "decoded": {
+        "invoice_id": "INV-001",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Consulting",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Smallest valid invoice — all required fields, one item, no optional fields. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "chain-ethereum",
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160b494e562d434841494e2d31180201061f20fa54a336521772037a5a0127ff47deb98280f10d36be6941b217be5a84641a76",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160b494e562d434841494e2d31180201061f20fa54a336521772037a5a0127ff47deb98280f10d36be6941b217be5a84641a76",
+      "decoded": {
+        "invoice_id": "INV-CHAIN-1",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Consulting",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Chain selector: ethereum (network_id=1). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "chain-base",
+      "canonical_hex": "56010d0202000504046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160e494e562d434841494e2d38343533180201061f20402eea0969408f0ab8b2ca2896d6010e3f185d4de79250c8db0b54e578cd2b2a",
+      "wire_hex": "56010d0202000504046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160e494e562d434841494e2d38343533180201061f20402eea0969408f0ab8b2ca2896d6010e3f185d4de79250c8db0b54e578cd2b2a",
+      "decoded": {
+        "invoice_id": "INV-CHAIN-8453",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Consulting",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Chain selector: base (network_id=8453). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "chain-arbitrum",
+      "canonical_hex": "56010d0202000204046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160f494e562d434841494e2d3432313631180201061f20b13545af610e6709e7ca7e7aeb2a7656fc660281153cbfaf92d624886091d835",
+      "wire_hex": "56010d0202000204046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160f494e562d434841494e2d3432313631180201061f20b13545af610e6709e7ca7e7aeb2a7656fc660281153cbfaf92d624886091d835",
+      "decoded": {
+        "invoice_id": "INV-CHAIN-42161",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Consulting",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Chain selector: arbitrum (network_id=42161). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "chain-optimism",
+      "canonical_hex": "56010d0202000304046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160c494e562d434841494e2d3130180201061f20e7953796936e016c128c25ce8860ea9ecbf3ca6b0951d237df288a72ea1b1a04",
+      "wire_hex": "56010d0202000304046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160c494e562d434841494e2d3130180201061f20e7953796936e016c128c25ce8860ea9ecbf3ca6b0951d237df288a72ea1b1a04",
+      "decoded": {
+        "invoice_id": "INV-CHAIN-10",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 10,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Consulting",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Chain selector: optimism (network_id=10). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "chain-polygon",
+      "canonical_hex": "56010d0202000404046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160d494e562d434841494e2d313337180201061f20f7b0ae2ea635ca1810c68c0e432202688c0080e483db39c05a8c92b47f8e285d",
+      "wire_hex": "56010d0202000404046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160d494e562d434841494e2d313337180201061f20f7b0ae2ea635ca1810c68c0e432202688c0080e483db39c05a8c92b47f8e285d",
+      "decoded": {
+        "invoice_id": "INV-CHAIN-137",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 137,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Consulting",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Chain selector: polygon (network_id=137). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "bigint-amount-zero",
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e12010c5a65726f207061796d656e74000100001005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160f494e562d424947494e542d5a45524f180200001f2028eb733c3fee47d262e9cbf37f683c1db35d26618dcca6c5333c181a8490780a",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e12010c5a65726f207061796d656e74000100001005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160f494e562d424947494e542d5a45524f180200001f2028eb733c3fee47d262e9cbf37f683c1db35d26618dcca6c5333c181a8490780a",
+      "decoded": {
+        "invoice_id": "INV-BIGINT-ZERO",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Zero payment",
+            "quantity": 1,
+            "rate": "0"
+          }
+        ],
+        "total": "0",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "BigInt edge: total = 0 (LEB128 single 0x00 byte). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "bigint-amount-one",
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e15010f4f6e652061746f6d696320756e6974000101001005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160e494e562d424947494e542d4f4e45180201001f2041c80d97247077111cdc112ff9973a4f9f7d985863b9f04e6470f76d4db9277f",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e15010f4f6e652061746f6d696320756e6974000101001005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160e494e562d424947494e542d4f4e45180201001f2041c80d97247077111cdc112ff9973a4f9f7d985863b9f04e6470f76d4db9277f",
+      "decoded": {
+        "invoice_id": "INV-BIGINT-ONE",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "One atomic unit",
+            "quantity": 1,
+            "rate": "1"
+          }
+        ],
+        "total": "1",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "BigInt edge: total = 1 (smallest nonzero, no trailing zeros). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "bigint-amount-uint256-max",
+      "canonical_hex": "56010d0202000104046553f100060380a3050801120a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200040e3d01134d61782075696e74323536207061796d656e740001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f001005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1612494e562d424947494e542d553235364d41581826ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f001f2090797da436f09e0d536666e0e918c25f6945347b1fcd926595ab2dcad94bc159",
+      "wire_hex": "56811be700708fd456f78b626c609c0e50dbd21adc2035d021ee8a4f62688c4a4674284fcfac74d88013b478935df60596c121b7db638c39ad8a058100400824e1f905c0c0e3052802484251ae6f737f99f8cefcf013f8434c3debae8575181000829301c9b6489bd5c814eb42897466b800e0bfe00104a8ea94ba90c0ea52944278dcdafd46692493ddcf519b0c79e0e5f88412a94d1564b07b80c99a74068bd21f584f32f93ce33094d1897bccd3e9c4dc06e7e8c67210",
+      "decoded": {
+        "invoice_id": "INV-BIGINT-U256MAX",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "ETH",
+        "decimals": 18,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Max uint256 payment",
+            "quantity": 1,
+            "rate": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+          }
+        ],
+        "total": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "BigInt edge: total = U256::MAX (115792089237316195423570985008687907853269984665640564039457584007913129639935) — largest encodable value after U256 widening. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "bigint-amount-over-u256",
+      "decoded": {
+        "invoice_id": "INV-BIGINT-OVER-U256",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "ETH",
+        "decimals": 18,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Over U256 payment",
+            "quantity": 1,
+            "rate": "115792089237316195423570985008687907853269984665640564039457584007913129639936"
+          }
+        ],
+        "total": "115792089237316195423570985008687907853269984665640564039457584007913129639936",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "diagnostic": "malformed:encode-input",
+      "expected_error": "InvalidAmount"
+    },
+    {
+      "name": "malformed-varint-overflow",
+      "canonical_hex": "56010118268080808080808080808080808080808080808080808080808080808080808080808080808080",
+      "diagnostic": "malformed:canonical",
+      "expected_error": "VarintOverflow"
+    },
+    {
+      "name": "extension-magic-dust",
+      "canonical_hex": "56010e0202000104046553f10005314d616769632064757374206170706c6965643a202b302e30303030343220666f7220756e69717565206d61746368696e67060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e12010a436f6e73756c74696e670001ea843d001005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160c494e562d4558542d445553541804ea843d001f2042c92a6131ebc43be9ebc980c4bb881acb115cc011a9820caf74db4a8a84712b",
+      "wire_hex": "56811bc7000064625c3ea82c3458331319fa9ce6eb64949aac9303e6ff3b480905a245d61642ba4376edd9bd234a74249a7120100008819445fe0050c50087cdce0f972981482e9533d5caac742d2bb6bbaafa0a18b867168a00c25094ebdb9affaad295f1aeaf09f0939a7ad6365768c38000401c0988dae406cf1b00f83ea00310a0a6daaa923212d8dc504c213c2e6dfca0a1615cfeb8c4968c4aae6e0e06440b7c81f95858a4f8d8d3bc7d1cf7ecad8eb04e89d92de25c1f66a5f5ce3d36d02402",
+      "decoded": {
+        "invoice_id": "INV-EXT-DUST",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Consulting",
+            "quantity": 1,
+            "rate": "1000042"
+          }
+        ],
+        "notes": "Magic dust applied: +0.000042 for unique matching",
+        "total": "1000042",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Extension: magic-dust (micro-amount uniquifier in total + notes field). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "extension-og-param",
+      "canonical_hex": "56011002020001031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f1000519506c65617365207061792077697468696e2033302064617973060380a305070c616c696365406465762e696f0801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e11010b44657369676e20776f726b000105061010416c696365204465762053747564696f120941636d6520436f72701410deadbeefdeadbeefdeadbeefdeadbeef160a494e562d4558542d4f47180205061f20b45936d1745dfc433d14c3b650505d67eb70799bce4371c399e1aec078c09c81",
+      "wire_hex": "56811bdf00788c53acdf37b0ce0630ed4299a41750a290e4282440090a7e9d1ce801f9bbd077a14028e1b62c929c728b43cea220d6f80cdf20412020309456d5d35cb5c3a2dca9c0b876f03201cfbc6bde87c1f2c37f20383b495576f34d592c00cc0902da350647e2b2cb8a73f30d79f90dbce24a141881a15ddd94fe17e7cd0e747c0d42df25f4d396f12c2b0e020213c860ec786c2a080c4790484601c0a237f28f8236e696e703e6ca9a2a1ae9617af5070d03e3f4c5b8d64484ebb7b3201ce0004b49d9715dba594bdb5a0904d20b3faa9afb0eccd55b3dcf33eb4debfddd",
+      "decoded": {
+        "invoice_id": "INV-EXT-OG",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Dev Studio",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@dev.io"
+        },
+        "client": {
+          "name": "Acme Corp",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8"
+        },
+        "items": [
+          {
+            "description": "Design work",
+            "quantity": 1,
+            "rate": "5000000"
+          }
+        ],
+        "notes": "Please pay within 30 days",
+        "total": "5000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Extension: OG-param fields (from.email, client.wallet_address, notes) for social preview. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "extension-sub-invoice-chain",
+      "canonical_hex": "56010f0202000204046553f100060380a3050801120a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200040e13010d43726f73732d636861696e200e000105111005416c6963651203426f62130231301410deadbeefdeadbeefdeadbeefdeadbeef1501351610494e562d4558542d535542434841494e180205111f203a4af626efeeeb80f837d8d51c38cbe8d942f329caee547628e84effccee6a26",
+      "wire_hex": "56010f0202000204046553f100060380a3050801120a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200040e13010d43726f73732d636861696e200e000105111005416c6963651203426f62130231301410deadbeefdeadbeefdeadbeefdeadbeef1501351610494e562d4558542d535542434841494e180205111f203a4af626efeeeb80f837d8d51c38cbe8d942f329caee547628e84effccee6a26",
+      "decoded": {
+        "invoice_id": "INV-EXT-SUBCHAIN",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "ETH",
+        "decimals": 18,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Cross-chain consulting",
+            "quantity": 1,
+            "rate": "500000000000000000"
+          }
+        ],
+        "tax": "10",
+        "discount": "5",
+        "total": "500000000000000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Extension: sub-invoice chain — ETH on Arbitrum with tax and discount fields. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "malformed-corrupted-brotli",
+      "wire_hex": "5681deadbeefcafebabe",
+      "diagnostic": "malformed:wire",
+      "expected_error": "CompressionFailed"
+    },
+    {
+      "name": "malformed-oversize",
+      "canonical_hex": "56010118d60b00000000",
+      "diagnostic": "malformed:canonical",
+      "expected_error": "Truncated"
+    },
+    {
+      "name": "malformed-bad-magic",
+      "canonical_hex": "ff010118020100",
+      "diagnostic": "malformed:canonical",
+      "expected_error": "BadMagic"
+    }
+  ]
+}
