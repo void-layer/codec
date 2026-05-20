@@ -1,8 +1,9 @@
 //! WASM bindings — compiled only for `target_arch = "wasm32"`.
 //!
-//! Exports exactly 2 functions to JS per B-v replan (2026-05-20):
+//! Exports 3 functions to JS (B-v replan + Phase 2B hotfix T-P2-9b, 2026-05-20):
 //!   - `encodeInvoiceCanonical` — TLV canonical bytes (no Brotli)
 //!   - `decodeInvoiceCanonical` — Invoice from canonical bytes
+//!   - `receiptHash`            — keccak256 of canonical bytes (ERC-3009 nonce)
 //!
 //! Wire encoding (Brotli + COMPRESSED_FLAG) lives in the JS shim
 //! (`src/index.ts`) which wraps these and calls `brotli-wasm` as peerDep.
@@ -13,7 +14,7 @@ use serde::Serialize;
 use serde_wasm_bindgen::Serializer;
 use wasm_bindgen::prelude::*;
 
-use crate::{Invoice, decode_invoice_canonical, encode_invoice_canonical};
+use crate::{Invoice, compute_content_hash, decode_invoice_canonical, encode_invoice_canonical};
 
 /// BigInt-safe serializer: amounts like `u64::MAX` come back as JS BigInt, not lossy f64.
 /// Required per D-B11 (BigInt boundary discipline).
@@ -43,6 +44,17 @@ pub fn decode_invoice_canonical_js(bytes: &[u8]) -> Result<JsValue, JsError> {
     invoice
         .serialize(&ts_serializer())
         .map_err(|e| JsError::new(&e.to_string()))
+}
+
+/// keccak-256 content hash for ERC-3009 nonce binding (spec §0.2).
+///
+/// Input MUST be the canonical pre-compression TLV bytes — the output of
+/// `encodeInvoiceCanonical`. Returns a 32-byte Keccak-256 digest.
+///
+/// Decision: receipt_hash ships in Phase 2 (plan-2c C6, Ignat 2026-05-20).
+#[wasm_bindgen(js_name = receiptHash)]
+pub fn receipt_hash_js(canonical_bytes: &[u8]) -> Vec<u8> {
+    compute_content_hash(canonical_bytes).to_vec()
 }
 
 /// dlmalloc allocator — ~5 KB overhead, replaces the default (wee_alloc is forbidden per §3.8).

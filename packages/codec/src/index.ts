@@ -1,8 +1,9 @@
 /**
  * @void-layer/codec JS shim — public entry point.
  *
- * Exposes 4 functions:
+ * Exposes 5 functions:
  *   - encodeInvoiceCanonical / decodeInvoiceCanonical  (WASM canonical, no Brotli)
+ *   - receiptHash                                       (keccak-256 of canonical bytes)
  *   - encodeInvoiceWire / decodeInvoiceWire             (Brotli-compressed wire format)
  *
  * Brotli compression is handled here via `brotli-wasm` peerDependency.
@@ -11,10 +12,11 @@
 
 import type { BrotliWasmType } from 'brotli-wasm'
 
-// Re-export the 2 canonical WASM functions directly.
+// Re-export canonical WASM functions directly.
 export {
   encodeInvoiceCanonical,
   decodeInvoiceCanonical,
+  receiptHash,
 } from '../pkg/void_layer_codec.js'
 
 // ---------------------------------------------------------------------------
