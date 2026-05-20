@@ -1,3 +1,5 @@
+#![cfg(not(target_arch = "wasm32"))]
+
 use void_layer_codec::{
     CodecError, Invoice, InvoiceClient, InvoiceFrom, InvoiceItem, decode_invoice_canonical,
     encode_invoice_canonical,

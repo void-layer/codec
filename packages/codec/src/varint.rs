@@ -283,6 +283,7 @@ mod tests {
         }
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
     proptest::proptest! {
         #[test]
         fn varint_roundtrips_for_any_u64(value in proptest::prelude::any::<u64>()) {
