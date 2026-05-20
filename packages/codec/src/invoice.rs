@@ -1,9 +1,7 @@
 use serde::{Deserialize, Serialize};
-use tsify::Tsify;
 
 /// A single line item in an invoice.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InvoiceItem {
     /// Human-readable description of the line item.
     pub description: String,
@@ -14,8 +12,7 @@ pub struct InvoiceItem {
 }
 
 /// Originator (payee) contact details.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InvoiceFrom {
     /// Display name of the issuer.
     pub name: String,
@@ -32,8 +29,7 @@ pub struct InvoiceFrom {
 }
 
 /// Client (payer) contact details.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InvoiceClient {
     /// Display name of the client.
     pub name: String,
@@ -53,8 +49,7 @@ pub struct InvoiceClient {
 ///
 /// All monetary amounts are represented as `String` for BigInt-safe JS boundary
 /// (D-B11). Amounts are in atomic token units (e.g. USDC uses 6 decimals).
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Invoice {
     /// Unique invoice identifier (e.g. "INV-001").
     pub invoice_id: String,
