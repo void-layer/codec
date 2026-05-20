@@ -251,21 +251,41 @@ async function main(): Promise<void> {
     } as MalformedVector)
   }
 
-  // 3e. malformed-varint-overflow — crafted bytes that produce VarintOverflow on decode.
-  // Valid magic+version+count=1 header, TLV_TOTAL=24, length=38, then 38 bytes
-  // all with continuation bit set (38 > MAX_BYTES=37 → VarintOverflow).
-  // Reclassified from 'bigint-overflow' (was misnamed — this is a malformed varint stream).
+  // 3e. malformed-checksum-mismatch — bytes with valid header + COUNT=1 but payload
+  // has no valid domain-separator/checksum TLV → ChecksumMismatch.
+  // This is the corrected classification of the original "malformed-varint-overflow"
+  // vector (hex is unchanged; only name + expected_error corrected per Kai decision
+  // 2026-05-20: the codec hits ChecksumMismatch before any varint overflow path).
   {
-    const overflowBytes = new Uint8Array([
-      0x56, 0x01,           // MAGIC, VERSION
-      0x01,                  // COUNT=1
-      0x18,                  // TLV type=24 (TOTAL)
-      0x26,                  // length=38
-      ...Array<number>(38).fill(0x80), // 38 continuation bytes
-    ])
+    const checksumBytes = new Uint8Array(
+      Buffer.from(
+        '56010118268080808080808080808080808080808080808080808080808080808080808080808080808080',
+        'hex',
+      ),
+    )
+    vectors.push({
+      name: 'malformed-checksum-mismatch',
+      canonical_hex: toHex(checksumBytes),
+      diagnostic: 'malformed:canonical',
+      expected_error: 'ChecksumMismatch',
+    })
+  }
+
+  // 3f. malformed-varint-overflow — crafted bytes where the LENGTH field of the
+  // first TLV record is a varint with 37 continuation bytes and no terminator.
+  // Wire: MAGIC VERSION COUNT=1 TYPE=0x18 [37× 0x80 with MSB set, no terminal byte]
+  // read_varint fires VarintOverflow at bytes_read == MAX_BYTES (37) before reaching
+  // the checksum validation stage.
+  {
+    const buf = new Uint8Array(4 + 37)
+    buf[0] = 0x56 // MAGIC
+    buf[1] = 0x01 // VERSION
+    buf[2] = 0x01 // COUNT=1
+    buf[3] = 0x18 // TLV type=24 (TLV_TOTAL) — type byte is valid; overflow is in LENGTH
+    buf.fill(0x80, 4) // 37 bytes all with continuation bit set, no terminal → VarintOverflow
     vectors.push({
       name: 'malformed-varint-overflow',
-      canonical_hex: toHex(overflowBytes),
+      canonical_hex: toHex(buf),
       diagnostic: 'malformed:canonical',
       expected_error: 'VarintOverflow',
     })

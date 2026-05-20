@@ -78,8 +78,8 @@ assert that `encodeInvoiceCanonical` throws the named error variant.
 
 ## Starter Set (v4-codec.json, schema_version=1)
 
-17 vectors, regenerated 2026-05-20 for U256 widening (T-P2-12a / C9 amendment),
-pending Kai review before commit.
+18 vectors, regenerated 2026-05-20 for U256 widening (T-P2-12a / C9 amendment) and
+corrected malformed vector set (T-P2-12 follow-up, Kai decision 2026-05-20).
 
 | # | Name | Category | wire compressed |
 |---|------|----------|----------------|
@@ -93,13 +93,14 @@ pending Kai review before commit.
 | 8 | `bigint-amount-one` | BigInt edge | false |
 | 9 | `bigint-amount-uint256-max` | BigInt edge | **true** |
 | 10 | `bigint-amount-over-u256` | BigInt edge (malformed — InvalidAmount) | — |
-| 11 | `malformed-varint-overflow` | Malformed | — |
-| 12 | `extension-magic-dust` | Extension | **true** |
-| 13 | `extension-og-param` | Extension | **true** |
-| 14 | `extension-sub-invoice-chain` | Extension | false |
-| 15 | `malformed-corrupted-brotli` | Malformed | — |
-| 16 | `malformed-oversize` | Malformed | — |
-| 17 | `malformed-bad-magic` | Malformed | — |
+| 11 | `malformed-checksum-mismatch` | Malformed | — |
+| 12 | `malformed-varint-overflow` | Malformed | — |
+| 13 | `extension-magic-dust` | Extension | **true** |
+| 14 | `extension-og-param` | Extension | **true** |
+| 15 | `extension-sub-invoice-chain` | Extension | false |
+| 16 | `malformed-corrupted-brotli` | Malformed | — |
+| 17 | `malformed-oversize` | Malformed | — |
+| 18 | `malformed-bad-magic` | Malformed | — |
 
 **Changes from initial 16-vector set (C9 amendment, 2026-05-20)**:
 - `bigint-amount-u128-max` replaced by `bigint-amount-uint256-max` (U256::MAX =
@@ -107,9 +108,15 @@ pending Kai review before commit.
   After U256 widening this encodes successfully (roundtrip=true, wire compressed).
 - `bigint-amount-over-u256` added: amount = 2^256, encode rejects with `InvalidAmount`.
   No canonical_hex field — error fires at encode time, no bytes produced.
-- `bigint-overflow` renamed `malformed-varint-overflow` and reclassified to the
-  malformed category. It is a crafted varint byte stream (VarintOverflow is a decoder
-  error, not an amount-domain error). Hex is byte-identical to the pre-rework vector.
+
+**Changes from 17-vector set (T-P2-12 follow-up, Kai decision 2026-05-20)**:
+- `malformed-varint-overflow` corrected: the previous hex (`56 01 01 18 0x26 38×0x80`)
+  was misidentified — the codec hits `ChecksumMismatch` before any varint overflow path.
+  The old hex is preserved as `malformed-checksum-mismatch` (new name, same bytes).
+- New `malformed-varint-overflow` added: hex = `56 01 01 18` + 37×`0x80`. The LENGTH
+  field of the first TLV record is 37 continuation bytes with no terminal byte. The
+  varint decoder fires `VarintOverflow` at `bytes_read == MAX_BYTES (37)` before the
+  checksum stage. Empirically confirmed on both WASM and Rust surfaces.
 
 **Why some vectors are uncompressed**: the T-P2-0a Brotli spike measured that
 payloads under ~180 bytes expand under Brotli q11. All single-item minimal invoices

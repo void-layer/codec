@@ -312,8 +312,14 @@
       "expected_error": "InvalidAmount"
     },
     {
-      "name": "malformed-varint-overflow",
+      "name": "malformed-checksum-mismatch",
       "canonical_hex": "56010118268080808080808080808080808080808080808080808080808080808080808080808080808080",
+      "diagnostic": "malformed:canonical",
+      "expected_error": "ChecksumMismatch"
+    },
+    {
+      "name": "malformed-varint-overflow",
+      "canonical_hex": "5601011880808080808080808080808080808080808080808080808080808080808080808080808080",
       "diagnostic": "malformed:canonical",
       "expected_error": "VarintOverflow"
     },
