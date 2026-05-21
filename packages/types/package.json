@@ -22,8 +22,11 @@
   "publishConfig": { "access": "public", "provenance": true },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "echo 'Phase 1 stub — type-level tests land Phase 2'",
-    "lint": "echo 'Phase 1 stub'"
+    "test": "vitest run",
+    "lint": "eslint src"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
   },
   "engines": { "node": ">=24" }
 }
