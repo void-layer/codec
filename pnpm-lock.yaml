@@ -53,8 +53,16 @@ importers:
       '@void-layer/types':
         specifier: workspace:*
         version: link:../types
+    devDependencies:
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.4(@types/node@25.9.1)
 
-  packages/types: {}
+  packages/types:
+    devDependencies:
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.4(@types/node@25.9.1)
 
 packages:
 

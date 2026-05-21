@@ -22,6 +22,8 @@ jobs:
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | WASM_PACK_VERSION=v0.14.1 sh
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r build
+      - run: pnpm -r lint
+      - run: pnpm -r test
       - run: cargo build --manifest-path packages/codec/Cargo.toml --release
       - run: cargo test --manifest-path packages/codec/Cargo.toml
       - name: Assert size budgets
