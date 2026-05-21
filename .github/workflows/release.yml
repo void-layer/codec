@@ -1,18 +1,27 @@
 name: Release
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 permissions:
+  contents: read
   id-token: write
-  contents: write
-  pull-requests: write
 jobs:
-  validate-oidc:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.24.0 }
       - uses: actions/setup-node@v4
-        with: { node-version: 24 }
-      - run: |
-          echo "Phase 1: release.yml plumbing reserved. Publish job lands Phase 3."
-          echo "OIDC token presence: $([ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ] && echo yes || echo no)"
+        with: { node-version: 24, cache: pnpm, registry-url: 'https://registry.npmjs.org' }
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with: { rustflags: "" }
+      - uses: Swatinem/rust-cache@v2
+      - run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack 0.14.1
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | WASM_PACK_VERSION=v0.14.1 sh
+      - run: npm install -g npm@latest
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - run: pnpm changeset publish
+        env:
+          NPM_CONFIG_PROVENANCE: true

@@ -8,13 +8,18 @@
   "exports": {
     ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" }
   },
-  "files": ["dist/", "README.md", "LICENSE"],
+  "files": ["dist/", "README.md", "LICENSE", "CHANGELOG.md"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/void-layer/codec.git",
     "directory": "packages/networks"
   },
   "license": "MIT",
+  "author": "void-layer",
+  "homepage": "https://github.com/void-layer/codec/tree/main/packages/networks#readme",
+  "bugs": { "url": "https://github.com/void-layer/codec/issues" },
+  "keywords": ["voidpay","void-layer","ethereum","chains","tokens","web3"],
+  "publishConfig": { "access": "public", "provenance": true },
   "dependencies": {
     "@void-layer/types": "workspace:*"
   },

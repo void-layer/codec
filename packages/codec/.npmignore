@@ -7,4 +7,4 @@ vectors/
 docs/
 .cargo/
 
-# Included in published package: pkg/, cjs/, README.md, LICENSE, REGISTRY.md
+# Included in published package: dist/, pkg/, README.md, LICENSE, REGISTRY.md
