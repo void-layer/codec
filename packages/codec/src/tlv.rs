@@ -35,6 +35,16 @@ pub(crate) fn read_tlv(buf: &[u8], offset: usize) -> Result<(TlvRecord, usize), 
     let (length, varint_bytes) = read_varint(buf, offset + consumed)?;
     consumed += varint_bytes;
 
+    // Guard before cast: a length > MAX_VALUE_SIZE is invalid regardless of
+    // target pointer width (prevents silent u64→usize truncation on wasm32).
+    // Must match decode::MAX_VALUE_SIZE (4096).
+    const MAX_VALUE_SIZE: u64 = 4096;
+    if length > MAX_VALUE_SIZE {
+        return Err(CodecError::Truncated {
+            needed: length as usize,
+            had: buf.len(),
+        });
+    }
     let length = length as usize;
     let value_end = offset + consumed + length;
     if value_end > buf.len() {
@@ -272,6 +282,44 @@ mod tests {
         assert!(
             matches!(err, CodecError::Truncated { .. }),
             "expected Truncated from stream, got {err:?}"
+        );
+    }
+
+    // --- R2: u64→usize TLV length truncation guard ---
+
+    /// A TLV length prefix of 0x1_0000_0064 (> 4096 MAX_VALUE_SIZE) must be
+    /// rejected before the u64→usize cast. On wasm32, the cast would truncate
+    /// 0x1_0000_0064 → 100, then read 100 bytes of garbage — silent misalignment.
+    #[test]
+    fn r2_oversized_tlv_length_prefix_errors() {
+        use crate::varint::write_varint;
+
+        // Craft a TLV record: type=0x01, length=0x1_0000_0064 (4GiB+100 — way above MAX_VALUE_SIZE)
+        let mut buf = Vec::new();
+        buf.push(0x01u8); // type
+        write_varint(0x1_0000_0064u64, &mut buf); // length varint > u32::MAX, > MAX_VALUE_SIZE
+
+        // No value bytes follow — the guard must fire before attempting to read them.
+        let err = read_tlv(&buf, 0).unwrap_err();
+        assert!(
+            matches!(err, CodecError::Truncated { .. }),
+            "expected Truncated for oversized length prefix, got {err:?}"
+        );
+    }
+
+    /// A TLV length just above MAX_VALUE_SIZE (4097) must also be rejected.
+    #[test]
+    fn r2_tlv_length_just_above_max_value_size_errors() {
+        use crate::varint::write_varint;
+
+        let mut buf = Vec::new();
+        buf.push(0x02u8); // type
+        write_varint(4097u64, &mut buf); // MAX_VALUE_SIZE=4096, so 4097 must error
+
+        let err = read_tlv(&buf, 0).unwrap_err();
+        assert!(
+            matches!(err, CodecError::Truncated { .. }),
+            "expected Truncated for length 4097 > MAX_VALUE_SIZE, got {err:?}"
         );
     }
 }

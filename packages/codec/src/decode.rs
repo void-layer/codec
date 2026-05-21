@@ -491,7 +491,13 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
         .get(&TLV_DUE_AT)
         .ok_or(CodecError::Truncated { needed: 1, had: 0 })?;
     let (due_delta, _) = read_varint(due_at_bytes, 0)?;
-    let due_at = issued_at + due_delta as u32;
+    let due_delta_u32 = u32::try_from(due_delta)
+        .map_err(|_| CodecError::InvalidAmount(format!("due_at delta {due_delta} overflows u32")))?;
+    let due_at = issued_at.checked_add(due_delta_u32).ok_or_else(|| {
+        CodecError::InvalidAmount(format!(
+            "due_at overflow: issued_at {issued_at} + delta {due_delta_u32}"
+        ))
+    })?;
 
     let decimals_bytes = records
         .get(&TLV_DECIMALS)
@@ -791,6 +797,125 @@ mod tests {
                 CodecError::InvalidAmount(_) | CodecError::VarintOverflow(_)
             ),
             "expected InvalidAmount or VarintOverflow for oversized mantissa, got {err:?}"
+        );
+    }
+
+    // --- R1: due_at u64→u32 truncation guard ---
+
+    /// A varint encoding 2^32 (0x1_0000_0000) must not silently truncate to 0.
+    /// Old code: `issued_at + due_delta as u32` → 0x1_0000_0000 as u32 == 0 → due_at == issued_at.
+    #[test]
+    fn r1_due_at_delta_exactly_2pow32_errors() {
+        use crate::varint::write_varint;
+        let delta: u64 = 0x1_0000_0000; // 2^32 — overflows u32
+        let mut due_bytes = Vec::new();
+        write_varint(delta, &mut due_bytes);
+
+        // Feed the oversized delta through the varint decode path directly.
+        // read_varint returns a u64; try_from(u64) must reject values > u32::MAX.
+        let (decoded_delta, _) = crate::varint::read_varint(&due_bytes, 0).unwrap();
+        let result = u32::try_from(decoded_delta);
+        assert!(
+            result.is_err(),
+            "u32::try_from(2^32) must fail — old 'as u32' cast would silently truncate to 0"
+        );
+    }
+
+    /// A varint encoding 2^32 + 100 must also reject, not produce due_at = issued_at + 100.
+    #[test]
+    fn r1_due_at_delta_2pow32_plus_100_errors() {
+        use crate::varint::write_varint;
+        let delta: u64 = 0x1_0000_0064; // 2^32 + 100
+        let mut due_bytes = Vec::new();
+        write_varint(delta, &mut due_bytes);
+
+        let (decoded_delta, _) = crate::varint::read_varint(&due_bytes, 0).unwrap();
+        let result = u32::try_from(decoded_delta);
+        assert!(
+            result.is_err(),
+            "u32::try_from(2^32+100) must fail — old cast would silently produce delta=100"
+        );
+    }
+
+    /// Encode a valid invoice then manually craft a TLV_DUE_AT with delta = 2^32.
+    /// decode_invoice_canonical must return Err, not silently produce due_at == issued_at.
+    #[test]
+    fn r1_full_decode_rejects_due_at_overflow() {
+        use crate::encode::encode_invoice_canonical;
+        use crate::invoice::{Invoice, InvoiceClient, InvoiceFrom, InvoiceItem};
+        use crate::varint::write_varint;
+
+        // Build a valid invoice and encode it.
+        let invoice = Invoice {
+            invoice_id: "INV-R1".to_string(),
+            issued_at: 1_700_000_000,
+            due_at: 1_700_604_800,
+            network_id: 1,
+            currency: "USDC".to_string(),
+            decimals: 6,
+            from: InvoiceFrom {
+                name: "Alice".to_string(),
+                wallet_address: "0xaabbccddee0011223344556677889900aabbccdd".to_string(),
+                email: None,
+                phone: None,
+                physical_address: None,
+                tax_id: None,
+            },
+            client: InvoiceClient {
+                name: "Bob".to_string(),
+                wallet_address: None,
+                email: None,
+                phone: None,
+                physical_address: None,
+                tax_id: None,
+            },
+            items: vec![InvoiceItem {
+                description: "Work".to_string(),
+                quantity: 1.0,
+                rate: "1000000".to_string(),
+            }],
+            token_address: None,
+            notes: None,
+            tax: None,
+            discount: None,
+            total: "1000000".to_string(),
+            salt: "00112233445566778899aabbccddeeff".to_string(),
+        };
+        let mut bytes = encode_invoice_canonical(&invoice).unwrap();
+
+        // Patch TLV_DUE_AT (type=6) in the wire bytes with delta = 2^32.
+        // Scan for type byte 0x06 after the 3-byte header.
+        let header_len = 3usize;
+        let mut i = header_len;
+        while i < bytes.len() {
+            let tlv_type = bytes[i];
+            let (length, n) = crate::varint::read_varint(&bytes, i + 1).unwrap();
+            let value_start = i + 1 + n;
+            let value_end = value_start + length as usize;
+            if tlv_type == crate::encode::TLV_DUE_AT {
+                // Replace value with varint(2^32).
+                let mut new_val = Vec::new();
+                write_varint(0x1_0000_0000u64, &mut new_val);
+                // Rebuild entire TLV for type 6 to correctly patch the length varint.
+                let mut tlv_new = Vec::new();
+                tlv_new.push(0x06u8);
+                write_varint(new_val.len() as u64, &mut tlv_new);
+                tlv_new.extend_from_slice(&new_val);
+                let before = &bytes[..i];
+                let after = &bytes[value_end..];
+                let mut rebuilt = before.to_vec();
+                rebuilt.extend_from_slice(&tlv_new);
+                rebuilt.extend_from_slice(after);
+                bytes = rebuilt;
+                break;
+            }
+            i = value_end;
+        }
+
+        let err = decode_invoice_canonical(&bytes).unwrap_err();
+        assert!(
+            matches!(err, CodecError::InvalidAmount(_) | CodecError::ChecksumMismatch),
+            "expected InvalidAmount or ChecksumMismatch for due_at overflow, got {err:?}"
         );
     }
 }

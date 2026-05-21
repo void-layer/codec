@@ -125,7 +125,19 @@ fn mantissa_bytes(value_str: &str) -> Result<Vec<u8>, CodecError> {
 /// Apply app-level dictionary substitution (mirrors applyDict from app-dict.ts).
 /// Replaces known string patterns with 1-byte control codes.
 /// Longest match first — iterate entries in length-descending order.
-fn apply_dict(input: &str) -> Vec<u8> {
+///
+/// Returns `Err(CodecError::CompressionFailed)` if the input contains any raw
+/// byte in the dict-code range 0x02–0x1F. Such bytes would be misinterpreted
+/// by `reverse_dict` as dictionary codes on decode, producing a different value.
+fn apply_dict(input: &str) -> Result<Vec<u8>, CodecError> {
+    // Reject control bytes that overlap the dict-code range.
+    if input.bytes().any(|b| matches!(b, 0x02..=0x1F)) {
+        return Err(CodecError::CompressionFailed(format!(
+            "field value contains reserved control byte (0x02–0x1F): {}",
+            input.chars().find(|&c| matches!(c as u8, 0x02..=0x1F)).map(|c| format!("0x{:02x}", c as u8)).unwrap_or_default()
+        )));
+    }
+
     // Sorted entries by key length descending (mirrors DICT_ENTRIES order in TS)
     // APP_DICT is a phf map; we must apply longest-match-first manually.
     let mut entries: Vec<(&str, u8)> = APP_DICT.entries().map(|(&k, &v)| (k, v)).collect();
@@ -135,7 +147,7 @@ fn apply_dict(input: &str) -> Vec<u8> {
     for (pattern, code) in &entries {
         text = text.replace(pattern, &(String::from(char::from(*code))));
     }
-    text.into_bytes()
+    Ok(text.into_bytes())
 }
 
 /// Encode chain ID per chain-dict encoding scheme:
@@ -262,20 +274,29 @@ fn encode_token_address(address: &str, network_id: u32) -> Result<Vec<u8>, Codec
     Ok(val)
 }
 
+/// Maximum line items per invoice — must match decode::MAX_ITEMS (50).
+const MAX_ITEMS: usize = 50;
+
 /// Encode items array into packed binary (Type 14, mirrors packItems from encode.ts).
 /// Format: [count: varint] per item: [desc_len: varint][desc_bytes][qty: scale+varint][rate: mantissa]
 fn pack_items(items: &[crate::invoice::InvoiceItem]) -> Result<Vec<u8>, CodecError> {
+    if items.len() > MAX_ITEMS {
+        return Err(CodecError::CompressionFailed(format!(
+            "item count {} exceeds max {MAX_ITEMS}",
+            items.len()
+        )));
+    }
     let mut buf = Vec::new();
     write_varint(items.len() as u64, &mut buf);
 
     for item in items {
         // description: apply dict, then length-prefix with varint
-        let desc_bytes = apply_dict(&item.description);
+        let desc_bytes = apply_dict(&item.description)?;
         write_varint(desc_bytes.len() as u64, &mut buf);
         buf.extend_from_slice(&desc_bytes);
 
         // quantity: [scale: u8][scaled_value: varint] — mirrors writeQuantity
-        write_quantity(&mut buf, item.quantity);
+        write_quantity(&mut buf, item.quantity)?;
 
         // rate: mantissa + trailing zeros — mirrors writeMantissa
         let rate_bytes = mantissa_bytes(&item.rate)?;
@@ -286,7 +307,12 @@ fn pack_items(items: &[crate::invoice::InvoiceItem]) -> Result<Vec<u8>, CodecErr
 
 /// Encode a fractional quantity as [scale: u8][scaled_value: varint].
 /// Mirrors writeQuantity from varint.ts.
-fn write_quantity(buf: &mut Vec<u8>, qty: f64) {
+fn write_quantity(buf: &mut Vec<u8>, qty: f64) -> Result<(), CodecError> {
+    if !qty.is_finite() {
+        return Err(CodecError::InvalidAmount(format!(
+            "quantity must be finite, got {qty}"
+        )));
+    }
     let mut scale = 0u8;
     let mut scaled = qty;
     while scale < 9 && (scaled.round() - scaled).abs() > 1e-9 {
@@ -296,6 +322,7 @@ fn write_quantity(buf: &mut Vec<u8>, qty: f64) {
     let scaled_int = scaled.round() as u64;
     buf.push(scale);
     write_varint(scaled_int, buf);
+    Ok(())
 }
 
 /// Compute domain separator: keccak256("VOIDPAY_INVOICE_V1" || serialized TLV records except type 31).
@@ -391,10 +418,10 @@ pub fn encode_invoice_canonical(invoice: &crate::invoice::Invoice) -> Result<Vec
     map.insert(TLV_ITEMS, pack_items(&invoice.items)?);
 
     // From name (type 16): dict-applied UTF-8
-    map.insert(TLV_FROM_NAME, apply_dict(&invoice.from.name));
+    map.insert(TLV_FROM_NAME, apply_dict(&invoice.from.name)?);
 
     // Client name (type 18): dict-applied UTF-8
-    map.insert(TLV_CLIENT_NAME, apply_dict(&invoice.client.name));
+    map.insert(TLV_CLIENT_NAME, apply_dict(&invoice.client.name)?);
 
     // Salt (type 20): decode hex string → raw bytes
     let salt_bytes = hex_decode_salt(&invoice.salt)?;
@@ -421,39 +448,39 @@ pub fn encode_invoice_canonical(invoice: &crate::invoice::Invoice) -> Result<Vec
     }
 
     if let Some(ref notes) = invoice.notes {
-        map.insert(TLV_NOTES, apply_dict(notes));
+        map.insert(TLV_NOTES, apply_dict(notes)?);
     }
 
     if let Some(ref email) = invoice.from.email {
-        map.insert(TLV_FROM_EMAIL, apply_dict(email));
+        map.insert(TLV_FROM_EMAIL, apply_dict(email)?);
     }
 
     if let Some(ref phone) = invoice.from.phone {
-        map.insert(TLV_FROM_PHONE, apply_dict(phone));
+        map.insert(TLV_FROM_PHONE, apply_dict(phone)?);
     }
 
     if let Some(ref addr) = invoice.from.physical_address {
-        map.insert(TLV_FROM_ADDRESS, apply_dict(addr));
+        map.insert(TLV_FROM_ADDRESS, apply_dict(addr)?);
     }
 
     if let Some(ref tax_id) = invoice.from.tax_id {
-        map.insert(TLV_FROM_TAX_ID, apply_dict(tax_id));
+        map.insert(TLV_FROM_TAX_ID, apply_dict(tax_id)?);
     }
 
     if let Some(ref email) = invoice.client.email {
-        map.insert(TLV_CLIENT_EMAIL, apply_dict(email));
+        map.insert(TLV_CLIENT_EMAIL, apply_dict(email)?);
     }
 
     if let Some(ref phone) = invoice.client.phone {
-        map.insert(TLV_CLIENT_PHONE, apply_dict(phone));
+        map.insert(TLV_CLIENT_PHONE, apply_dict(phone)?);
     }
 
     if let Some(ref addr) = invoice.client.physical_address {
-        map.insert(TLV_CLIENT_ADDRESS, apply_dict(addr));
+        map.insert(TLV_CLIENT_ADDRESS, apply_dict(addr)?);
     }
 
     if let Some(ref tax_id) = invoice.client.tax_id {
-        map.insert(TLV_CLIENT_TAX_ID, apply_dict(tax_id));
+        map.insert(TLV_CLIENT_TAX_ID, apply_dict(tax_id)?);
     }
 
     if let Some(ref tax) = invoice.tax {
@@ -574,7 +601,7 @@ mod tests {
     #[test]
     fn write_quantity_integer_one() {
         let mut buf = Vec::new();
-        write_quantity(&mut buf, 1.0);
+        write_quantity(&mut buf, 1.0).unwrap();
         // scale=0, value=1 → [0x00, 0x01]
         assert_eq!(buf, vec![0x00, 0x01]);
     }
@@ -582,7 +609,7 @@ mod tests {
     #[test]
     fn write_quantity_1_5() {
         let mut buf = Vec::new();
-        write_quantity(&mut buf, 1.5);
+        write_quantity(&mut buf, 1.5).unwrap();
         // scale=1, value=15 → [0x01, 0x0F]
         assert_eq!(buf, vec![0x01, 0x0F]);
     }
@@ -635,14 +662,14 @@ mod tests {
 
     #[test]
     fn apply_dict_substitutes_pattern() {
-        let result = apply_dict("Invoice total");
+        let result = apply_dict("Invoice total").unwrap();
         // "Invoice" → 0x06
         assert_eq!(result[0], 0x06);
     }
 
     #[test]
     fn apply_dict_no_match_passthrough() {
-        let result = apply_dict("Hello world");
+        let result = apply_dict("Hello world").unwrap();
         assert_eq!(result, b"Hello world");
     }
 
@@ -698,6 +725,119 @@ mod tests {
         assert!(
             matches!(err, crate::error::CodecError::InvalidAmount(_)),
             "expected InvalidAmount, got {err:?}"
+        );
+    }
+
+    // --- R3: dict control-byte injection ---
+
+    /// A field value containing raw byte 0x06 ("Invoice" dict code) must be
+    /// rejected. Old code let it pass through apply_dict unchanged, then
+    /// reverse_dict on decode expanded it: "\x06Acme" → "InvoiceAcme".
+    #[test]
+    fn r3_control_byte_0x06_in_field_value_errors() {
+        let hostile = "\x06Acme"; // 0x06 = dict code for "Invoice"
+        let err = apply_dict(hostile).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::CompressionFailed(_)),
+            "expected CompressionFailed for control byte 0x06, got {err:?}"
+        );
+    }
+
+    /// Verify that a value with no control bytes still round-trips correctly
+    /// (regression guard — apply_dict must not break clean input).
+    #[test]
+    fn r3_normal_value_still_roundtrips() {
+        let normal = "Acme Corp";
+        let encoded = apply_dict(normal).unwrap();
+        // Must not contain any raw control bytes in the dict range.
+        assert!(
+            !encoded.iter().any(|&b| matches!(b, 0x02..=0x1F)),
+            "clean input must not produce reserved control bytes"
+        );
+    }
+
+    /// All bytes in the range 0x02–0x1F must be rejected.
+    #[test]
+    fn r3_all_control_bytes_in_range_rejected() {
+        for code in 0x02u8..=0x1Fu8 {
+            let hostile = format!("{}", char::from(code));
+            let err = apply_dict(&hostile).unwrap_err();
+            assert!(
+                matches!(err, crate::error::CodecError::CompressionFailed(_)),
+                "expected CompressionFailed for control byte 0x{code:02x}, got {err:?}"
+            );
+        }
+    }
+
+    // --- R4: MAX_ITEMS encode cap ---
+
+    /// pack_items must reject item counts above MAX_ITEMS (50) with an error,
+    /// not produce a blob that decode_invoice_canonical would reject later.
+    #[test]
+    fn r4_pack_items_above_max_items_errors() {
+        let item = crate::invoice::InvoiceItem {
+            description: "Work".to_string(),
+            quantity: 1.0,
+            rate: "1000000".to_string(),
+        };
+        // MAX_ITEMS = 50; create 51 items.
+        let items: Vec<_> = (0..51).map(|_| item.clone()).collect();
+        let err = pack_items(&items).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::CompressionFailed(_)),
+            "expected CompressionFailed for 51 items > MAX_ITEMS, got {err:?}"
+        );
+    }
+
+    /// Exactly MAX_ITEMS (50) items must still encode without error.
+    #[test]
+    fn r4_pack_items_at_max_items_ok() {
+        let item = crate::invoice::InvoiceItem {
+            description: "Work".to_string(),
+            quantity: 1.0,
+            rate: "1000000".to_string(),
+        };
+        let items: Vec<_> = (0..50).map(|_| item.clone()).collect();
+        assert!(
+            pack_items(&items).is_ok(),
+            "exactly MAX_ITEMS items must encode successfully"
+        );
+    }
+
+    // --- R5: NaN/Inf quantity guard ---
+
+    /// f64::INFINITY quantity must return Err, not silently encode as u64::MAX.
+    #[test]
+    fn r5_infinity_quantity_errors() {
+        let mut buf = Vec::new();
+        let err = write_quantity(&mut buf, f64::INFINITY).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::InvalidAmount(_)),
+            "expected InvalidAmount for Inf quantity, got {err:?}"
+        );
+        assert!(buf.is_empty(), "buf must remain empty on error");
+    }
+
+    /// f64::NAN quantity must return Err, not silently encode as 0.
+    #[test]
+    fn r5_nan_quantity_errors() {
+        let mut buf = Vec::new();
+        let err = write_quantity(&mut buf, f64::NAN).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::InvalidAmount(_)),
+            "expected InvalidAmount for NaN quantity, got {err:?}"
+        );
+        assert!(buf.is_empty(), "buf must remain empty on error");
+    }
+
+    /// f64::NEG_INFINITY must also be rejected.
+    #[test]
+    fn r5_neg_infinity_quantity_errors() {
+        let mut buf = Vec::new();
+        let err = write_quantity(&mut buf, f64::NEG_INFINITY).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::InvalidAmount(_)),
+            "expected InvalidAmount for -Inf quantity, got {err:?}"
         );
     }
 }
