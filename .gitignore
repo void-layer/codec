@@ -1,6 +1,8 @@
 node_modules/
 target/
 pkg/
+pkg-node/
+pkg-web/
 dist/
 .DS_Store
 *.log

@@ -12,6 +12,18 @@ export default defineConfig({
     // Exclude the generator wrapper from the default test run — regeneration
     // is an explicit manual step, not something that should run on every pnpm test.
     exclude: [...configDefaults.exclude, 'scripts/**'],
+    coverage: {
+      include: ['src/**'],
+      exclude: [
+        'target/**',
+        'pkg/**',
+        'pkg-node/**',
+        'pkg-web/**',
+        'dist/**',
+        'docs/**',
+        'scripts/**',
+      ],
+    },
   },
   resolve: {
     alias: {
