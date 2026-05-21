@@ -8,5 +8,8 @@ export interface TokenInfo {
   name: string;
 }
 
-// Phase 2 populates from Uniswap Token List
+/**
+ * @alpha Token list is intentionally empty at 0.1.0.
+ * Populated from Uniswap Token List in a future minor release.
+ */
 export const SUPPORTED_TOKENS: readonly TokenInfo[] = [];
