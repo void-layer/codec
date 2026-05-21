@@ -11,6 +11,7 @@
  */
 
 import type { BrotliWasmType } from 'brotli-wasm'
+import type { Invoice } from '@void-layer/types'
 
 // Re-export canonical WASM functions directly.
 export {
@@ -47,7 +48,7 @@ async function getBrotli(): Promise<BrotliWasmType> {
 // Mirrors: compressPayload() in tlv-codec/compress.ts
 // ---------------------------------------------------------------------------
 
-export async function encodeInvoiceWire(invoice: unknown): Promise<Uint8Array> {
+export async function encodeInvoiceWire(invoice: Invoice): Promise<Uint8Array> {
   const { encodeInvoiceCanonical: encodeCanonical } = await import(
     '../pkg/void_layer_codec.js'
   )
@@ -75,7 +76,7 @@ export async function encodeInvoiceWire(invoice: unknown): Promise<Uint8Array> {
 // Mirrors: decompressPayload() in tlv-codec/compress.ts
 // ---------------------------------------------------------------------------
 
-export async function decodeInvoiceWire(bytes: Uint8Array): Promise<unknown> {
+export async function decodeInvoiceWire(bytes: Uint8Array): Promise<Invoice> {
   const { decodeInvoiceCanonical: decodeCanonical } = await import(
     '../pkg/void_layer_codec.js'
   )

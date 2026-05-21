@@ -17,6 +17,7 @@ import { describe, it, expect } from 'vitest'
 import {
   encodeInvoiceCanonical,
   decodeInvoiceCanonical,
+  receiptHash,
 } from '../pkg/void_layer_codec.js'
 import { encodeInvoiceWire, decodeInvoiceWire } from '../src/index.js'
 import vectors from '../vectors/v4-codec.json'
@@ -111,6 +112,42 @@ describe('golden-vector parity: wire (async)', () => {
     it(`decode:wire:${v.name}`, async () => {
       const decoded = await decodeInvoiceWire(fromHex(v.wire_hex))
       expect(decoded).toEqual(v.decoded)
+    })
+
+    // For uncompressed-fallback vectors (wire == canonical), verify that the
+    // COMPRESSED_FLAG bit is clear. This exercises the structural invariant
+    // separately from value comparison so the shim's brotli-fallback path is
+    // distinguishable from the compressed path.
+    if (v.wire_hex === v.canonical_hex) {
+      it(`wire:uncompressed-flag-clear:${v.name}`, () => {
+        const wire = fromHex(v.wire_hex)
+        expect(wire[1]! & 0x80).toBe(0)
+      })
+    }
+  }
+})
+
+// ---------------------------------------------------------------------------
+// receipt_hash_hex golden vectors — vectors that carry a receipt_hash_hex field
+// ---------------------------------------------------------------------------
+
+type VectorWithReceiptHash = (typeof vectors.vectors)[number] & {
+  canonical_hex: string
+  receipt_hash_hex: string
+}
+
+const receiptHashVectors = vectors.vectors.filter(
+  (v): v is VectorWithReceiptHash =>
+    typeof (v as { canonical_hex?: unknown }).canonical_hex === 'string' &&
+    typeof (v as { receipt_hash_hex?: unknown }).receipt_hash_hex === 'string',
+)
+
+describe('golden-vector parity: receipt_hash_hex', () => {
+  for (const v of receiptHashVectors) {
+    it(`receiptHash:${v.name}`, () => {
+      const canonical = fromHex(v.canonical_hex)
+      const hash = receiptHash(canonical)
+      expect(toHex(hash)).toBe(v.receipt_hash_hex)
     })
   }
 })

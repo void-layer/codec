@@ -122,4 +122,20 @@ describe('receiptHash (JS export coverage)', () => {
     expect(first).toHaveLength(32)
     expect(first).toEqual(second)
   })
+
+  it('golden value — minimal-single-tlv canonical bytes', () => {
+    // Keccak-256 of the canonical bytes for the minimal-single-tlv vector.
+    // Value is independently verified against the receipt_hash_hex field in
+    // vectors/v4-codec.json.
+    const canonical = new Uint8Array(
+      Buffer.from(
+        '56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be5',
+        'hex',
+      ),
+    )
+    const hash = receiptHash(canonical)
+    expect(Buffer.from(hash).toString('hex')).toBe(
+      'b5e4a21f39c8bdc09fd93a54806584fab25e3094c045835a7bd1928246223d53',
+    )
+  })
 })

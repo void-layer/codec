@@ -1,7 +1,7 @@
 /**
  * Golden vector generator — @void-layer/codec v4-codec.json
  *
- * Produces the starter set of 16 canonical golden vectors per spec §D-R6.1 and
+ * Produces the starter set of 18 canonical golden vectors per spec §D-R6.1 and
  * plan-phase2c §T-P2-12 (C2 amendment: TypeScript generator, not Rust bin).
  *
  * Run (from packages/codec root):
@@ -386,7 +386,7 @@ async function main(): Promise<void> {
 
   const output = {
     schema_version: 1,
-    generated_by: '@void-layer/codec v0.0.0',
+    generated_by: '@void-layer/codec v0.1.0',
     generated_at: '2026-05-20',
     vectors,
   }
