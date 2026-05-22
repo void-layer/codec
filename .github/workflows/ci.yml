@@ -18,8 +18,8 @@ jobs:
         with: { rustflags: "" }
       - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
       - run: rustup target add wasm32-unknown-unknown
-      - name: Install wasm-pack 0.14.1
-        run: cargo install wasm-pack --version 0.14.1 --locked
+      - name: Install wasm-pack 0.14.0
+        run: cargo install wasm-pack --version 0.14.0 --locked
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r build
       - run: pnpm -r lint
@@ -46,8 +46,8 @@ jobs:
         with: { rustflags: "" }
       - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
       - run: rustup target add wasm32-unknown-unknown
-      - name: Install wasm-pack 0.14.1
-        run: cargo install wasm-pack --version 0.14.1 --locked
+      - name: Install wasm-pack 0.14.0
+        run: cargo install wasm-pack --version 0.14.0 --locked
       - run: pnpm install --frozen-lockfile
       - run: pnpm -C packages/codec build
       - name: TS/JS parity (vitest)
@@ -70,7 +70,7 @@ jobs:
         with: { rustflags: "" }
       - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
       - run: rustup target add wasm32-unknown-unknown
-      - name: Install wasm-pack 0.14.1
-        run: cargo install wasm-pack --version 0.14.1 --locked
+      - name: Install wasm-pack 0.14.0
+        run: cargo install wasm-pack --version 0.14.0 --locked
       - name: Run wasm-pack test --node (AC-9 boundary tests)
         run: wasm-pack test --node packages/codec

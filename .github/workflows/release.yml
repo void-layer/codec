@@ -17,8 +17,8 @@ jobs:
         with: { rustflags: "" }
       - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32   # v2
       - run: rustup target add wasm32-unknown-unknown
-      - name: Install wasm-pack 0.14.1
-        run: cargo install wasm-pack --version 0.14.1 --locked
+      - name: Install wasm-pack 0.14.0
+        run: cargo install wasm-pack --version 0.14.0 --locked
       - run: npm install -g npm@latest
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r build
