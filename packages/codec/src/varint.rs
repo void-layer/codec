@@ -56,9 +56,7 @@ pub(crate) fn read_varint(buf: &[u8], offset: usize) -> Result<(u64, usize), Cod
             // C-3: reject non-canonical encoding — a terminal byte of 0x00 with
             // preceding bytes means the value fits in fewer bytes (e.g. 0x80 0x00).
             if bytes_read > 1 && (byte & 0x7F) == 0 {
-                return Err(CodecError::InvalidData(
-                    "non-canonical varint".to_string(),
-                ));
+                return Err(CodecError::InvalidData("non-canonical varint".to_string()));
             }
             break;
         }
@@ -128,9 +126,7 @@ pub(crate) fn read_bigint_varint(
         if byte & 0x80 == 0 {
             // C-3: reject non-canonical encoding — terminal 0x00 with preceding bytes.
             if bytes_read > 1 && (byte & 0x7F) == 0 {
-                return Err(CodecError::InvalidData(
-                    "non-canonical varint".to_string(),
-                ));
+                return Err(CodecError::InvalidData("non-canonical varint".to_string()));
             }
             break;
         }

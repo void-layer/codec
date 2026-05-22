@@ -26,8 +26,7 @@ use crate::encode::{
 /// All v1 known TLV tags (25 content tags + TLV_DOMAIN_SEPARATOR=31 = 26 total).
 /// Any tag outside this set is an unknown extension → reject with UnknownExtension.
 const KNOWN_TAGS: &[u8] = &[
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 31, 35,
-    37,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 31, 35, 37,
 ];
 use crate::error::CodecError;
 use crate::invoice::{Invoice, InvoiceClient, InvoiceFrom};

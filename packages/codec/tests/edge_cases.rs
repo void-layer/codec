@@ -139,7 +139,6 @@ fn g01_encode_decode_encode_byte_stable_with_all_optional_fields() {
 
 #[test]
 fn g05_issued_at_u32_max_due_delta_1_overflows() {
-
     // The easiest way: build TLV bytes manually using the encode path as a template,
     // then swap the issued_at and due_delta via a rebuild approach.
     // We know from the source: decode calls issued_at.checked_add(due_delta_u32).
@@ -185,7 +184,9 @@ fn g05_issued_at_u32_max_due_delta_1_overflows() {
                 let b = bytes[i + 1 + n];
                 n += 1;
                 value |= ((b & 0x7F) as u64) << shift;
-                if b & 0x80 == 0 { break; }
+                if b & 0x80 == 0 {
+                    break;
+                }
                 shift += 7;
             }
             (value as usize, n)
@@ -262,7 +263,9 @@ fn g06_decode_mantissa_u256_max_times_10_overflows() {
                 let b = bytes[i + 1 + n];
                 n += 1;
                 value |= ((b & 0x7F) as u64) << shift;
-                if b & 0x80 == 0 { break; }
+                if b & 0x80 == 0 {
+                    break;
+                }
                 shift += 7;
             }
             (value as usize, n)
@@ -522,7 +525,10 @@ fn g15_decode_token_address_unknown_dict_code_errors() {
     // Decode: domain separator mismatch fires before token_address decode.
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::ChecksumMismatch | CodecError::UnknownExtension(_)),
+        matches!(
+            err,
+            CodecError::ChecksumMismatch | CodecError::UnknownExtension(_)
+        ),
         "expected ChecksumMismatch or UnknownExtension for unknown token dict code, got {err:?}"
     );
 }
@@ -558,7 +564,10 @@ fn g16_decode_currency_unknown_dict_code_errors() {
 
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::ChecksumMismatch | CodecError::UnknownExtension(_)),
+        matches!(
+            err,
+            CodecError::ChecksumMismatch | CodecError::UnknownExtension(_)
+        ),
         "expected ChecksumMismatch or UnknownExtension(200) for unknown currency code, got {err:?}"
     );
 }
@@ -607,7 +616,10 @@ fn g17_decode_chain_id_unknown_dict_code_0xff_errors() {
 
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::ChecksumMismatch | CodecError::UnknownExtension(0xFF)),
+        matches!(
+            err,
+            CodecError::ChecksumMismatch | CodecError::UnknownExtension(0xFF)
+        ),
         "expected ChecksumMismatch or UnknownExtension(0xFF) for unknown chain dict code, got {err:?}"
     );
 }
@@ -640,7 +652,10 @@ fn g20_invalid_utf8_in_invoice_id_errors() {
 
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::ChecksumMismatch | CodecError::InvalidData(_)),
+        matches!(
+            err,
+            CodecError::ChecksumMismatch | CodecError::InvalidData(_)
+        ),
         "invalid UTF-8 in invoice_id must error, got {err:?}"
     );
 }
@@ -669,7 +684,10 @@ fn g20_invalid_utf8_in_tax_errors() {
 
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::ChecksumMismatch | CodecError::InvalidData(_)),
+        matches!(
+            err,
+            CodecError::ChecksumMismatch | CodecError::InvalidData(_)
+        ),
         "invalid UTF-8 in tax must error, got {err:?}"
     );
 }
@@ -698,7 +716,10 @@ fn g20_invalid_utf8_in_discount_errors() {
 
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::ChecksumMismatch | CodecError::InvalidData(_)),
+        matches!(
+            err,
+            CodecError::ChecksumMismatch | CodecError::InvalidData(_)
+        ),
         "invalid UTF-8 in discount must error, got {err:?}"
     );
 }
@@ -745,7 +766,10 @@ fn g21_salt_shorter_than_16_bytes_errors_checksum() {
     // The salt < 16 check fires before domain separator.
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::ChecksumMismatch | CodecError::Truncated { .. }),
+        matches!(
+            err,
+            CodecError::ChecksumMismatch | CodecError::Truncated { .. }
+        ),
         "salt < 16 bytes must error with ChecksumMismatch or Truncated, got {err:?}"
     );
 }
@@ -783,7 +807,10 @@ fn g22_issued_at_shorter_than_4_bytes_errors_truncated() {
 
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::Truncated { .. } | CodecError::ChecksumMismatch),
+        matches!(
+            err,
+            CodecError::Truncated { .. } | CodecError::ChecksumMismatch
+        ),
         "issued_at < 4 bytes must error Truncated or ChecksumMismatch, got {err:?}"
     );
 }
@@ -821,7 +848,10 @@ fn g23_decimals_empty_value_errors_truncated() {
 
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::Truncated { .. } | CodecError::ChecksumMismatch),
+        matches!(
+            err,
+            CodecError::Truncated { .. } | CodecError::ChecksumMismatch
+        ),
         "empty decimals TLV must error Truncated or ChecksumMismatch, got {err:?}"
     );
 }
@@ -1124,7 +1154,10 @@ fn g34_decode_mantissa_missing_zeros_byte_errors_truncated() {
     // Domain separator mismatch fires first, but IF it got through, Truncated would fire.
     let err = decode_invoice_canonical(&bytes).expect_err("must fail");
     assert!(
-        matches!(err, CodecError::ChecksumMismatch | CodecError::Truncated { .. }),
+        matches!(
+            err,
+            CodecError::ChecksumMismatch | CodecError::Truncated { .. }
+        ),
         "missing zeros byte must error ChecksumMismatch or Truncated, got {err:?}"
     );
 }
@@ -1160,7 +1193,11 @@ fn g36_weth_base_encodes_as_code_43_decodes_correctly() {
         }
         i = value_end;
     }
-    assert_eq!(found_code, Some(43), "WETH on Base must encode as dict code 43");
+    assert_eq!(
+        found_code,
+        Some(43),
+        "WETH on Base must encode as dict code 43"
+    );
 
     // Decode and verify the address roundtrips correctly.
     let decoded = decode_invoice_canonical(&bytes).expect("decode WETH on Base");
@@ -1196,7 +1233,11 @@ fn g36_weth_optimism_encodes_as_code_24_decodes_correctly() {
         }
         i = value_end;
     }
-    assert_eq!(found_code, Some(24), "WETH on Optimism must encode as dict code 24");
+    assert_eq!(
+        found_code,
+        Some(24),
+        "WETH on Optimism must encode as dict code 24"
+    );
 
     let decoded = decode_invoice_canonical(&bytes).expect("decode WETH on Optimism");
     assert_eq!(
@@ -1232,7 +1273,10 @@ fn g37_write_bigint_varint_0x80_encodes_with_continuation() {
     invoice.total = "128".to_string();
     let bytes = encode_invoice_canonical(&invoice).expect("encode total=128");
     let decoded = decode_invoice_canonical(&bytes).expect("decode total=128");
-    assert_eq!(decoded.total, "128", "0x80 mantissa must roundtrip via 2-byte LEB128");
+    assert_eq!(
+        decoded.total, "128",
+        "0x80 mantissa must roundtrip via 2-byte LEB128"
+    );
 }
 
 // ---------------------------------------------------------------------------
