@@ -133,6 +133,59 @@ describe('decodeInvoiceWire decompression-bomb guard', () => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// G-11 TS parity: write_quantity(0.1234567891) scale clamps at 9, silent rounding.
+// The TS shim calls the WASM encodeInvoiceCanonical which calls the Rust write_quantity.
+// ---------------------------------------------------------------------------
+
+describe('G-11: write_quantity clamps scale at 9 (TS parity)', () => {
+  it('encodes 0.1234567891 without error (scale clamps at 9)', () => {
+    const inv: Invoice = {
+      ...MINIMAL_INVOICE,
+      items: [{ description: 'Fractional qty', quantity: 0.1234567891, rate: '1000000' }],
+    }
+    // Must not throw — scale clamps silently at 9.
+    expect(() => encodeInvoiceCanonical(inv)).not.toThrow()
+  })
+
+  it('decoded quantity is close to 0.1234567891 (within 1e-6)', async () => {
+    const inv: Invoice = {
+      ...MINIMAL_INVOICE,
+      items: [{ description: 'Fractional qty', quantity: 0.1234567891, rate: '1000000' }],
+    }
+    const canonical = encodeInvoiceCanonical(inv)
+    const decoded = decodeInvoiceCanonical(canonical) as { items: { quantity: number }[] }
+    const qty = decoded.items[0]!.quantity
+    expect(Math.abs(qty - 0.1234567891)).toBeLessThan(1e-6)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// G-35: decodeInvoiceWire(encodeInvoiceCanonical(inv)) — canonical (uncompressed)
+// payload fed to wire decoder → correct Invoice.
+// The wire decoder must pass through uncompressed canonical bytes unchanged.
+// ---------------------------------------------------------------------------
+
+describe('G-35: decodeInvoiceWire accepts encodeInvoiceCanonical output', () => {
+  it('decodes canonical (uncompressed) bytes as wire input — invoice_id matches', async () => {
+    const canonical = encodeInvoiceCanonical(MINIMAL_INVOICE)
+    // Canonical bytes have COMPRESSED_FLAG clear on version byte.
+    expect(canonical[1]! & 0x80).toBe(0)
+    const decoded = (await decodeInvoiceWire(canonical)) as DecodedInvoice
+    expect(decoded.invoice_id).toBe('INV-001')
+    expect(decoded.currency).toBe('USDC')
+    expect(decoded.total).toBe('1000000')
+    expect(decoded.decimals).toBe(6)
+  })
+
+  it('decodes canonical bytes for a larger invoice correctly', async () => {
+    const canonical = encodeInvoiceCanonical(LARGE_INVOICE)
+    const decoded = (await decodeInvoiceWire(canonical)) as DecodedInvoice
+    expect(decoded.invoice_id).toBe('INV-LARGE-001')
+    expect(decoded.total).toBe('14000000')
+  })
+})
+
 describe('receiptHash (JS export coverage)', () => {
   // Hand-crafted canonical TLV: tag=0x01, length=0x03, value=[0xAA, 0xBB, 0xCC]
   const CANONICAL_FIXTURE = new Uint8Array([0x01, 0x03, 0xaa, 0xbb, 0xcc])
