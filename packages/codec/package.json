@@ -43,6 +43,9 @@
     "lint": "cargo clippy --all-targets --all-features --locked -- -D warnings && cargo fmt --manifest-path Cargo.toml -- --check && eslint src",
     "size": "ls -la pkg/void_layer_codec_bg.wasm"
   },
+  "dependencies": {
+    "@void-layer/types": "workspace:^"
+  },
   "peerDependencies": {
     "brotli-wasm": "^3.0.1"
   },
