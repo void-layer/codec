@@ -13,6 +13,9 @@ export default defineConfig({
     // is an explicit manual step, not something that should run on every pnpm test.
     exclude: [...configDefaults.exclude, 'scripts/**'],
     coverage: {
+      // enabled: true → `vitest run` always collects + gates coverage, so the
+      // 80% threshold (Constitution X) is enforced by plain `pnpm -r test` in CI.
+      enabled: true,
       include: ['src/**'],
       exclude: [
         'target/**',
