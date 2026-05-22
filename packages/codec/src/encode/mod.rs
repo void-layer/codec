@@ -20,7 +20,7 @@ use amount::{mantissa_bytes, uint32_be, varint_bytes};
 use dict::{apply_dict, encode_chain_id, encode_currency};
 use fields::{compute_domain_separator, pack_items, utf8_bytes};
 // `MAX_*` limits stay module-internal (originally unmarked in encode.rs → `pub(super)`).
-use tags::{MAX_PAYLOAD_SIZE, MAX_TLV_COUNT, MAX_VALUE_SIZE};
+use tags::{MAX_TLV_COUNT, MAX_VALUE_SIZE};
 
 // Re-export the wire-format + TLV-tag constants at their real names so
 // `crate::encode::TLV_DUE_AT`, `crate::encode::MAGIC`, etc. continue to resolve
@@ -88,8 +88,16 @@ pub fn encode_invoice_canonical(invoice: &crate::invoice::Invoice) -> Result<Vec
     // Issued at (type 4): uint32 BE
     map.insert(TLV_ISSUED_AT, uint32_be(invoice.issued_at));
 
-    // Due at (type 6): delta from issuedAt as varint
-    let due_delta = invoice.due_at.saturating_sub(invoice.issued_at);
+    // Due at (type 6): delta from issuedAt as varint.
+    // `due_at < issued_at` has no valid delta encoding — reject rather than
+    // let the subtraction collapse it silently to a zero delta.
+    if invoice.due_at < invoice.issued_at {
+        return Err(CodecError::InvalidAmount(format!(
+            "due_at {} is before issued_at {}",
+            invoice.due_at, invoice.issued_at
+        )));
+    }
+    let due_delta = invoice.due_at - invoice.issued_at;
     map.insert(TLV_DUE_AT, varint_bytes(due_delta as u64));
 
     // Decimals (type 8): single byte
@@ -208,13 +216,10 @@ pub fn encode_invoice_canonical(invoice: &crate::invoice::Invoice) -> Result<Vec
     out.push(map.len() as u8);
     write_tlv_stream(&map, &mut out);
 
-    if out.len() > MAX_PAYLOAD_SIZE {
-        return Err(CodecError::CompressionFailed(format!(
-            "payload size {} exceeds max {}",
-            out.len(),
-            MAX_PAYLOAD_SIZE
-        )));
-    }
+    // No URL-budget cap here: canonical bytes are Brotli-compressed by the JS
+    // shim before hitting the URL. A canonical form > the 2000-byte URL budget
+    // can still compress under it — enforcing the cap pre-compression is the
+    // wrong layer. `MAX_TLV_COUNT` / `MAX_VALUE_SIZE` are real structural caps.
 
     Ok(out)
 }
@@ -227,5 +232,90 @@ pub fn encode_invoice_canonical(invoice: &crate::invoice::Invoice) -> Result<Vec
 pub(crate) mod tests_pub {
     pub(crate) fn mantissa_bytes_pub(s: &str) -> Result<Vec<u8>, crate::error::CodecError> {
         super::mantissa_bytes(s)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::invoice::{Invoice, InvoiceClient, InvoiceFrom, InvoiceItem};
+
+    /// Minimal valid invoice; callers tweak fields under test.
+    fn sample_invoice() -> Invoice {
+        Invoice {
+            invoice_id: "INV-001".to_string(),
+            issued_at: 1_700_000_000,
+            due_at: 1_700_604_800,
+            network_id: 1,
+            currency: "USDC".to_string(),
+            decimals: 6,
+            from: InvoiceFrom {
+                name: "Alice".to_string(),
+                wallet_address: "0xaabbccddee0011223344556677889900aabbccdd".to_string(),
+                email: None,
+                phone: None,
+                physical_address: None,
+                tax_id: None,
+            },
+            client: InvoiceClient {
+                name: "Bob".to_string(),
+                wallet_address: None,
+                email: None,
+                phone: None,
+                physical_address: None,
+                tax_id: None,
+            },
+            items: vec![InvoiceItem {
+                description: "Work".to_string(),
+                quantity: 1.0,
+                rate: "1000000".to_string(),
+            }],
+            token_address: None,
+            notes: None,
+            tax: None,
+            discount: None,
+            total: "1000000".to_string(),
+            salt: "00112233445566778899aabbccddeeff".to_string(),
+        }
+    }
+
+    // --- #10: due_at < issued_at must be rejected ---
+
+    /// `due_at` earlier than `issued_at` must Err, not collapse to a zero delta.
+    #[test]
+    fn encode_rejects_due_at_before_issued_at() {
+        let mut invoice = sample_invoice();
+        invoice.due_at = invoice.issued_at - 1;
+        let err = encode_invoice_canonical(&invoice).unwrap_err();
+        assert!(
+            matches!(err, CodecError::InvalidAmount(_)),
+            "expected InvalidAmount for due_at < issued_at, got {err:?}"
+        );
+    }
+
+    /// `due_at == issued_at` is a valid zero-delta invoice.
+    #[test]
+    fn encode_accepts_due_at_equal_issued_at() {
+        let mut invoice = sample_invoice();
+        invoice.due_at = invoice.issued_at;
+        assert!(encode_invoice_canonical(&invoice).is_ok());
+    }
+
+    // --- #7: canonical form may exceed the 1481-byte URL budget ---
+
+    /// An invoice whose canonical form exceeds 1481 bytes must still encode —
+    /// the URL budget is enforced post-compression by the JS shim, not here.
+    #[test]
+    fn encode_accepts_canonical_over_url_budget() {
+        let mut invoice = sample_invoice();
+        // A 2000-char notes field pushes the canonical form well past 1481 bytes
+        // while staying under MAX_VALUE_SIZE (4096).
+        invoice.notes = Some("x".repeat(2000));
+        let out = encode_invoice_canonical(&invoice).expect("should encode");
+        assert!(
+            out.len() > 1481,
+            "canonical form must exceed 1481 bytes for this test to be meaningful, got {}",
+            out.len()
+        );
     }
 }

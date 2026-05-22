@@ -42,7 +42,6 @@ pub(crate) const COMPRESSED_FLAG: u8 = 0x80;
 
 pub(super) const MAX_TLV_COUNT: usize = 64;
 pub(super) const MAX_VALUE_SIZE: usize = 4096;
-pub(super) const MAX_PAYLOAD_SIZE: usize = 1481; // (2000 - 25 prefix) / 1.333 Base64url ratio
 
 /// Maximum line items per invoice — must match decode::MAX_ITEMS (50).
 pub(super) const MAX_ITEMS: usize = 50;

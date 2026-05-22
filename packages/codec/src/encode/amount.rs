@@ -33,17 +33,25 @@ pub(super) fn mantissa_bytes(value_str: &str) -> Result<Vec<u8>, CodecError> {
         return Ok(buf);
     }
 
+    // A U256 value has at most 77 decimal digits, so at most 77 trailing zeros.
+    // Decode accepts a zeros byte in 0..=77; encode must never emit more.
+    const MAX_TRAILING_ZEROS: usize = 77;
     let ten = U256::from(10u64);
     let mut mantissa = value;
-    let mut zeros: u8 = 0;
+    let mut zeros: usize = 0;
     while mantissa % ten == U256::ZERO {
         mantissa /= ten;
         zeros += 1;
+        if zeros > MAX_TRAILING_ZEROS {
+            return Err(CodecError::InvalidAmount(format!(
+                "trailing-zero count exceeds U256 domain max {MAX_TRAILING_ZEROS}"
+            )));
+        }
     }
     // Write mantissa as big-endian bytes via bigint_varint
     let mantissa_be: [u8; 32] = mantissa.to_be_bytes();
     write_bigint_varint(&mantissa_be, &mut buf);
-    buf.push(zeros);
+    buf.push(zeros as u8);
     Ok(buf)
 }
 
@@ -53,6 +61,13 @@ pub(super) fn write_quantity(buf: &mut Vec<u8>, qty: f64) -> Result<(), CodecErr
     if !qty.is_finite() {
         return Err(CodecError::InvalidAmount(format!(
             "quantity must be finite, got {qty}"
+        )));
+    }
+    // A negative quantity has no representable encoding (`scaled_int` is u64).
+    // Without this guard `-5.0 as u64` saturates to 0 — a silent data corruption.
+    if qty < 0.0 {
+        return Err(CodecError::InvalidAmount(format!(
+            "quantity must be non-negative, got {qty}"
         )));
     }
     let mut scale = 0u8;
@@ -199,5 +214,32 @@ mod tests {
             matches!(err, crate::error::CodecError::InvalidAmount(_)),
             "expected InvalidAmount for -Inf quantity, got {err:?}"
         );
+    }
+
+    // --- #3: negative finite quantity guard ---
+
+    /// A negative finite quantity must return Err, not saturate to 0 via `as u64`.
+    #[test]
+    fn write_quantity_negative_errors() {
+        let mut buf = Vec::new();
+        let err = write_quantity(&mut buf, -5.0).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::InvalidAmount(_)),
+            "expected InvalidAmount for negative quantity, got {err:?}"
+        );
+        assert!(buf.is_empty(), "buf must remain empty on error");
+    }
+
+    // --- #2 encode-side: trailing-zeros accumulator robustness ---
+
+    /// A value with many trailing zeros (well within the U256 77-zero domain)
+    /// encodes correctly without overflowing the accumulator.
+    #[test]
+    fn mantissa_bytes_max_trailing_zeros() {
+        // 10^77 is the largest power of ten representable in U256.
+        let s = "1".to_string() + &"0".repeat(77);
+        let b = mantissa_bytes(&s).unwrap();
+        // mantissa = 1, zeros = 77
+        assert_eq!(*b.last().unwrap(), 77u8);
     }
 }
