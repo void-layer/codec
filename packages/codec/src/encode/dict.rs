@@ -18,7 +18,10 @@ use crate::varint::write_varint;
 pub(super) fn apply_dict(input: &str) -> Result<Vec<u8>, CodecError> {
     // Reject only bytes equal to an actual dict code (derived from APP_DICT).
     let is_dict_code = |b: u8| APP_DICT.values().any(|&code| code == b);
-    if let Some(c) = input.chars().find(|&c| (c as u32) < 0x100 && is_dict_code(c as u8)) {
+    if let Some(c) = input
+        .chars()
+        .find(|&c| (c as u32) < 0x100 && is_dict_code(c as u8))
+    {
         return Err(CodecError::CompressionFailed(format!(
             "field value contains reserved dictionary code byte: 0x{:02x}",
             c as u8

@@ -77,9 +77,10 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
         let (desc_len, n) = read_bounded_len(data, offset, MAX_DESC_LEN)?;
         offset += n;
         // checked_add guards against offset + desc_len overflowing usize.
-        let desc_end = offset
-            .checked_add(desc_len)
-            .ok_or(CodecError::Truncated { needed: usize::MAX, had: data.len() })?;
+        let desc_end = offset.checked_add(desc_len).ok_or(CodecError::Truncated {
+            needed: usize::MAX,
+            had: data.len(),
+        })?;
         if desc_end > data.len() {
             return Err(CodecError::Truncated {
                 needed: desc_end,
