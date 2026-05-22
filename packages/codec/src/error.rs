@@ -58,4 +58,8 @@ pub enum CodecError {
     /// A structural size or count limit was exceeded.
     #[error("payload overflow: {0}")]
     Overflow(String),
+    /// Input bytes were structurally present but not valid
+    /// (e.g. invalid UTF-8, reserved byte injection).
+    #[error("invalid data: {0}")]
+    InvalidData(String),
 }

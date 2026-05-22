@@ -44,7 +44,7 @@ static DICT_CODE_SET: [bool; 256] = build_dict_code_set();
 /// Replaces known string patterns with 1-byte control codes.
 /// Longest match first — iterate entries in length-descending order.
 ///
-/// Returns `Err(CodecError::Overflow)` if the input contains any raw byte equal
+/// Returns `Err(CodecError::InvalidData)` if the input contains any raw byte equal
 /// to an actual dictionary code value. Such bytes would be misinterpreted by
 /// `reverse_dict` as dictionary codes on decode, producing a different value.
 /// Only the exact `APP_DICT` code values are reserved — non-code control
@@ -56,7 +56,7 @@ pub(super) fn apply_dict(input: &str) -> Result<Vec<u8>, CodecError> {
         .chars()
         .find(|&c| (c as u32) < 0x100 && DICT_CODE_SET[c as usize])
     {
-        return Err(CodecError::Overflow(format!(
+        return Err(CodecError::InvalidData(format!(
             "field value contains reserved dictionary code byte: 0x{:02x}",
             c as u8
         )));
@@ -168,8 +168,8 @@ mod tests {
         let hostile = "\x06Acme"; // 0x06 = dict code for "Invoice"
         let err = apply_dict(hostile).unwrap_err();
         assert!(
-            matches!(err, crate::error::CodecError::Overflow(_)),
-            "expected Overflow for control byte 0x06, got {err:?}"
+            matches!(err, crate::error::CodecError::InvalidData(_)),
+            "expected InvalidData for control byte 0x06, got {err:?}"
         );
     }
 
@@ -193,8 +193,8 @@ mod tests {
             let hostile = format!("{}", char::from(code));
             let err = apply_dict(&hostile).unwrap_err();
             assert!(
-                matches!(err, crate::error::CodecError::Overflow(_)),
-                "expected Overflow for dict code 0x{code:02x}, got {err:?}"
+                matches!(err, crate::error::CodecError::InvalidData(_)),
+                "expected InvalidData for dict code 0x{code:02x}, got {err:?}"
             );
         }
     }
@@ -217,8 +217,8 @@ mod tests {
     fn apply_dict_rejects_tab() {
         let err = apply_dict("col1\tcol2").unwrap_err();
         assert!(
-            matches!(err, crate::error::CodecError::Overflow(_)),
-            "expected Overflow for TAB (0x09), got {err:?}"
+            matches!(err, crate::error::CodecError::InvalidData(_)),
+            "expected InvalidData for TAB (0x09), got {err:?}"
         );
     }
 
@@ -227,8 +227,8 @@ mod tests {
     fn apply_dict_rejects_cr() {
         let err = apply_dict("line\rwrap").unwrap_err();
         assert!(
-            matches!(err, crate::error::CodecError::Overflow(_)),
-            "expected Overflow for CR (0x0D), got {err:?}"
+            matches!(err, crate::error::CodecError::InvalidData(_)),
+            "expected InvalidData for CR (0x0D), got {err:?}"
         );
     }
 
@@ -250,8 +250,8 @@ mod tests {
     fn apply_dict_rejects_raw_0x06() {
         let err = apply_dict("\x06Acme").unwrap_err();
         assert!(
-            matches!(err, crate::error::CodecError::Overflow(_)),
-            "expected Overflow for 0x06, got {err:?}"
+            matches!(err, crate::error::CodecError::InvalidData(_)),
+            "expected InvalidData for 0x06, got {err:?}"
         );
     }
 }

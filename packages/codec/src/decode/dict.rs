@@ -16,7 +16,7 @@ pub(super) fn reverse_dict(bytes: &[u8]) -> Result<String, CodecError> {
     // Dict-code bytes (0x02–0x0F) are valid single-byte UTF-8 and survive as
     // single chars, so the expansion loop below works unchanged.
     let mut text = String::from_utf8(bytes.to_vec())
-        .map_err(|_| CodecError::Overflow("invalid UTF-8 in dict text".to_string()))?;
+        .map_err(|_| CodecError::InvalidData("invalid UTF-8 in dict text".to_string()))?;
 
     // Apply in reverse order (shortest first for reverse) — mirrors TS [...DICT_ENTRIES].reverse()
     for &(pattern, code) in crate::encode::APP_DICT_ENTRIES.iter().rev() {
@@ -125,7 +125,7 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
             .ok_or(CodecError::UnknownExtension(code))
     } else {
         String::from_utf8(value[1..].to_vec())
-            .map_err(|_| CodecError::Overflow("invalid UTF-8 in currency".to_string()))
+            .map_err(|_| CodecError::InvalidData("invalid UTF-8 in currency".to_string()))
     }
 }
 
@@ -174,8 +174,8 @@ mod tests {
         let bad = [b'a', 0xFF, b'b'];
         let err = reverse_dict(&bad).unwrap_err();
         assert!(
-            matches!(err, CodecError::Overflow(_)),
-            "expected Overflow for invalid UTF-8, got {err:?}"
+            matches!(err, CodecError::InvalidData(_)),
+            "expected InvalidData for invalid UTF-8, got {err:?}"
         );
     }
 

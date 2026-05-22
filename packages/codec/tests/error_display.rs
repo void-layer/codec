@@ -83,3 +83,9 @@ fn overflow_displays_inner_message() {
         "payload overflow: TLV count 65 exceeds max 64"
     );
 }
+
+#[test]
+fn invalid_data_displays_inner_message() {
+    let err = CodecError::InvalidData("invalid UTF-8 in dict text".to_string());
+    assert_eq!(err.to_string(), "invalid data: invalid UTF-8 in dict text");
+}
