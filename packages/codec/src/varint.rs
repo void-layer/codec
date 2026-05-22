@@ -1,7 +1,3 @@
-// Dead-code lint suppressed: these pub(crate) functions are the Phase 2A wire-format
-// API consumed by the TLV layer and codec entry-point landing in Phase 2B+.
-#![allow(dead_code)]
-
 use crate::error::CodecError;
 
 /// Maximum LEB128 bytes allowed per value.

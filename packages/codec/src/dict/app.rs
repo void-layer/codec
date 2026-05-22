@@ -1,14 +1,15 @@
-// Dead-code lint suppressed: pub(crate) statics consumed by encode/decode in Phase 2B;
-// #[expect] incompatible with inline-test target (lint never fires on test binary → unfulfilled_lint_expectations).
-#![allow(dead_code)]
-
-use phf::phf_map;
-
 /// Application-level text dictionary — pre-Brotli substitution for common patterns.
 ///
 /// Maps string pattern → 1-byte control code (0x02–0x1F range).
-/// Entries are in length-descending order (longest match first) to avoid partial replacements.
-/// This map is append-only forever (Constitution IV).
+/// This `phf_map!` iterates in hash-order; the runtime codec uses the
+/// length-ordered `encode::dict::APP_DICT_ENTRIES` slice for longest-match.
+/// This map is the canonical reference the dict-lock test validates against
+/// (test-only — gated `#[cfg(test)]` since the codec path uses the slice).
+/// The dictionary is append-only forever (Constitution IV).
+#[cfg(test)]
+use phf::phf_map;
+
+#[cfg(test)]
 pub(crate) static APP_DICT: phf::Map<&'static str, u8> = phf_map! {
     "@outlook.com" => 0x02u8,
     "@hotmail.com" => 0x0cu8,

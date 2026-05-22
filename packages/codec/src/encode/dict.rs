@@ -1,40 +1,69 @@
 // Dictionary substitution + chain/currency dict encoding.
 // Mirrors applyDict from app-dict.ts and the chain-dict / CURRENCY_DICT schemes.
 
-use crate::dict::{app::APP_DICT, chain::CHAIN_DICT};
+use crate::dict::chain::CHAIN_DICT;
 use crate::error::CodecError;
 use crate::varint::write_varint;
+
+/// Compile-time-ordered `APP_DICT` entries, longest pattern first.
+///
+/// `APP_DICT` is a `phf_map!` whose iteration order is hash-order, not the
+/// length-descending order `apply_dict` requires for correct longest-match.
+/// This slice hardcodes that order so the hot path needs zero per-call sorting
+/// or allocation. It is the single ordered source of truth — `decode::dict`
+/// reuses it for `reverse_dict` so the two sides cannot diverge. The dict-lock
+/// test in `dict::tests` asserts it matches `APP_DICT` (same set of pairs).
+pub(crate) static APP_DICT_ENTRIES: &[(&str, u8)] = &[
+    ("@outlook.com", 0x02),
+    ("@hotmail.com", 0x0c),
+    ("development", 0x0d),
+    ("consulting", 0x0e),
+    ("@gmail.com", 0x03),
+    ("@yahoo.com", 0x04),
+    ("https://", 0x05),
+    ("Invoice", 0x06),
+    ("Payment", 0x07),
+    (".com", 0x09),
+    ("INV-", 0x0f),
+];
+
+/// Lookup table: `true` at index `b` iff byte `b` is a reserved `APP_DICT` code.
+/// Built once at compile time — zero per-call allocation.
+const fn build_dict_code_set() -> [bool; 256] {
+    let mut set = [false; 256];
+    let mut i = 0;
+    while i < APP_DICT_ENTRIES.len() {
+        set[APP_DICT_ENTRIES[i].1 as usize] = true;
+        i += 1;
+    }
+    set
+}
+static DICT_CODE_SET: [bool; 256] = build_dict_code_set();
 
 /// Apply app-level dictionary substitution (mirrors applyDict from app-dict.ts).
 /// Replaces known string patterns with 1-byte control codes.
 /// Longest match first — iterate entries in length-descending order.
 ///
-/// Returns `Err(CodecError::CompressionFailed)` if the input contains any raw
-/// byte equal to an actual dictionary code value. Such bytes would be
-/// misinterpreted by `reverse_dict` as dictionary codes on decode, producing a
-/// different value. Only the exact `APP_DICT` code values are reserved —
-/// non-code control characters such as LF (0x0A) pass through unchanged so
-/// multi-line `notes` encode correctly (matches the TS reference).
+/// Returns `Err(CodecError::Overflow)` if the input contains any raw byte equal
+/// to an actual dictionary code value. Such bytes would be misinterpreted by
+/// `reverse_dict` as dictionary codes on decode, producing a different value.
+/// Only the exact `APP_DICT` code values are reserved — non-code control
+/// characters such as LF (0x0A) pass through unchanged so multi-line `notes`
+/// encode correctly (matches the TS reference).
 pub(super) fn apply_dict(input: &str) -> Result<Vec<u8>, CodecError> {
     // Reject only bytes equal to an actual dict code (derived from APP_DICT).
-    let is_dict_code = |b: u8| APP_DICT.values().any(|&code| code == b);
     if let Some(c) = input
         .chars()
-        .find(|&c| (c as u32) < 0x100 && is_dict_code(c as u8))
+        .find(|&c| (c as u32) < 0x100 && DICT_CODE_SET[c as usize])
     {
-        return Err(CodecError::CompressionFailed(format!(
+        return Err(CodecError::Overflow(format!(
             "field value contains reserved dictionary code byte: 0x{:02x}",
             c as u8
         )));
     }
 
-    // Sorted entries by key length descending (mirrors DICT_ENTRIES order in TS)
-    // APP_DICT is a phf map; we must apply longest-match-first manually.
-    let mut entries: Vec<(&str, u8)> = APP_DICT.entries().map(|(&k, &v)| (k, v)).collect();
-    entries.sort_by(|a, b| b.0.len().cmp(&a.0.len()));
-
     let mut text = input.to_string();
-    for (pattern, code) in &entries {
+    for (pattern, code) in APP_DICT_ENTRIES {
         text = text.replace(pattern, &(String::from(char::from(*code))));
     }
     Ok(text.into_bytes())
@@ -88,6 +117,7 @@ pub(super) fn encode_currency(currency: &str) -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::dict::app::APP_DICT;
 
     #[test]
     fn encode_chain_id_known_ethereum() {
@@ -138,8 +168,8 @@ mod tests {
         let hostile = "\x06Acme"; // 0x06 = dict code for "Invoice"
         let err = apply_dict(hostile).unwrap_err();
         assert!(
-            matches!(err, crate::error::CodecError::CompressionFailed(_)),
-            "expected CompressionFailed for control byte 0x06, got {err:?}"
+            matches!(err, crate::error::CodecError::Overflow(_)),
+            "expected Overflow for control byte 0x06, got {err:?}"
         );
     }
 
@@ -163,8 +193,8 @@ mod tests {
             let hostile = format!("{}", char::from(code));
             let err = apply_dict(&hostile).unwrap_err();
             assert!(
-                matches!(err, crate::error::CodecError::CompressionFailed(_)),
-                "expected CompressionFailed for dict code 0x{code:02x}, got {err:?}"
+                matches!(err, crate::error::CodecError::Overflow(_)),
+                "expected Overflow for dict code 0x{code:02x}, got {err:?}"
             );
         }
     }
@@ -187,8 +217,8 @@ mod tests {
     fn apply_dict_rejects_tab() {
         let err = apply_dict("col1\tcol2").unwrap_err();
         assert!(
-            matches!(err, crate::error::CodecError::CompressionFailed(_)),
-            "expected CompressionFailed for TAB (0x09), got {err:?}"
+            matches!(err, crate::error::CodecError::Overflow(_)),
+            "expected Overflow for TAB (0x09), got {err:?}"
         );
     }
 
@@ -197,8 +227,8 @@ mod tests {
     fn apply_dict_rejects_cr() {
         let err = apply_dict("line\rwrap").unwrap_err();
         assert!(
-            matches!(err, crate::error::CodecError::CompressionFailed(_)),
-            "expected CompressionFailed for CR (0x0D), got {err:?}"
+            matches!(err, crate::error::CodecError::Overflow(_)),
+            "expected Overflow for CR (0x0D), got {err:?}"
         );
     }
 
@@ -220,8 +250,8 @@ mod tests {
     fn apply_dict_rejects_raw_0x06() {
         let err = apply_dict("\x06Acme").unwrap_err();
         assert!(
-            matches!(err, crate::error::CodecError::CompressionFailed(_)),
-            "expected CompressionFailed for 0x06, got {err:?}"
+            matches!(err, crate::error::CodecError::Overflow(_)),
+            "expected Overflow for 0x06, got {err:?}"
         );
     }
 }

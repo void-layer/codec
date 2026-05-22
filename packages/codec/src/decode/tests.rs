@@ -344,7 +344,7 @@ fn decode_mantissa_accepts_77_trailing_zeros() {
 fn decode_mantissa_rejects_78_trailing_zeros() {
     let err = decode_mantissa(&[0x01, 78]).unwrap_err();
     assert!(
-        matches!(err, CodecError::CompressionFailed(_)),
-        "expected CompressionFailed for zeros > 77, got {err:?}"
+        matches!(err, CodecError::Overflow(_)),
+        "expected Overflow for zeros > 77, got {err:?}"
     );
 }

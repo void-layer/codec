@@ -1,7 +1,3 @@
-// Dead-code lint suppressed: pub(crate) statics consumed by encode/decode in Phase 2B;
-// #[expect] incompatible with inline-test target (lint never fires on test binary → unfulfilled_lint_expectations).
-#![allow(dead_code)]
-
 use phf::phf_map;
 
 /// Chain ID dictionary — maps known EVM chain IDs to 1-byte dict codes.

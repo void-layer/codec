@@ -1,7 +1,3 @@
-// Dead-code lint suppressed: keccak256 is the internal primitive consumed by
-// compute_content_hash and future Phase 2B codec entry-point callers.
-#![allow(dead_code)]
-
 use tiny_keccak::{Hasher, Keccak};
 
 /// Keccak-256 over `bytes`. Returns the 32-byte digest.
