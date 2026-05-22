@@ -55,13 +55,6 @@ fn minimal_invoice() -> Invoice {
     }
 }
 
-fn from_hex(hex: &str) -> Vec<u8> {
-    (0..hex.len())
-        .step_by(2)
-        .map(|i| u8::from_str_radix(&hex[i..i + 2], 16).expect("valid hex"))
-        .collect()
-}
-
 fn to_hex(bytes: &[u8]) -> String {
     use std::fmt::Write as _;
     bytes
@@ -146,7 +139,6 @@ fn g01_encode_decode_encode_byte_stable_with_all_optional_fields() {
 
 #[test]
 fn g05_issued_at_u32_max_due_delta_1_overflows() {
-    use void_layer_codec::compute_content_hash as _; // ensure crate is loaded
 
     // The easiest way: build TLV bytes manually using the encode path as a template,
     // then swap the issued_at and due_delta via a rebuild approach.
@@ -232,7 +224,6 @@ fn g05_issued_at_u32_max_due_delta_1_overflows() {
 fn g06_decode_mantissa_u256_max_times_10_overflows() {
     // U256::MAX * 10 overflows — mantissa=[0xFF;32], zeros=1.
     // Craft the payload directly.
-    use void_layer_codec::decode_invoice_canonical as _; // bring into scope
 
     // We test via the encode path: encode U256::MAX then modify zeros byte to 1.
     // encode U256::MAX → mantissa_bytes which has last byte = 0 (no trailing zeros).
@@ -546,7 +537,7 @@ fn g15_decode_token_address_unknown_dict_code_errors() {
 #[test]
 fn g16_decode_currency_unknown_dict_code_errors() {
     // Encode valid invoice, patch TLV_CURRENCY (type=12=0x0C) value to [0x00, 200].
-    let mut invoice = minimal_invoice();
+    let invoice = minimal_invoice();
     let mut bytes = encode_invoice_canonical(&invoice).expect("encode");
 
     let header_len = 3usize;
@@ -595,7 +586,7 @@ fn g16_decode_currency_raw_prefix_empty_string_returns_empty() {
 #[test]
 fn g17_decode_chain_id_unknown_dict_code_0xff_errors() {
     // Patch TLV_CHAIN_ID (type=2) to [0x00, 0xFF] — unknown dict code.
-    let mut invoice = minimal_invoice();
+    let invoice = minimal_invoice();
     let mut bytes = encode_invoice_canonical(&invoice).expect("encode");
 
     let header_len = 3usize;
@@ -843,7 +834,7 @@ fn g23_decimals_empty_value_errors_truncated() {
 fn g24_count_mismatch_header_20_body_1_errors_truncated() {
     // Minimal payload: just magic(0x56) + version(0x01) + count(20) + one valid TLV.
     // The decoder checks: records.len() != tlv_count → Truncated.
-    let mut payload: Vec<u8> = vec![
+    let payload: Vec<u8> = vec![
         0x56, // MAGIC
         0x01, // VERSION
         20,   // COUNT = 20
