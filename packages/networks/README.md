@@ -25,7 +25,7 @@ const url = getPublicRpcUrl(1);
 **NO RPC KEYS in this package.** All URLs are public endpoints (llamarpc.com).
 Server-side API keys (Alchemy, Infura, etc.) live in `voidpay.xyz` only — never shipped in client bundles.
 
-`SUPPORTED_TOKENS` is empty in Phase 1. Phase 2 populates from Uniswap Token List.
+`SUPPORTED_TOKENS` is empty at 0.1.0 (@alpha — to be populated in a future minor release).
 
 ## Supported chains
 
