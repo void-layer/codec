@@ -39,9 +39,3 @@ pub(crate) const MAGIC: u8 = 0x56; // 'V'
 pub(crate) const VERSION: u8 = 0x01;
 /// High bit of VERSION byte signals whole-payload Brotli compression (set by JS shim).
 pub(crate) const COMPRESSED_FLAG: u8 = 0x80;
-
-pub(super) const MAX_TLV_COUNT: usize = 64;
-pub(super) const MAX_VALUE_SIZE: usize = 4096;
-
-/// Maximum line items per invoice — must match decode::MAX_ITEMS (50).
-pub(super) const MAX_ITEMS: usize = 50;

@@ -7,6 +7,7 @@
 use std::collections::BTreeMap;
 
 use crate::error::CodecError;
+use crate::limits::{MAX_TLV_COUNT, MAX_VALUE_SIZE};
 use crate::tlv::write_tlv_stream;
 
 mod address;
@@ -18,9 +19,10 @@ mod tags;
 use address::{address_to_bytes, encode_token_address, hex_decode_salt};
 use amount::{mantissa_bytes, uint32_be, varint_bytes};
 use dict::{apply_dict, encode_chain_id, encode_currency};
-use fields::{compute_domain_separator, pack_items, utf8_bytes};
-// `MAX_*` limits stay module-internal (originally unmarked in encode.rs → `pub(super)`).
-use tags::{MAX_TLV_COUNT, MAX_VALUE_SIZE};
+use fields::{compute_domain_separator, pack_items};
+
+// Single ordered source of truth for the app-dict — `decode::dict` reuses it.
+pub(crate) use dict::APP_DICT_ENTRIES;
 
 // Re-export the wire-format + TLV-tag constants at their real names so
 // `crate::encode::TLV_DUE_AT`, `crate::encode::MAGIC`, etc. continue to resolve
@@ -124,7 +126,7 @@ pub fn encode_invoice_canonical(invoice: &crate::invoice::Invoice) -> Result<Vec
     map.insert(TLV_SALT, salt_bytes);
 
     // Invoice ID (type 22): raw UTF-8 (NOT dict-applied per encode.ts comment)
-    map.insert(TLV_INVOICE_ID, utf8_bytes(&invoice.invoice_id));
+    map.insert(TLV_INVOICE_ID, invoice.invoice_id.as_bytes().to_vec());
 
     // Total (type 24): mantissa-encoded
     map.insert(TLV_TOTAL, mantissa_bytes(&invoice.total)?);
@@ -180,11 +182,11 @@ pub fn encode_invoice_canonical(invoice: &crate::invoice::Invoice) -> Result<Vec
     }
 
     if let Some(ref tax) = invoice.tax {
-        map.insert(TLV_TAX, utf8_bytes(tax));
+        map.insert(TLV_TAX, tax.as_bytes().to_vec());
     }
 
     if let Some(ref discount) = invoice.discount {
-        map.insert(TLV_DISCOUNT, utf8_bytes(discount));
+        map.insert(TLV_DISCOUNT, discount.as_bytes().to_vec());
     }
 
     // Domain separator (type 31): computed over all other records
@@ -193,7 +195,7 @@ pub fn encode_invoice_canonical(invoice: &crate::invoice::Invoice) -> Result<Vec
 
     // Validate counts and sizes
     if map.len() > MAX_TLV_COUNT {
-        return Err(CodecError::CompressionFailed(format!(
+        return Err(CodecError::Overflow(format!(
             "TLV count {} exceeds max {}",
             map.len(),
             MAX_TLV_COUNT
@@ -201,7 +203,7 @@ pub fn encode_invoice_canonical(invoice: &crate::invoice::Invoice) -> Result<Vec
     }
     for value in map.values() {
         if value.len() > MAX_VALUE_SIZE {
-            return Err(CodecError::CompressionFailed(format!(
+            return Err(CodecError::Overflow(format!(
                 "TLV value size {} exceeds max {}",
                 value.len(),
                 MAX_VALUE_SIZE

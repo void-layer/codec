@@ -4,22 +4,18 @@ use std::collections::BTreeMap;
 
 use crate::error::CodecError;
 use crate::hash::keccak256;
+use crate::limits::MAX_ITEMS;
 use crate::varint::write_varint;
 
 use super::amount::{mantissa_bytes, write_quantity};
 use super::dict::apply_dict;
-use super::tags::{MAX_ITEMS, TLV_DOMAIN_SEPARATOR};
-
-/// Encode a UTF-8 string to bytes.
-pub(super) fn utf8_bytes(s: &str) -> Vec<u8> {
-    s.as_bytes().to_vec()
-}
+use super::tags::TLV_DOMAIN_SEPARATOR;
 
 /// Encode items array into packed binary (Type 14, mirrors packItems from encode.ts).
 /// Format: [count: varint] per item: [desc_len: varint][desc_bytes][qty: scale+varint][rate: mantissa]
 pub(super) fn pack_items(items: &[crate::invoice::InvoiceItem]) -> Result<Vec<u8>, CodecError> {
     if items.len() > MAX_ITEMS {
-        return Err(CodecError::CompressionFailed(format!(
+        return Err(CodecError::Overflow(format!(
             "item count {} exceeds max {MAX_ITEMS}",
             items.len()
         )));
@@ -95,8 +91,8 @@ mod tests {
         let items: Vec<_> = (0..51).map(|_| item.clone()).collect();
         let err = pack_items(&items).unwrap_err();
         assert!(
-            matches!(err, crate::error::CodecError::CompressionFailed(_)),
-            "expected CompressionFailed for 51 items > MAX_ITEMS, got {err:?}"
+            matches!(err, crate::error::CodecError::Overflow(_)),
+            "expected Overflow for 51 items > MAX_ITEMS, got {err:?}"
         );
     }
 

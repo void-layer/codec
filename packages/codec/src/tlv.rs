@@ -1,7 +1,3 @@
-// Dead-code lint suppressed: these pub(crate) functions are the Phase 2A wire-format
-// API consumed by the encode/decode entry-point landing in Phase 2B+.
-#![allow(dead_code)]
-
 use std::collections::BTreeMap;
 
 use crate::error::CodecError;
@@ -37,9 +33,7 @@ pub(crate) fn read_tlv(buf: &[u8], offset: usize) -> Result<(TlvRecord, usize), 
 
     // Guard before cast: a length > MAX_VALUE_SIZE is invalid regardless of
     // target pointer width (prevents silent u64→usize truncation on wasm32).
-    // Must match decode::MAX_VALUE_SIZE (4096).
-    const MAX_VALUE_SIZE: u64 = 4096;
-    if length > MAX_VALUE_SIZE {
+    if length > crate::limits::MAX_VALUE_SIZE as u64 {
         return Err(CodecError::Truncated {
             needed: length as usize,
             had: buf.len(),

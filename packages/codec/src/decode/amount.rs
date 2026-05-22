@@ -2,21 +2,14 @@
 
 use crate::error::CodecError;
 use crate::invoice::InvoiceItem;
+use crate::limits::{MAX_ITEMS, MAX_TRAILING_ZEROS, MAX_VALUE_SIZE};
 use crate::varint::{read_bigint_varint, read_bounded_len, read_varint};
 
 use super::dict::reverse_dict;
 
-const MAX_ITEMS: usize = 50;
-
-/// Maximum trailing-zero count for a mantissa-encoded amount.
-/// A valid U256 has at most 77 decimal digits, so a base-10 value can carry
-/// up to 77 trailing zeros (e.g. 10^77 < 2^256). Decode must accept any count
-/// a valid U256 can produce — capping lower would reject valid encodings.
-const MAX_TRAILING_ZEROS: u32 = 77;
-
 /// Maximum byte length of a single packed-item description value.
 /// Bounds the per-item slice read against hostile varint lengths.
-const MAX_DESC_LEN: usize = 4096;
+const MAX_DESC_LEN: usize = MAX_VALUE_SIZE;
 
 /// Decode mantissa-encoded amount from bytes (mirrors readMantissa from varint.ts).
 /// Returns amount as a decimal string (BigInt-safe).
@@ -34,7 +27,7 @@ pub(super) fn decode_mantissa(bytes: &[u8]) -> Result<String, CodecError> {
     }
     let zeros = bytes[zeros_offset] as u32;
     if zeros > MAX_TRAILING_ZEROS {
-        return Err(CodecError::CompressionFailed(format!(
+        return Err(CodecError::Overflow(format!(
             "mantissa trailing zeros {zeros} exceeds maximum {MAX_TRAILING_ZEROS}"
         )));
     }
@@ -116,7 +109,7 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
         let zeros = data[offset] as u32;
         offset += 1;
         if zeros > MAX_TRAILING_ZEROS {
-            return Err(CodecError::CompressionFailed(format!(
+            return Err(CodecError::Overflow(format!(
                 "item {i} rate zeros {zeros} exceeds max {MAX_TRAILING_ZEROS}"
             )));
         }

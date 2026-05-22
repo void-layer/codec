@@ -24,6 +24,7 @@ use crate::encode::{
 };
 use crate::error::CodecError;
 use crate::invoice::{Invoice, InvoiceClient, InvoiceFrom};
+use crate::limits::{MAX_TLV_COUNT, MAX_VALUE_SIZE};
 use crate::tlv::read_tlv_stream;
 use crate::varint::read_varint;
 
@@ -31,9 +32,6 @@ use amount::{decode_mantissa, unpack_items};
 use canonical::verify_domain_separator;
 use dict::{decode_chain_id, decode_currency, decode_token_address, reverse_dict};
 use hex::{bytes_to_address, bytes_to_hex};
-
-const MAX_TLV_COUNT: usize = 64;
-const MAX_VALUE_SIZE: usize = 4096;
 
 // ---------------------------------------------------------------------------
 // Test helpers (pub only under #[cfg(test)])
@@ -101,7 +99,7 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
     // Reject compressed payloads — COMPRESSED_FLAG (0x80) means JS shim must Brotli-decompress first.
     // decode_invoice_canonical is the identity-boundary function; it only accepts raw canonical bytes.
     if version_byte & COMPRESSED_FLAG != 0 {
-        return Err(CodecError::CompressionFailed(
+        return Err(CodecError::Overflow(
             "unexpected compressed input in decode_invoice_canonical — decompress first"
                 .to_string(),
         ));
@@ -116,7 +114,7 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
 
     let tlv_count = bytes[2] as usize;
     if tlv_count > MAX_TLV_COUNT {
-        return Err(CodecError::CompressionFailed(format!(
+        return Err(CodecError::Overflow(format!(
             "TLV count {tlv_count} exceeds max {MAX_TLV_COUNT}"
         )));
     }
@@ -133,7 +131,7 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
 
     for (&tlv_type, value) in &records {
         if value.len() > MAX_VALUE_SIZE {
-            return Err(CodecError::CompressionFailed(format!(
+            return Err(CodecError::Overflow(format!(
                 "TLV type {tlv_type} value size {} exceeds max {MAX_VALUE_SIZE}",
                 value.len()
             )));
@@ -150,7 +148,9 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
         .ok_or(CodecError::ChecksumMismatch)?;
     verify_domain_separator(&records, stored_sep)?;
 
-    let chain_id_bytes = records.get(&TLV_CHAIN_ID).ok_or(CodecError::BadMagic)?;
+    let chain_id_bytes = records
+        .get(&TLV_CHAIN_ID)
+        .ok_or(CodecError::MissingField(TLV_CHAIN_ID))?;
     let network_id = decode_chain_id(chain_id_bytes)?;
 
     let issued_at_bytes = records
@@ -218,7 +218,7 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
         .get(&TLV_INVOICE_ID)
         .ok_or(CodecError::Truncated { needed: 1, had: 0 })?;
     let invoice_id = String::from_utf8(invoice_id_bytes.clone())
-        .map_err(|_| CodecError::CompressionFailed("invalid UTF-8 in invoice_id".to_string()))?;
+        .map_err(|_| CodecError::Overflow("invalid UTF-8 in invoice_id".to_string()))?;
 
     let total_bytes = records
         .get(&TLV_TOTAL)
@@ -296,20 +296,20 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
     let tax = if let Some(v) = records.get(&TLV_TAX) {
         Some(
             String::from_utf8(v.clone())
-                .map_err(|_| CodecError::CompressionFailed("invalid UTF-8 in tax".to_string()))?,
+                .map_err(|_| CodecError::Overflow("invalid UTF-8 in tax".to_string()))?,
         )
     } else {
         None
     };
 
-    let discount =
-        if let Some(v) = records.get(&TLV_DISCOUNT) {
-            Some(String::from_utf8(v.clone()).map_err(|_| {
-                CodecError::CompressionFailed("invalid UTF-8 in discount".to_string())
-            })?)
-        } else {
-            None
-        };
+    let discount = if let Some(v) = records.get(&TLV_DISCOUNT) {
+        Some(
+            String::from_utf8(v.clone())
+                .map_err(|_| CodecError::Overflow("invalid UTF-8 in discount".to_string()))?,
+        )
+    } else {
+        None
+    };
 
     Ok(Invoice {
         invoice_id,

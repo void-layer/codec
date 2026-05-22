@@ -8,30 +8,18 @@ use crate::varint::read_varint;
 use super::hex::bytes_to_address;
 
 /// Reverse app-level dictionary substitution (mirrors reverseDict from app-dict.ts).
+///
+/// Reuses `encode::APP_DICT_ENTRIES` — the single ordered source of truth — so
+/// the encode and decode dict tables cannot silently diverge.
 pub(super) fn reverse_dict(bytes: &[u8]) -> Result<String, CodecError> {
     // Decode raw bytes as UTF-8 (matches the TS reference's TextDecoder).
     // Dict-code bytes (0x02–0x0F) are valid single-byte UTF-8 and survive as
     // single chars, so the expansion loop below works unchanged.
     let mut text = String::from_utf8(bytes.to_vec())
-        .map_err(|_| CodecError::CompressionFailed("invalid UTF-8 in dict text".to_string()))?;
-
-    // Reverse entries longest-pattern-first (same order as apply_dict)
-    let entries: &[(&str, u8)] = &[
-        ("@outlook.com", 0x02),
-        ("@hotmail.com", 0x0c),
-        ("development", 0x0d),
-        ("consulting", 0x0e),
-        ("@gmail.com", 0x03),
-        ("@yahoo.com", 0x04),
-        ("https://", 0x05),
-        ("Invoice", 0x06),
-        ("Payment", 0x07),
-        (".com", 0x09),
-        ("INV-", 0x0f),
-    ];
+        .map_err(|_| CodecError::Overflow("invalid UTF-8 in dict text".to_string()))?;
 
     // Apply in reverse order (shortest first for reverse) — mirrors TS [...DICT_ENTRIES].reverse()
-    for &(pattern, code) in entries.iter().rev() {
+    for &(pattern, code) in crate::encode::APP_DICT_ENTRIES.iter().rev() {
         text = text.replace(char::from(code), pattern);
     }
 
@@ -137,7 +125,7 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
             .ok_or(CodecError::UnknownExtension(code))
     } else {
         String::from_utf8(value[1..].to_vec())
-            .map_err(|_| CodecError::CompressionFailed("invalid UTF-8 in currency".to_string()))
+            .map_err(|_| CodecError::Overflow("invalid UTF-8 in currency".to_string()))
     }
 }
 
@@ -186,8 +174,8 @@ mod tests {
         let bad = [b'a', 0xFF, b'b'];
         let err = reverse_dict(&bad).unwrap_err();
         assert!(
-            matches!(err, CodecError::CompressionFailed(_)),
-            "expected CompressionFailed for invalid UTF-8, got {err:?}"
+            matches!(err, CodecError::Overflow(_)),
+            "expected Overflow for invalid UTF-8, got {err:?}"
         );
     }
 

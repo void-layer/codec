@@ -7,12 +7,15 @@ use crate::error::CodecError;
 pub(super) fn address_to_bytes(address: &str) -> Result<[u8; 20], CodecError> {
     let hex = address.strip_prefix("0x").unwrap_or(address);
     if hex.len() != 40 {
-        return Err(CodecError::BadMagic); // reuse: bad address treated as corrupt input
+        return Err(CodecError::InvalidAddress(format!(
+            "address must be 40 hex chars (20 bytes), got {}",
+            hex.len()
+        )));
     }
     let mut out = [0u8; 20];
     for i in 0..20 {
-        out[i] =
-            u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16).map_err(|_| CodecError::BadMagic)?;
+        out[i] = u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16)
+            .map_err(|_| CodecError::InvalidAddress("invalid address hex".to_string()))?;
     }
     Ok(out)
 }
@@ -100,7 +103,7 @@ pub(super) fn encode_token_address(address: &str, network_id: u32) -> Result<Vec
 pub(super) fn hex_decode_salt(hex: &str) -> Result<Vec<u8>, CodecError> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
     if hex.len() != 32 {
-        return Err(CodecError::CompressionFailed(format!(
+        return Err(CodecError::InvalidAddress(format!(
             "salt must be 32 hex chars (16 bytes), got {} chars",
             hex.len()
         )));
@@ -109,7 +112,7 @@ pub(super) fn hex_decode_salt(hex: &str) -> Result<Vec<u8>, CodecError> {
     for i in 0..16 {
         bytes.push(
             u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16)
-                .map_err(|_| CodecError::CompressionFailed("invalid salt hex".to_string()))?,
+                .map_err(|_| CodecError::InvalidAddress("invalid salt hex".to_string()))?,
         );
     }
     Ok(bytes)
