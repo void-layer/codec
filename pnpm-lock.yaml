@@ -61,12 +61,18 @@ importers:
         specifier: workspace:*
         version: link:../types
     devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.4
+        version: 3.2.4(vitest@3.2.4(@types/node@25.9.1))
       vitest:
         specifier: ^3.0.0
         version: 3.2.4(@types/node@25.9.1)
 
   packages/types:
     devDependencies:
+      '@vitest/coverage-v8':
+        specifier: 3.2.4
+        version: 3.2.4(vitest@3.2.4(@types/node@25.9.1))
       vitest:
         specifier: ^3.0.0
         version: 3.2.4(@types/node@25.9.1)
