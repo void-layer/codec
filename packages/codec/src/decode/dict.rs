@@ -9,11 +9,11 @@ use super::hex::bytes_to_address;
 
 /// Reverse app-level dictionary substitution (mirrors reverseDict from app-dict.ts).
 pub(super) fn reverse_dict(bytes: &[u8]) -> Result<String, CodecError> {
-    // Decode raw bytes as a string — control chars are the dict codes
-    let mut text = String::with_capacity(bytes.len());
-    for &b in bytes {
-        text.push(b as char);
-    }
+    // Decode raw bytes as UTF-8 (matches the TS reference's TextDecoder).
+    // Dict-code bytes (0x02–0x0F) are valid single-byte UTF-8 and survive as
+    // single chars, so the expansion loop below works unchanged.
+    let mut text = String::from_utf8(bytes.to_vec())
+        .map_err(|_| CodecError::CompressionFailed("invalid UTF-8 in dict text".to_string()))?;
 
     // Reverse entries longest-pattern-first (same order as apply_dict)
     let entries: &[(&str, u8)] = &[
@@ -161,5 +161,42 @@ pub(super) fn decode_token_address(value: &[u8]) -> Result<String, CodecError> {
             .ok_or(CodecError::UnknownExtension(code))
     } else {
         bytes_to_address(&value[1..])
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// FIX #1: non-ASCII text must round-trip through dict layer.
+    /// "Café 日本語 ñ" contains no `APP_DICT` pattern, so `apply_dict` would
+    /// emit exactly its UTF-8 bytes — fed here directly to `reverse_dict`.
+    /// The old `b as char` (Latin-1) path corrupted every multi-byte char.
+    #[test]
+    fn reverse_dict_roundtrips_non_ascii() {
+        let original = "Café 日本語 ñ";
+        let encoded = original.as_bytes(); // == apply_dict(original) — no dict match
+        let decoded = reverse_dict(encoded).expect("valid UTF-8 must decode");
+        assert_eq!(decoded, original, "non-ASCII text must round-trip intact");
+    }
+
+    /// FIX #1: invalid UTF-8 input must surface an error, not silent garbage.
+    #[test]
+    fn reverse_dict_invalid_utf8_errors() {
+        // 0xFF is never a valid UTF-8 byte.
+        let bad = [b'a', 0xFF, b'b'];
+        let err = reverse_dict(&bad).unwrap_err();
+        assert!(
+            matches!(err, CodecError::CompressionFailed(_)),
+            "expected CompressionFailed for invalid UTF-8, got {err:?}"
+        );
+    }
+
+    /// Regression: dict-code expansion still works on a UTF-8-decoded string.
+    #[test]
+    fn reverse_dict_expands_dict_code() {
+        // 0x06 = "Invoice" dict code.
+        let decoded = reverse_dict(&[0x06, b' ', b'#', b'1']).unwrap();
+        assert_eq!(decoded, "Invoice #1");
     }
 }

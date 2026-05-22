@@ -10,18 +10,18 @@ use crate::varint::write_varint;
 /// Longest match first — iterate entries in length-descending order.
 ///
 /// Returns `Err(CodecError::CompressionFailed)` if the input contains any raw
-/// byte in the dict-code range 0x02–0x1F. Such bytes would be misinterpreted
-/// by `reverse_dict` as dictionary codes on decode, producing a different value.
+/// byte equal to an actual dictionary code value. Such bytes would be
+/// misinterpreted by `reverse_dict` as dictionary codes on decode, producing a
+/// different value. Only the exact `APP_DICT` code values are reserved —
+/// non-code control characters such as LF (0x0A) pass through unchanged so
+/// multi-line `notes` encode correctly (matches the TS reference).
 pub(super) fn apply_dict(input: &str) -> Result<Vec<u8>, CodecError> {
-    // Reject control bytes that overlap the dict-code range.
-    if input.bytes().any(|b| matches!(b, 0x02..=0x1F)) {
+    // Reject only bytes equal to an actual dict code (derived from APP_DICT).
+    let is_dict_code = |b: u8| APP_DICT.values().any(|&code| code == b);
+    if let Some(c) = input.chars().find(|&c| (c as u32) < 0x100 && is_dict_code(c as u8)) {
         return Err(CodecError::CompressionFailed(format!(
-            "field value contains reserved control byte (0x02–0x1F): {}",
-            input
-                .chars()
-                .find(|&c| matches!(c as u8, 0x02..=0x1F))
-                .map(|c| format!("0x{:02x}", c as u8))
-                .unwrap_or_default()
+            "field value contains reserved dictionary code byte: 0x{:02x}",
+            c as u8
         )));
     }
 
@@ -153,16 +153,72 @@ mod tests {
         );
     }
 
-    /// All bytes in the range 0x02–0x1F must be rejected.
+    /// Every actual `APP_DICT` code value must be rejected as a raw byte.
     #[test]
-    fn r3_all_control_bytes_in_range_rejected() {
-        for code in 0x02u8..=0x1Fu8 {
+    fn r3_all_dict_code_bytes_rejected() {
+        for &code in APP_DICT.values() {
             let hostile = format!("{}", char::from(code));
             let err = apply_dict(&hostile).unwrap_err();
             assert!(
                 matches!(err, crate::error::CodecError::CompressionFailed(_)),
-                "expected CompressionFailed for control byte 0x{code:02x}, got {err:?}"
+                "expected CompressionFailed for dict code 0x{code:02x}, got {err:?}"
             );
         }
+    }
+
+    // --- #4: exact-set rejection (match TS reference) ---
+
+    /// LF (0x0A) is NOT a dict code — multi-line `notes` must encode fine.
+    #[test]
+    fn apply_dict_accepts_lf_multiline_notes() {
+        let multiline = "Line one\nLine two\nLine three";
+        let encoded = apply_dict(multiline).expect("LF must be accepted");
+        assert!(
+            encoded.contains(&0x0A),
+            "LF byte must survive into the encoded output"
+        );
+    }
+
+    /// TAB (0x09) IS a dict code (".com") — must be rejected.
+    #[test]
+    fn apply_dict_rejects_tab() {
+        let err = apply_dict("col1\tcol2").unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::CompressionFailed(_)),
+            "expected CompressionFailed for TAB (0x09), got {err:?}"
+        );
+    }
+
+    /// CR (0x0D) IS a dict code ("development") — must be rejected.
+    #[test]
+    fn apply_dict_rejects_cr() {
+        let err = apply_dict("line\rwrap").unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::CompressionFailed(_)),
+            "expected CompressionFailed for CR (0x0D), got {err:?}"
+        );
+    }
+
+    /// FIX #1 (encode half): non-ASCII text must pass `apply_dict` and emit
+    /// its exact UTF-8 bytes — `reverse_dict` round-trips it (see decode tests).
+    #[test]
+    fn apply_dict_preserves_non_ascii_utf8() {
+        let original = "Café 日本語 ñ";
+        let encoded = apply_dict(original).expect("non-ASCII must be accepted");
+        assert_eq!(
+            encoded,
+            original.as_bytes(),
+            "non-ASCII input must emit its UTF-8 bytes unchanged"
+        );
+    }
+
+    /// A raw 0x06 byte ("Invoice" dict code) must still be rejected.
+    #[test]
+    fn apply_dict_rejects_raw_0x06() {
+        let err = apply_dict("\x06Acme").unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::CompressionFailed(_)),
+            "expected CompressionFailed for 0x06, got {err:?}"
+        );
     }
 }
