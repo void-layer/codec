@@ -10,7 +10,6 @@ export default tseslint.config(
       '**/pkg/**',
       '**/pkg-node/**',
       '**/pkg-web/**',
-      '**/scripts/**',
       '**/target/**',
       '.changeset/**',
     ],
