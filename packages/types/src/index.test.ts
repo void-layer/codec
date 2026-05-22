@@ -1,5 +1,5 @@
 import { describe, it, expectTypeOf } from 'vitest';
-import type { Invoice, InvoiceItem, InvoiceParty, ChainId, NetworkConfig } from './index.js';
+import type { Invoice, InvoiceItem, InvoiceFrom, InvoiceClient, ChainId, NetworkConfig } from './index.js';
 
 /**
  * Type-level tests for @void-layer/types.
@@ -24,12 +24,25 @@ describe('@void-layer/types — type shapes', () => {
     expectTypeOf<Invoice['notes']>().toEqualTypeOf<string | undefined>();
     expectTypeOf<Invoice['tax']>().toEqualTypeOf<string | undefined>();
     expectTypeOf<Invoice['discount']>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<Invoice['token_address']>().toEqualTypeOf<string | undefined>();
   });
 
-  it('InvoiceParty has name required and optional fields', () => {
-    expectTypeOf<InvoiceParty['name']>().toBeString();
-    expectTypeOf<InvoiceParty['wallet_address']>().toEqualTypeOf<string | undefined>();
-    expectTypeOf<InvoiceParty['email']>().toEqualTypeOf<string | undefined>();
+  it('InvoiceFrom has wallet_address required and other contact fields optional', () => {
+    expectTypeOf<InvoiceFrom['name']>().toBeString();
+    expectTypeOf<InvoiceFrom['wallet_address']>().toBeString();
+    expectTypeOf<InvoiceFrom['email']>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<InvoiceFrom['phone']>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<InvoiceFrom['physical_address']>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<InvoiceFrom['tax_id']>().toEqualTypeOf<string | undefined>();
+  });
+
+  it('InvoiceClient has all fields optional except name', () => {
+    expectTypeOf<InvoiceClient['name']>().toBeString();
+    expectTypeOf<InvoiceClient['wallet_address']>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<InvoiceClient['email']>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<InvoiceClient['phone']>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<InvoiceClient['physical_address']>().toEqualTypeOf<string | undefined>();
+    expectTypeOf<InvoiceClient['tax_id']>().toEqualTypeOf<string | undefined>();
   });
 
   it('InvoiceItem has correct field types', () => {
