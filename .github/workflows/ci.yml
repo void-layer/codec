@@ -49,7 +49,7 @@ jobs:
       - name: Install wasm-pack 0.14.0
         run: cargo install wasm-pack --version 0.14.0 --locked
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -C packages/codec build
+      - run: pnpm -r build
       - name: TS/JS parity (vitest)
         run: pnpm -C packages/codec exec vitest run tests/parity.test.ts
       - name: Rust parity (cargo)
