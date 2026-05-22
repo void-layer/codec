@@ -345,9 +345,94 @@ async function main(): Promise<void> {
     ),
   )
 
-  // 5. Malformed (3)
+  // 5. Unicode (multi-byte UTF-8) vectors
+  // All 18 original vectors are 100% ASCII; these cover multi-byte code points.
 
-  // 5a. Corrupted brotli: COMPRESSED_FLAG set, body is not valid Brotli
+  // 5a. Cyrillic text — 2-byte UTF-8 sequences in name, client.name, description, notes
+  vectors.push(
+    await nonMalformed(
+      'unicode-cyrillic',
+      base({
+        invoice_id: 'INV-UNI-CYR',
+        from: { name: 'Алиса Разработчик', wallet_address: FROM_WALLET },
+        client: { name: 'Боб Клиент' },
+        items: [{ description: 'Консультационные услуги', quantity: 1.0, rate: '2000000' }],
+        total: '2000000',
+        notes: 'Оплата в течение 30 дней',
+      }),
+      `Unicode: Cyrillic (2-byte UTF-8) in from.name, client.name, item.description, notes. ${WIRE_DIAG}`,
+    ),
+  )
+
+  // 5b. CJK — 3-byte UTF-8 sequences in description and notes
+  vectors.push(
+    await nonMalformed(
+      'unicode-cjk',
+      base({
+        invoice_id: 'INV-UNI-CJK',
+        from: { name: 'Alice', wallet_address: FROM_WALLET },
+        client: { name: 'Bob' },
+        items: [{ description: '软件开发咨询服务', quantity: 1.0, rate: '3000000' }],
+        total: '3000000',
+        notes: '請在30天內付款。感謝您的支持。',
+      }),
+      `Unicode: CJK (3-byte UTF-8) in item.description and notes. ${WIRE_DIAG}`,
+    ),
+  )
+
+  // 5c. Emoji — 4-byte surrogate pairs in notes and from.name
+  vectors.push(
+    await nonMalformed(
+      'unicode-emoji',
+      base({
+        invoice_id: 'INV-UNI-EMJ',
+        from: { name: 'Alice 🚀', wallet_address: FROM_WALLET },
+        client: { name: 'Bob' },
+        items: [{ description: 'Premium consulting', quantity: 1.0, rate: '5000000' }],
+        total: '5000000',
+        notes: '✅ Payment confirmed 🎉 Thank you! 💎',
+      }),
+      `Unicode: emoji (4-byte UTF-8 surrogate pairs) in from.name and notes. Codec treats as bytes — no normalization. ${WIRE_DIAG}`,
+    ),
+  )
+
+  // 5d. RTL — Arabic text in from.name and item.description
+  // Codec treats strings as opaque bytes — must NOT normalize or reorder RTL text.
+  // Verify decode produces byte-identical output.
+  vectors.push(
+    await nonMalformed(
+      'unicode-rtl',
+      base({
+        invoice_id: 'INV-UNI-RTL',
+        from: { name: 'أليس المطور', wallet_address: FROM_WALLET },
+        client: { name: 'Bob' },
+        items: [{ description: 'خدمات استشارية', quantity: 1.0, rate: '1500000' }],
+        total: '1500000',
+        notes: 'يرجى الدفع خلال 30 يوماً',
+      }),
+      `Unicode: Arabic RTL (2-4 byte UTF-8) in from.name, description, notes. Codec treats as opaque bytes — no reorder or normalize. ${WIRE_DIAG}`,
+    ),
+  )
+
+  // 5e. Mixed — all scripts combined in different fields
+  vectors.push(
+    await nonMalformed(
+      'unicode-mixed',
+      base({
+        invoice_id: 'INV-UNI-MIX',
+        from: { name: 'Alice 🌍', wallet_address: FROM_WALLET },
+        client: { name: 'Боб / 鲍勃' },
+        items: [
+          { description: '咨询服务 / Consulting / Консультации', quantity: 1.0, rate: '4000000' },
+        ],
+        total: '4000000',
+        notes: 'Mixed: Кириллица + 中文 + العربية + emoji 🎯',
+      }),
+      `Unicode: mixed scripts (ASCII + Cyrillic + CJK + Arabic + emoji) across all text fields. ${WIRE_DIAG}`,
+    ),
+  )
+
+  // 6. Malformed (3)
   {
     const bytes = new Uint8Array([0x56, 0x81, 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe, 0xba, 0xbe])
     vectors.push({

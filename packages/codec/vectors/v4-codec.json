@@ -435,6 +435,171 @@
       "diagnostic": "Extension: sub-invoice chain — ETH on Arbitrum with tax and discount fields. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
     },
     {
+      "name": "unicode-cyrillic",
+      "canonical_hex": "56010e0202000104046553f100052ad09ed0bfd0bbd0b0d182d0b020d0b220d182d0b5d187d0b5d0bdd0b8d0b520333020d0b4d0bdd0b5d0b9060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e33012dd09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b8000102061021d090d0bbd0b8d181d0b020d0a0d0b0d0b7d180d0b0d0b1d0bed182d187d0b8d0ba1213d091d0bed0b120d09ad0bbd0b8d0b5d0bdd1821410deadbeefdeadbeefdeadbeefdeadbeef160b494e562d554e492d435952180202061f20ed404c742bd44c10c32df47029b0d8e735ad645f607fe9417959ee31cb453262",
+      "wire_hex": "56811b0a01e8ad0e7893952b0b4cb2c0b83a55f750c5fbc13ffcbdfb6bd5f65e9a7ee096505b74904789047cae7dcae61a76daa588af72466914c8df7d80b381ecffce9dd0bd897cdbbc9292a36dba5916a7d2ba42ac755933c8384de994952c3ab0012762894066e38bdd004b545926ca8e63d99eb7f88368878f8385ac9a6ca8a293ab803b11b8eb8d1fd941d22c3ef3cde6e95d3e3e7c2079cbaddb05597639879c8b9d4d951a16adaac9ea19d9d9d8b4d0b559cab29da0dae664615445367832c3a1a90d8cccf506969d62702c8c746caa9bd57dd8bd30301be6809d025c06819ca0651eb4bebf5e7de09f938b9f2a1cb9ab0b53f4d40b0a",
+      "receipt_hash_hex": "c5ea482e2cd22e3dc852665424f51b2d4f1c391b01e2c121766a3a81e660711f",
+      "decoded": {
+        "invoice_id": "INV-UNI-CYR",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Алиса Разработчик",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Боб Клиент"
+        },
+        "items": [
+          {
+            "description": "Консультационные услуги",
+            "quantity": 1,
+            "rate": "2000000"
+          }
+        ],
+        "notes": "Оплата в течение 30 дней",
+        "total": "2000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Unicode: Cyrillic (2-byte UTF-8) in from.name, client.name, item.description, notes. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "unicode-cjk",
+      "canonical_hex": "56010e0202000104046553f100052ce8ab8be59ca83330e5a4a9e585a7e4bb98e6acbee38082e6849fe8ac9de682a8e79a84e694afe68c81e38082060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e1e0118e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa1000103061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160b494e562d554e492d434a4b180203061f20890f1ebf402b28aab39cd9fd8d28f5ba47672e108cf1a864c21656946411fc3e",
+      "wire_hex": "56010e0202000104046553f100052ce8ab8be59ca83330e5a4a9e585a7e4bb98e6acbee38082e6849fe8ac9de682a8e79a84e694afe68c81e38082060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e1e0118e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa1000103061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160b494e562d554e492d434a4b180203061f20890f1ebf402b28aab39cd9fd8d28f5ba47672e108cf1a864c21656946411fc3e",
+      "receipt_hash_hex": "8b3de445a74e60e5bd83509b8c15e5a3c56d052d57382e00395137be4ce35139",
+      "decoded": {
+        "invoice_id": "INV-UNI-CJK",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "软件开发咨询服务",
+            "quantity": 1,
+            "rate": "3000000"
+          }
+        ],
+        "notes": "請在30天內付款。感謝您的支持。",
+        "total": "3000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Unicode: CJK (3-byte UTF-8) in item.description and notes. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "unicode-emoji",
+      "canonical_hex": "56010e0202000104046553f1000524e29c85200720636f6e6669726d656420f09f8e89205468616e6b20796f752120f09f928e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e0f01095072656d69756d200e00010506100a416c69636520f09f9a801203426f621410deadbeefdeadbeefdeadbeefdeadbeef160b494e562d554e492d454d4a180205061f207f768ae523efaff007a895a48f470c1b100c40b9cad4388a8a0cf314dfb15441",
+      "wire_hex": "56010e0202000104046553f1000524e29c85200720636f6e6669726d656420f09f8e89205468616e6b20796f752120f09f928e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e0f01095072656d69756d200e00010506100a416c69636520f09f9a801203426f621410deadbeefdeadbeefdeadbeefdeadbeef160b494e562d554e492d454d4a180205061f207f768ae523efaff007a895a48f470c1b100c40b9cad4388a8a0cf314dfb15441",
+      "receipt_hash_hex": "2eeb93a5e25c80625eb29bd85b7441997f2cc397c93db48b9ded04afcb21f0bf",
+      "decoded": {
+        "invoice_id": "INV-UNI-EMJ",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice 🚀",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Premium consulting",
+            "quantity": 1,
+            "rate": "5000000"
+          }
+        ],
+        "notes": "✅ Payment confirmed 🎉 Thank you! 💎",
+        "total": "5000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Unicode: emoji (4-byte UTF-8 surrogate pairs) in from.name and notes. Codec treats as bytes — no normalization. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "unicode-rtl",
+      "canonical_hex": "56010e0202000104046553f100052ad98ad8b1d8acd98920d8a7d984d8afd981d8b920d8aed984d8a7d98420333020d98ad988d985d8a7d98b060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e21011bd8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a900010f051015d8a3d984d98ad8b320d8a7d984d985d8b7d988d8b11203426f621410deadbeefdeadbeefdeadbeefdeadbeef160b494e562d554e492d52544c18020f051f2052a8b9c1384ad7ecfcbc012c68e11027ca653b3da2609bdfae4716232dcade45",
+      "wire_hex": "56811bdc00508d921c2ef9bedc112add1ec6bd1fc2442566aad3210a0899f726b4392f9d189461034e4402858486812739841a402ecf502c63b1184c0ea738eb97c175a33eac61917a6d30431d58a156ecc98ebfcfea6d6186fa79ec9609ae80c913697053f9575eb432d4f439cc7e0fd09ed7cde525c6623065b64c3396b1429d98c1bc0d66b081796c62066bd487390653ce55683191811766a8833ab1433d5853b1e36a0b348a87a5e36f4c274e95eb9923d533333bc3c0aa606d9339bb77169276fdf17fc8f4287b56385f1c1e399e37f0b89cacb3f7fc2111",
+      "receipt_hash_hex": "cc360036d75a6da27c80c5ac38b68020c100d5598026e4d7cfda57390b20c094",
+      "decoded": {
+        "invoice_id": "INV-UNI-RTL",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "أليس المطور",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "خدمات استشارية",
+            "quantity": 1,
+            "rate": "1500000"
+          }
+        ],
+        "notes": "يرجى الدفع خلال 30 يوماً",
+        "total": "1500000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Unicode: Arabic RTL (2-4 byte UTF-8) in from.name, description, notes. Codec treats as opaque bytes — no reorder or normalize. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "unicode-mixed",
+      "canonical_hex": "56010e0202000104046553f10005404d697865643a20d09ad0b8d180d0b8d0bbd0bbd0b8d186d0b0202b20e4b8ade69687202b20d8a7d984d8b9d8b1d8a8d98ad8a9202b20656d6f6a6920f09f8eaf060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e3a0134e592a8e8afa2e69c8de58aa1202f20436f6e73756c74696e67202f20d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0b800010406100a416c69636520f09f8c8d120fd091d0bed0b1202f20e9b28de58b831410deadbeefdeadbeefdeadbeefdeadbeef160b494e562d554e492d4d4958180204061f203d3c59c52687c38cbae0b69f7988abe2217ffacee46fbf38e64b29029b1e6a49",
+      "wire_hex": "56811b0c01c81c07b969e51ec4b292436f844affffc7bd1f50a29a0646b2511960955477ee1b80a4b85e79e981d7204587ed7572a4073c1e00c2d204528b38b3964aa1f218cb9d301cd7ccc2e13058022129ec1743f49aa1c405b4c10a2a4958f7b353a61a2e87d57580a4ac9cf434f9dd4dd3247c493f918225d10497d7197f6989d39d45efc2bf59852779a3b13170182ccb056b2580456ff8775d69d9297297b7601395a272a00654f60b55c10aac60b0041287e69d99969024bfbba191c78656d88259b9bee61adfeacb059cfbc9ad6f6c88e83e81919688401f4b804fb4044720c9e4b9c51c6ab7dfb0f6b8d49d5b33feac28fe3f7acdd9767af733e0daa5e93e",
+      "receipt_hash_hex": "651cabe38d8fd4b247ec3c6223d9b11d465d224b3ffb0581880cd6cb105a5194",
+      "decoded": {
+        "invoice_id": "INV-UNI-MIX",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice 🌍",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Боб / 鲍勃"
+        },
+        "items": [
+          {
+            "description": "咨询服务 / Consulting / Консультации",
+            "quantity": 1,
+            "rate": "4000000"
+          }
+        ],
+        "notes": "Mixed: Кириллица + 中文 + العربية + emoji 🎯",
+        "total": "4000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": true,
+      "diagnostic": "Unicode: mixed scripts (ASCII + Cyrillic + CJK + Arabic + emoji) across all text fields. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
       "name": "malformed-corrupted-brotli",
       "wire_hex": "5681deadbeefcafebabe",
       "diagnostic": "malformed:wire",

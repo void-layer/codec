@@ -14,7 +14,7 @@ export default defineConfig({
   plugins: [wasm(), topLevelAwait()],
   test: {
     environment: 'node',
-    include: ['scripts/run-generate-vectors.test.ts'],
+    include: ['scripts/run-generate-vectors.test.ts', 'scripts/run-generate-corpus.test.ts'],
   },
   resolve: {
     alias: {

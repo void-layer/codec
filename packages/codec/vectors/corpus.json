@@ -1,0 +1,2365 @@
+{
+  "schema_version": 1,
+  "generated_by": "@void-layer/codec v0.1.0",
+  "generated_at": "2026-05-22",
+  "entry_count": 54,
+  "entries": [
+    {
+      "name": "A-chain1-min-ascii-typical",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000001",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010106100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303031180201061f207f9493d49dda6825d860ab43fe1cd506cee1a6193ce8e5cc3d32afaa7e0bed75",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010106100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303031180201061f207f9493d49dda6825d860ab43fe1cd506cee1a6193ce8e5cc3d32afaa7e0bed75",
+      "canonical_len": 172,
+      "wire_len": 172,
+      "compressed": false
+    },
+    {
+      "name": "A-chain8453-min-ascii-typical",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 8453,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000002",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000504046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010106100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303032180201061f2057e1e2d306b9aaaa881b033662a1831089498f50ef45585c2406e19ba2d418e3",
+      "wire_hex": "56811ba900e01da7573ab74e1e3431ce062a647630c191ea54da7530cdd9a5cc2f4417094cb6407179c0c5a7385362d8932b80876c6f362988aaf9634120001402f199ff0030707e0445006128caf52ef21ff22e3bd9af2ef8534c3d24c74e15060400e29840728b1127c83000100823e0655163cc5924943ce1fe415c2884a7f9fe87a0a1157a536a2564808030bec0fefa7680ad26933a1b2c750f4a8486ae69f85139067b6d0d8f8c77",
+      "canonical_len": 172,
+      "wire_len": 171,
+      "compressed": true
+    },
+    {
+      "name": "A-chain42161-min-ascii-typical",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 42161,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000003",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000204046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010106100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303033180201061f20f4e76c6937ac2b67b1a6d0802bf0c2d6933ea34bc1401c0da606077e62fd216c",
+      "wire_hex": "56811ba900e08d942eeed2c4381bc82c362881a1507d0e7dd9088d21cdff6e7f9fa08aed77ca8163600935afd432fdfc1e6379cad9325df9c7824000100412f5ff0060e05a0f8a00c25094fbc7f46f32b26a543e9ae03735f55c98046c181000886302c92d469c20230040208c8037658431679150e67ce807f1a0105e17eb2f140d6d71fb3c12395dc50001617cc1ffbbe1a49b8be286879ae87b7fabeb7bf69d91831dc2e095506106",
+      "canonical_len": 172,
+      "wire_len": 170,
+      "compressed": true
+    },
+    {
+      "name": "A-chain10-min-ascii-typical",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 10,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000004",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 10,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000304046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010106100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303034180201061f204375fcf10a2361201eb74dd2713ffc4125ea4a4df9c54c3c0eb760260be9ccfd",
+      "wire_hex": "56811ba900c065609c0e768322a05020ff4fe54e775c7b7b7b129bdce89403c7c0120ad252cbf4f37b8ce529e7ca74e51f0b0201c0104826f6098081e756a108200c4539bb287d15d23bf333af0be05b1df570b81677604000208e0924d7187182900000813002de5216d69c4542596bc923c48342b8d9da7d47d1d0b650342c57d1740c1010c6375c3b7f9f287142c09b060e1aa63f8bf4c91bf8def3eb71d3b80cfdb8ff0f",
+      "canonical_len": 172,
+      "wire_len": 166,
+      "compressed": true
+    },
+    {
+      "name": "A-chain137-min-ascii-typical",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 137,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000005",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 137,
+        "currency": "MATIC",
+        "decimals": 18,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000404046553f100060380a3050801120a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200060e190113536f667477617265200e20736572766963657300010106100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303035180201061f20d32a86c90fe1898f9f6c297e09794516fc4d8a605e8521b2f89d709c95352200",
+      "wire_hex": "56811ba900a065629c0d605213af33cedda800d21a94b67f5ffffed9884e748303c7c0020e0229b55087c143b63d095d1655232c080480e8d167fb04c0c0c525140124a128e79791af9077679c7f9d805f94d4a3f4caa9c78000301c1348ee31e2d8290100026104bc3a6acc399b84d224dc4f88078570bb75f04ed1d05a93d52c9272a56280803016fb885f3fc43fb406d3282f8f4ce969ff86b6d35ee3ec7f8f93a3a18a0b00",
+      "canonical_len": 172,
+      "wire_len": 167,
+      "compressed": true
+    },
+    {
+      "name": "B-chain1-med-ascii-typical",
+      "shape": "medium",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000006",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000104046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e3b0213536f667477617265200e207365727669636573000101061d536f667477617265200e2073657276696365732028706861736520322900020505100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303036180201061f20841eaf681c90d5979462f66e0b6f99f0f6f589c6784c5b5484bf4e6595f1c5fc",
+      "wire_hex": "56811bff006864609c0e54b4121bd8ac036e56ba43fbd31f8ad41ee1f4a707ac2d28c86a8b020c28d28402cc133a5c4f16982941515466b2667ee34020001002c9063f0150355c9069f99da41a2542106e93a45c8bc8d535668b9cbfe43070ff0e140184a128b7f7e5af62e678adf7751dfca2a55e74ee269c18100088b380c83de8384108b03a208ccb26100ec0a21601405028016fad08df45270965ab4ba1160f14c2f3e1c93b151adaee0df8644a7da567808030be6098775ce04c5e2dcca6fe6ae8baa58fbfdf89f3765738347ceac9ce7d9efd03",
+      "canonical_len": 258,
+      "wire_len": 215,
+      "compressed": true
+    },
+    {
+      "name": "B-chain8453-med-ascii-typical",
+      "shape": "medium",
+      "language": "ascii",
+      "chain": 8453,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000007",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000504046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e3b0213536f667477617265200e207365727669636573000101061d536f667477617265200e2073657276696365732028706861736520322900020505100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303037180201061f203cd85a7d82979150cccf30b62458cfe17f067184c48d7f66e9f9d1f565b22667",
+      "wire_hex": "56811bff006864609c8ee2ef2c259895e9e94e727c7a94fcf480b50505596d518001459a5080794287ebc9023325288aca4cd6cc6f1c0804804220a911ef00a8092e4829fd9da4660342106e9324bb1691965f942d72fed2c1c00d8350041086a2ec1d647f64a64c74d73df780af2dd4cdaaa184600c0800c4b941e41e749c2004581d10c6651328066031290120289480f7cf11be8b4e122a203f09b578a0104ec6165ea9d0d08121e1a15a83beb2334040185fe0d98baf6deaea0c5d5a35cc4b6257cfeb61852d8badf569f7ffebdfa9d3b274",
+      "canonical_len": 258,
+      "wire_len": 212,
+      "compressed": true
+    },
+    {
+      "name": "B-chain42161-med-ascii-typical",
+      "shape": "medium",
+      "language": "ascii",
+      "chain": 42161,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000008",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000204046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e3b0213536f667477617265200e207365727669636573000101061d536f667477617265200e2073657276696365732028706861736520322900020505100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303038180201061f20799da898e50c4b4b8ca3fbfdadd16868052a9e7b89b006aa1556ff57a135dc8c",
+      "wire_hex": "56811bff006864625c3ea8682526b1021a54751d60480b5d6e1fc7caa707ac2d28c86a8b020c28d28402cc133a5c4f16982941515466b2667ee34020000802c9843e0150355c90eefc4e528d122108b74952aa45646bcd6c91f3971c069ed88022803014e5eea1f455489f2c8dbd2e83fb5aeae5d05edc89010180380b88dc838e138400ab03c2b86c02e1002c6a1100048512f0d6b2f05d749250b65a12b578a0105e8ecedea9d0d0765fd02f53ea2b23030484f105834bbbb37d8ccb35b3f1fd7b749ecf43c5cbc393a7b07d6af43fb6a67b9a01",
+      "canonical_len": 258,
+      "wire_len": 213,
+      "compressed": true
+    },
+    {
+      "name": "B-chain10-med-ascii-typical",
+      "shape": "medium",
+      "language": "ascii",
+      "chain": 10,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000009",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 10,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000304046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e3b0213536f667477617265200e207365727669636573000101061d536f667477617265200e2073657276696365732028706861736520322900020505100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303039180201061f204cc6addec0fc2a84a3101ce1a529ab073c0cf9767a2a2683fbd444d61b119c06",
+      "wire_hex": "56811bff006864625c3ea804aa41a198234ab442db2d2d1423bae9e9016b0b0ab2daa200038a34a100f3840ed79305664a50149599ac99df38100800864072892f00540b17647b7e27a94e8d1084db24a9d422f28d76b6c8f94b09038f2f431140188a727155f92e65f76747dfe6c0af7aeaf1e0663280010180381b88dc838e138400ab03c2b86c02f1002c5a0900048512f09eaaf05d749250de461ab578a010ee760f3ea8d0d0be483caa50eb2b0b030484f105c1a3ddbbc37fe9f43281f3b82ad986db313fbd8352e1d4df89ff8c4d9c8101",
+      "canonical_len": 258,
+      "wire_len": 212,
+      "compressed": true
+    },
+    {
+      "name": "B-chain137-med-ascii-typical",
+      "shape": "medium",
+      "language": "ascii",
+      "chain": 137,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000A",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 137,
+        "currency": "MATIC",
+        "decimals": 18,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000404046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a3050801120a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200060e3b0213536f667477617265200e207365727669636573000101061d536f667477617265200e2073657276696365732028706861736520322900020505100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303041180201061f20623524f7695585430bfafccd492e3b38793d7c353ddf508eac475a09db8c9a9c",
+      "wire_hex": "56811bff00601c09364e760dc287dc12d9c4b87c0a094c6c9fc8596db7eb709a435b684b625aa452ac8aac7af29e1eb00705596d51f320a050a300db223a5c6f78ace438a51cec522c70201000e24721f902809ae0827bde4e12b34141106c26716d2abcd8ea6c2d4cfca58381c737a00820094539bfacbd56de5f1a7d5806df5ba847839be900060480e1dc20320b1a4e504307000261dc800a14fcbf98940010144ac07bea46e7a29384f2b6282d1e2884dbdd8327141ada174dc4b406bcf2304040185fc02af9aa34e343fffe1f46746e47c35677b1b99d500a79353bbf08",
+      "canonical_len": 258,
+      "wire_len": 224,
+      "compressed": true
+    },
+    {
+      "name": "C-chain1-full-ascii-typical",
+      "shape": "full",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000B",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob Client",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Software consulting services (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020001031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e5d0313536f667477617265200e207365727669636573000101061d536f667477617265200e20736572766963657320287068617365203229000205051d536f667477617265200e2073657276696365732028706861736520332901051904100f416c69636520446576656c6f706572120a426f6220436c69656e74130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303042180201061f20ff215ca3ba713340d3b550512441cdbe1d51c7fcc8801d3070d435b6537d79a0",
+      "wire_hex": "56811b5c01601c8571e3736be22be2a71cb2f5229aff71f6ff1fe4b63521e9755698a56e07a573829bbad42e2bdfd35b6b6b410b3909a4c05a78856f37be5df470a03706490b94a707ec49d016d416348f020a350de8db49be6f17be4d8e344a920e824fdabe5b1c8400c470abb35ef54ac87eb703750407749ae0bd778bc5a6f2019c9ea0ecd6324a62d0de1504fd4a5488154f57eaccf56fe2ec0933ddc011e8b1914ba41c3ef382c4104fe63ebf16fe72bdbf34becb982f23efaebf19754100d2a8f14a1c1b1a424ee634bad2ee0e4088972954a9ae19c37a0d40381ca41a341027c232194ed3700875b2c9ae4add6ffcc1413a2d97f9b97bf92d563c68e253dc9e382d9d7281205ea1fcaae03aad19eceec0ebd3b92f65be9bffdba94c5b3da6c3c0a83701",
+      "canonical_len": 351,
+      "wire_len": 295,
+      "compressed": true
+    },
+    {
+      "name": "C-chain8453-full-ascii-typical",
+      "shape": "full",
+      "language": "ascii",
+      "chain": 8453,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000C",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob Client",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Software consulting services (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020005031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e5d0313536f667477617265200e207365727669636573000101061d536f667477617265200e20736572766963657320287068617365203229000205051d536f667477617265200e2073657276696365732028706861736520332901051904100f416c69636520446576656c6f706572120a426f6220436c69656e74130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303043180201061f20a03cd9f0492d96be75323527d02a259618fb2a1bfb4edb747b6aedb4ffe4c6af",
+      "wire_hex": "56811b5c01601c09b62d99f5e862103e6936304e07aa414c42a64f962a24b1ae1d91487f5665b61795a425ccc6d303f624680b6a0b9a4701859a06f4ed24dfb70bdf26471a254907c1276ddf2d3208048082299d53439d470cd293058819031ee2b0f4a7a15308a498f80440357041a16f1925d1aaee0a827e25aac78a973aba99bbbf89b387812757a0705cb651cd175d3ef3028900c25094bb87fa57b5b03d376e1efca6a35e0eaf66c68000402c26d791c3062e0926674ec309ecee0040208cab5081a8660c6bc40010140aa95a3110ca8410f06ed370087592509e8edcfdc61f64905a4521bc6cb6dfc58a0ad4d3d0de483c2a9f4e791920208c2f58b4dd7ff8e4da7d1abdf04c12c6b7a4eff063ef48cdc1ffebf136",
+      "canonical_len": 351,
+      "wire_len": 280,
+      "compressed": true
+    },
+    {
+      "name": "C-chain42161-full-ascii-typical",
+      "shape": "full",
+      "language": "ascii",
+      "chain": 42161,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000D",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob Client",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Software consulting services (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020002031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e5d0313536f667477617265200e207365727669636573000101061d536f667477617265200e20736572766963657320287068617365203229000205051d536f667477617265200e2073657276696365732028706861736520332901051904100f416c69636520446576656c6f706572120a426f6220436c69656e74130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303044180201061f203e8944c13ecfea5f2c72e0a7f1c997c706a13ed08fe53155215e2c7da1a069e5",
+      "wire_hex": "56811b5c01608cc2b66db309de4e2c53c4af81713a50a100cc73946fd6a74780e9554ab0746e5080c088749b6c844f5273dde8d303f624680b6a0b9a4701859a06f4ed24dfb70bdf26471a254907c1276ddf2d320804008129c51d35c5eb0cd2a58e310dc0791c967e59b30581247d7f00a84c05898a659464705710f42b515eacf82f2a652efd26ce5ec0cd4350382e9a9f8d272d3ef3026940188a727a9ef79f4dccf5347ef5829f14d483da8988d341002016132b8a6123826072e6b410d8dd0180401857a1825d33864f11080a85d42986322104bcd5341c429d2494ad2876bff10719240585703db3f0235654a032d176d7750b41a71c0c1010c617985a1ccba69df77097de8efd6db76dc2064cbbad4fd2c07add30d09f7d02",
+      "canonical_len": 351,
+      "wire_len": 284,
+      "compressed": true
+    },
+    {
+      "name": "C-chain10-full-ascii-typical",
+      "shape": "full",
+      "language": "ascii",
+      "chain": 10,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000E",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 10,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob Client",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Software consulting services (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020003031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e5d0313536f667477617265200e207365727669636573000101061d536f667477617265200e20736572766963657320287068617365203229000205051d536f667477617265200e2073657276696365732028706861736520332901051904100f416c69636520446576656c6f706572120a426f6220436c69656e74130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303045180201061f2094ac5d81e18483b909c567adb05661902b274ff7ec4ef19ed43f9ff555500444",
+      "wire_hex": "56811b5c01601c0776d34e21c4e0abb19b4703e374a01a880ab6ed304b1192ddd48d26b5181924a5864939b0f8f4803d09da82da82e65140a1a6017d3bc9f7edc2b7c9914649d241f049db778b0c0201c0604a794f43f92e83746501625a80cb382cfdaae10002c9897e02a09a09ac594649b4ee0a827e252a8a15cf2dab64aefc26ce1e066e1f83c27119c50559392e9f798144006128cad945d15781b303adaf83e0671df5b0713cdd8f010180584c6659263670493039731a4e6077070002615c850a443563581300048542aa3620940921e0dda6e110ea24a13c65dc6ffc4106a9510837d33bef624505ea8ff6062321393ae567808030bee0a964c77d77d73a72376f7a2e91915418fc7f097c0e1e39877ee321880f",
+      "canonical_len": 351,
+      "wire_len": 280,
+      "compressed": true
+    },
+    {
+      "name": "C-chain137-full-ascii-typical",
+      "shape": "full",
+      "language": "ascii",
+      "chain": 137,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000F",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 137,
+        "currency": "MATIC",
+        "decimals": 18,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob Client",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Software consulting services (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020004031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a305070e616c696365406578616d706c65090801120a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200060d0c626f62406578616d706c65090e5d0313536f667477617265200e207365727669636573000101061d536f667477617265200e20736572766963657320287068617365203229000205051d536f667477617265200e2073657276696365732028706861736520332901051904100f416c69636520446576656c6f706572120a426f6220436c69656e74130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303046180201061f206d5045165d25a9fafe85a954b6366e759c7101ac6f2371ccb766ea393d5eaa9b",
+      "wire_hex": "56811b5c01608cc2b6bd31da7d9b2008a781713adad55587558290ee84f6a62e35395227b7cb2983442e1a78904211471af4b68d7dc5e3101c0a0e717b86f3761b2b689d083abb4f864590148520bc627bb7c820100002a6348e7735ee3248572e60fa809b382cfdaaeb0002294b3f006a820b4adb965152b3e1ae20ec57e29a5889f2866692e66fe2ec091e5c84c27145b5552565019f798144004928cad945cd5755e9c674ffcd806f2dd4c3eea5820c04806131c50dc5ba85cb82c999d37102bb47002010c61598405133269b94001014aad2cd4a20940921e083a6d1106a800c3514df6ffc4106190d14c2cddace3b5b5181561a3a1c4f25b48ea7620c1010c617d42544cb4afbfb7f6c29b365abafa926e06a833877bbfcc9e98d9904",
+      "canonical_len": 351,
+      "wire_len": 287,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-minimal-ascii-typical",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000G",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010106100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303047180201061f20ba55a0c0353420620220d9df7ee6ac1da45a0e557cfd202333d3e25f0339fe84",
+      "wire_hex": "56811ba900e065609c0e4616e31c4176a1d4ed54bf43b79afbef01179fe24c89614fae001eb2bdd9a420aae68f058100400824e7f901c0c0fd0528020843512eaf2bbfa5eccea4fb3105bfa9a927cdb5a415030200714c20b9c58813641800088411f0c6aa31e62c12cad448ff202e14c2fdd6e11741439b1d6ea744ae959d0102c2f8825ddfecb1462d488304570fddf74dee6218e76bff09c4aa93e704d8f03f06",
+      "canonical_len": 172,
+      "wire_len": 162,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-minimal-cyrillic-typical",
+      "shape": "minimal",
+      "language": "cyrillic",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000H",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Алиса Разработчик",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Боб Клиент"
+        },
+        "items": [
+          {
+            "description": "Консультационные услуги по разработке",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e4d0147d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b5000101061021d090d0bbd0b8d181d0b020d0a0d0b0d0b7d180d0b0d0b1d0bed182d187d0b8d0ba1213d091d0bed0b120d09ad0bbd0b8d0b5d0bdd1821410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303048180201061f20e84a4afbeded74ef45269a7b2d65d67f8e7edc19989be4bc4778c442d7688cf1",
+      "wire_hex": "56811bf800e89d87b131ade9c12c365e29a24ffddc65c59a0600553ee3e3221482904416a88c8e483308bb5722d54ad4855cdcdd8037d038c138c7945eb09c227e4fc65479d880139384a68178c46dc1c121b7db0d138ce2fec8c561b179bc8c3f9680dbb5ce17b105123f3e972ea4b7163bbe96b89ff6dc348bbb651c165b11667b31874b5c5037f5e28cc6a807db3480635ce20217348a8315862b5c3e7656720b4e71c062b3052a2ba6708663eac636c34aee6810c738d568318d4bec30cce10cc738c005f5e854ef1b973f8841ea8c6eccd6a6c6c4610b2ccc0702ff5f5fe5dd752d5be6be73a2e3d53c33ff71eeade778c8fb03",
+      "canonical_len": 251,
+      "wire_len": 246,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-minimal-cjk-typical",
+      "shape": "minimal",
+      "language": "cjk",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000I",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "鲍勃客户"
+        },
+        "items": [
+          {
+            "description": "软件开发咨询服务",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e1e0118e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa1000101061005416c696365120ce9b28de58b83e5aea2e688b71410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303049180201061f20ee257f1a87b5bcf9a98d9b79a29402565509e607aa1958a46f38e4fdbed46c28",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e1e0118e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa1000101061005416c696365120ce9b28de58b83e5aea2e688b71410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303049180201061f20ee257f1a87b5bcf9a98d9b79a29402565509e607aa1958a46f38e4fdbed46c28",
+      "canonical_len": 169,
+      "wire_len": 169,
+      "compressed": false
+    },
+    {
+      "name": "D-ch1-minimal-emoji-typical",
+      "shape": "minimal",
+      "language": "emoji",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000J",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice 🚀",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob 💎"
+        },
+        "items": [
+          {
+            "description": "Premium consulting ✅",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e13010d5072656d69756d200e20e29c8500010106100a416c69636520f09f9a801208426f6220f09f928e1410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030304a180201061f206b810ca5738a11dfa8f7f650dc4b81098a15cb044e66b576f324c3bef6e32d36",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e13010d5072656d69756d200e20e29c8500010106100a416c69636520f09f9a801208426f6220f09f928e1410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030304a180201061f206b810ca5738a11dfa8f7f650dc4b81098a15cb044e66b576f324c3bef6e32d36",
+      "canonical_len": 159,
+      "wire_len": 159,
+      "compressed": false
+    },
+    {
+      "name": "D-ch1-minimal-rtl-typical",
+      "shape": "minimal",
+      "language": "rtl",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000K",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "أليس المطور",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "بوب العميل"
+        },
+        "items": [
+          {
+            "description": "خدمات استشارية للبرمجيات",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e34012ed8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa000101061015d8a3d984d98ad8b320d8a7d984d985d8b7d988d8b11213d8a8d988d8a820d8a7d984d8b9d985d98ad9841410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030304b180201061f202fd933d951c071ac98053b6a571faf720a1a93a37a51750d3b7dc45e6c1dce9f",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e34012ed8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa000101061015d8a3d984d98ad8b320d8a7d984d985d8b7d988d8b11213d8a8d988d8a820d8a7d984d8b9d985d98ad9841410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030304b180201061f202fd933d951c071ac98053b6a571faf720a1a93a37a51750d3b7dc45e6c1dce9f",
+      "canonical_len": 214,
+      "wire_len": 214,
+      "compressed": false
+    },
+    {
+      "name": "D-ch1-minimal-high-entropy-typical",
+      "shape": "minimal",
+      "language": "high-entropy",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000L",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "i4)#%JS|XeCE'y2,g8Kx",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "pSu48.F03qgVX56"
+        },
+        "items": [
+          {
+            "description": "0[0,6(k#)V4ZBoNB\\p$6>Vkq>*QjQM\\XHJ/S8:pf",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e2e0128305b302c36286b232956345a426f4e425c7024363e566b713e2a516a514d5c58484a2f53383a706600010106101469342923254a537c586543452779322c67384b78120f70537534382e4630337167565835361410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030304c180201061f2099a6a1ad1697d8c3418950cd4b2fbf6c51aadc2aafe75c8ce1c1b372c2c19f76",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e2e0128305b302c36286b232956345a426f4e425c7024363e566b713e2a516a514d5c58484a2f53383a706600010106101469342923254a537c586543452779322c67384b78120f70537534382e4630337167565835361410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030304c180201061f2099a6a1ad1697d8c3418950cd4b2fbf6c51aadc2aafe75c8ce1c1b372c2c19f76",
+      "canonical_len": 203,
+      "wire_len": 203,
+      "compressed": false
+    },
+    {
+      "name": "D-ch1-medium-ascii-typical",
+      "shape": "medium",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000M",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000104046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e3b0213536f667477617265200e207365727669636573000101061d536f667477617265200e2073657276696365732028706861736520322900020505100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030304d180201061f203efa0bffe0685992ae53736d49bab098b33304336a67cf4574773185a1bb8b93",
+      "wire_hex": "56811bff006864609c0e54141bc0b4a6834c6f74121a4305101dfdf480b50505596d518001459a5080794287ebc9023325288aca4cd6cc6f1c080400422099b10f00540d176454fe4e528d122108b749925f8bc82a2ecb16397fc961e096192802084351ce2ef23f733396c79a5ec6c1cf5aea61dd6cc281010180381d88dc838e138400ab03c2b86c02e1002c6a1100048512f09602e1bbe824a1acc529d4e28142b859dc79a34243db42d1b04ca9af020c1010c61718bfd0ff7739f1eea55879a1676365705d03d1e465ef3a2aaa559d539b5d3d",
+      "canonical_len": 258,
+      "wire_len": 213,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-medium-cyrillic-typical",
+      "shape": "medium",
+      "language": "cyrillic",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000N",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Алиса Разработчик",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Боб Клиент"
+        },
+        "items": [
+          {
+            "description": "Консультационные услуги по разработке",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Консультационные услуги по разработке (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "Оплата в течение 30 дней. Спасибо за сотрудничество.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000104046553f100055dd09ed0bfd0bbd0b0d182d0b020d0b220d182d0b5d187d0b5d0bdd0b8d0b520333020d0b4d0bdd0b5d0b92e20d0a1d0bfd0b0d181d0b8d0b1d0be20d0b7d0b020d181d0bed182d180d183d0b4d0bdd0b8d187d0b5d181d182d0b2d0be2e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010ea3010247d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b50001010651d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b520287068617365203229000205051021d090d0bbd0b8d181d0b020d0a0d0b0d0b7d180d0b0d0b1d0bed182d187d0b8d0ba1213d091d0bed0b120d09ad0bbd0b8d0b5d0bdd1821410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030304e180201061f20aa8d0819824649cc6e2992b69c3aa175cd07c83fe47f94999c1ac31cab2acca6",
+      "wire_hex": "56811bae01401c07762cf840af1646190d9eeff76bfffd15b3b7cdac6d5d54320d42a46a67bab54d4027aa9fdb4824887e799a2eaa421116f9a250733ee747a056b3dd6c328e120c210d34e9febb6b501048c3747222f0ed40173a05c421b5acc472cb53b6494225f2227c85df340d65b5ae2cfec9b444d0c8082142a3929eddd6634e65101a424040021a8fd00260ef7355258863054214d0b05b360636a7b2bba36ffffadf96f95bfb8ae1b3c4be7e5087ad37947fa0cc51304015c824cb11226411002a5536f604170d98f68500f981843594b2cfbb41974aa947a76c98365bb0c825130408cd2b98132790c2114e00a9c16402962a8c06dfe9c90f2ccdfdd985b97a8b5933c95ed90bfa70db99da1a197f3acad7f17e8fac3eebddf2319e9dfdf4653eaa3c7d",
+      "canonical_len": 433,
+      "wire_len": 296,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-medium-cjk-typical",
+      "shape": "medium",
+      "language": "cjk",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000O",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "鲍勃客户"
+        },
+        "items": [
+          {
+            "description": "软件开发咨询服务",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "软件开发咨询服务 (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "請在30天內付款。感謝您的支持與合作。",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000104046553f1000535e8ab8be59ca83330e5a4a9e585a7e4bb98e6acbee38082e6849fe8ac9de682a8e79a84e694afe68c81e88887e59088e4bd9ce38082060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e450218e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa10001010622e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa120287068617365203229000205051005416c696365120ce9b28de58b83e5aea2e688b71410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030304f180201061f2049717d310da30ccf18eb87fe3c82ea3f13d42775bc8a2ff8f4a67ed25d08d518",
+      "wire_hex": "56811b0401608cd4634d985c69629c0d5003d0e4c44ca4d5ed89d000e6bf0f5570faa8d3c9451890b61dac30a220a244120f306a816e0c8ec110ad6e5637381008008440d2a17700547f37dd79dd33a1555d8f4c5e378fcb62baac6bb869eabf9be9bd6998b8ed6ae2c0efda5a4991f1130c5c370c45006128cade41f1239f9aefad79ee035feba89be5c99813030200714e100300100b0f60f5a90484714a59a26390356200080a2540adcfaa320973bf649d8d1e68288493d995d7041adaee0bfae5aabef23140401893e52d55abb1c39855c663ebbfa1e1c14cde122e7728ffbec66a36c2886d06",
+      "canonical_len": 263,
+      "wire_len": 233,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-medium-emoji-typical",
+      "shape": "medium",
+      "language": "emoji",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000P",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice 🚀",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob 💎"
+        },
+        "items": [
+          {
+            "description": "Premium consulting ✅",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Premium consulting ✅ (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "✅ Payment confirmed 🎉 Thank you! 💎 Invoice #️⃣",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000104046553f100052ee29c85200720636f6e6669726d656420f09f8e89205468616e6b20796f752120f09f928e20062023efb88fe283a3060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e2f020d5072656d69756d200e20e29c8500010106175072656d69756d200e20e29c852028706861736520322900020505100a416c69636520f09f9a801208426f6220f09f928e1410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303050180201061f20b700774026e533acc735e8349a31b1e1ee87278ba5200413d77e7d65af0d8062",
+      "wire_hex": "56811be8008064be71efdd7db3fdfb56776628f018214540694bab7b1d944e0e9cbfe3c14e01479660c4419ee7363674e876f7a251b460230420919889fd0192e57eac0d53c61dff4ef677bd2566f14d0ce47818eec764acfcd91db86f9925131a67495448a60b4fcf8bff0be9cdf1faaf09c2934b7450bd1c0f3211806c2b62ad5f041bdf8fb5b942b284c2ba763f75e8012291b8746f492195c1bf93238d7caaaf3c59b21172afd7f77e92c40c7f281a36db741596224896e11d50e1d13c39d7f6ddafae11fbf6dd7787b6671e130527f575994d566312",
+      "canonical_len": 235,
+      "wire_len": 216,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-medium-rtl-typical",
+      "shape": "medium",
+      "language": "rtl",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000Q",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "أليس المطور",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "بوب العميل"
+        },
+        "items": [
+          {
+            "description": "خدمات استشارية للبرمجيات",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "خدمات استشارية للبرمجيات (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "يرجى الدفع خلال 30 يوماً. شكراً لتعاملكم معنا.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000104046553f1000551d98ad8b1d8acd98920d8a7d984d8afd981d8b920d8aed984d8a7d98420333020d98ad988d985d8a7d98b2e20d8b4d983d8b1d8a7d98b20d984d8aad8b9d8a7d985d984d983d98520d985d8b9d986d8a72e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e71022ed8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa0001010638d8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa20287068617365203229000205051015d8a3d984d98ad8b320d8a7d984d985d8b7d988d8b11213d8a8d988d8a820d8a7d984d8b9d985d98ad9841410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303051180201061f20df4220e190217814ab11221311780e9df2f0f7d9bfb81f88a75e2f34cb6c7390",
+      "wire_hex": "56811b6301c09c07b6ade6b4367a99ecc18b1b290d058d319f6fadedecb9b69b7709b56c192e14c47516f150d433094afd1f4d4437b7258a494bb1675b3174c3cda18ca120966cfb92fed327c572b8639cc042dbdd440fba4e0edc0ef20b7f1e5b7ee120a48cf2944d538acc7c3ef6eaba26cce6967d9a4f711d8ace35095041b88013e455a8019f016ee4dcfa323724151807a0510de03fe85fb49ae64f2c766175c293ff3b2e7bb35ffbeeb3287227afeaaba2d5847740cfc13d840600960026180b80721d4d525181a034d0b90e803521ac6502ca344709a6d12d167f04b5a6b801a8686073151a0c81b80a9233a76e9d2aec7f1f8f3f28d15051dd9a6c712b15b7c29a901fe5f2dd34ee26904460dcbbf7fffe7c7a48ac5ed4e6a6eea102",
+      "canonical_len": 358,
+      "wire_len": 288,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-medium-high-entropy-typical",
+      "shape": "medium",
+      "language": "high-entropy",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000R",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "4VK^a-pF/i9}gs!*LO2Q",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "u}Wo`bd#AWleyOG"
+        },
+        "items": [
+          {
+            "description": "B:4m;^*:?og~yaqy8@VUz1/_OOjjQUax0w1,ZcD>",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "B:4m;^*:?og~yaqy8@VUz1/_OOjjQUax0w1,ZcD> (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "qQy2BhZB[(GI_Xfkz5z@a|y*,sXZyZW4tQ0ztH:4NqG^zavOWM*HhCwr-qB$",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000104046553f100053c7151793242685a425b2847495f58666b7a357a40617c792a2c73585a795a57347451307a74483a344e71475e7a61764f574d2a48684377722d714224060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e650228423a346d3b5e2a3a3f6f677e79617179384056557a312f5f4f4f6a6a515561783077312c5a63443e0001010632423a346d3b5e2a3a3f6f677e79617179384056557a312f5f4f4f6a6a515561783077312c5a63443e2028706861736520322900020505101434564b5e612d70462f69397d6773212a4c4f3251120f757d576f6062642341576c65794f471410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303052180201061f200df82cde7ad3dbfa0d5706fc45183f0ba5983b9a88cc20425b268427d600b696",
+      "wire_hex": "56811b3d01f82d0eccd33f45616c12769ac8b1f844576bdbbd47bd720d4dcc37c44b37cb669190d42295484834b34664e80c4da1698d6f609e7712ebe09b4e6ffd393f69b4bc33755a1e36e04420b3c030b789e40e00011eb4714d6484007238f1e21fb88e7dfe6e08cc1a81261e8d776b93e5c3fcf0f55f775275ac35ee8daae994d73d4e3187cc3eda79f42fd96a9a8ccd82d7837a1f80394c73c115204fc4e5963d3dfa8dea9f31f36665fbb250904b0065718631e0b076764887773bfddcfbfbbbcd57293ff4da6e36bb58e4cbfd9beeaa57350c790091670b8abf2f1808205cae42c356929dbe7a17d1ceedefe411205359435e2ccfbdabdbde6004f9ababf13d1b952a5eebed17e9c4fe6c21a7d659159404797acadb7ab9fb4f5ae5fc834ab778d5b5dbdad14013fd1a824d1b",
+      "canonical_len": 320,
+      "wire_len": 304,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-full-ascii-typical",
+      "shape": "full",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000S",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob Client",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Software consulting services (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020001031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e5d0313536f667477617265200e207365727669636573000101061d536f667477617265200e20736572766963657320287068617365203229000205051d536f667477617265200e2073657276696365732028706861736520332901051904100f416c69636520446576656c6f706572120a426f6220436c69656e74130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303053180201061f20dd59ab6b3d8cb1d89a44b67d3fc51119e6fcdaf14969dbb2f1b4194371bdd976",
+      "wire_hex": "56811b5c01601c05ee9e9bd778622807148c7e1af7debb0f31fe0a3031c18358aa90e4b63575a96dcd790d9372605127b7efa06f4b24e040db026b1906603d3d604f82b6a0b6a0791450a86940df4ef27dbbf06d72a4519274107cd2f6dd12608c8020ec9e19e93e97f25f1cc09cc0319b257919b922121b32bf886498b67e60192531ba2b08fa95a82d56bcb1ab97b9f79b387b32617a8d446157db5bea1a7c3ef3824605325df8f0d4f6d7b2bb0b939f8b8477935d8fae57c24c8c80c5ac75d5b0c12e5290398dadb5bb4300649542b5ba9a316c08611209528d014946e472fca6e110eae4d3035d73bff18700eb89fbb67df62d5622309f114ca42bd0a9760c648df635bbd9e6befd87d9d0c9449ef3641fff4fbff1963ff83d92057b4e1f0701",
+      "canonical_len": 351,
+      "wire_len": 290,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-full-cyrillic-typical",
+      "shape": "full",
+      "language": "cyrillic",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000T",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Алиса Разработчик",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Боб Клиент",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Консультационные услуги по разработке",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Консультационные услуги по разработке (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Консультационные услуги по разработке (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Оплата в течение 30 дней. Спасибо за сотрудничество.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020001031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100055dd09ed0bfd0bbd0b0d182d0b020d0b220d182d0b5d187d0b5d0bdd0b8d0b520333020d0b4d0bdd0b5d0b92e20d0a1d0bfd0b0d181d0b8d0b1d0be20d0b7d0b020d181d0bed182d180d183d0b4d0bdd0b8d187d0b5d181d182d0b2d0be2e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090ef9010347d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b50001010651d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b5202870686173652032290002050551d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b520287068617365203329010519041021d090d0bbd0b8d181d0b020d0a0d0b0d0b7d180d0b0d0b1d0bed182d187d0b8d0ba1213d091d0bed0b120d09ad0bbd0b8d0b5d0bdd182130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303054180201061f20786518ec2d6351618ded73977729c4e261305b1ae2e903286797932188502fbd",
+      "wire_hex": "56811b3f02402c0a6c176e232e16a517a7d8dc9e2f093f94882488efc7da8968ba7fcdbc8b45992e9ab988582454328944a2d22cee6b98466ffcdfcde6121c9333eb850125981ed5f3bbd6fe279005d6dfcf6de6695e92a6b8ebe25981f63e6a99f5407670c8017085311ca579996201f3f444a015c411441871182490449c0676bdd3f17ab22a4bff9341b07101bf4ea7d1ea03abc3e9eadcf4dd67ac63477bea721af7d5156558e68f8943462817bd207ac598ffa9fcbb4ec15b28bd003b03300a1801600b881f76762a208811c849fafd23a3d975662b2e6bf1d561e5b4269b7afd957f7576f2d8fd1cf98f407b67c7515be2345aa7345b9b81cf50fe71be0b02780464ce250741f4b26207787864cfd2b60b1458075449e70f9c2c1aadd63450039528648ff2303aa35177878f35460d9e38172e76017a45438865cdcee9f353030c0a841db1f008f2eb8aabce233efbf69ec656d39b3df7b3a95585114e6b8aa9f565e415158a8fef8621b967eed47efd49b7e41e3fe8e71f",
+      "canonical_len": 578,
+      "wire_len": 379,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-full-cjk-typical",
+      "shape": "full",
+      "language": "cjk",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000U",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "鲍勃客户",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "软件开发咨询服务",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "软件开发咨询服务 (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "软件开发咨询服务 (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "請在30天內付款。感謝您的支持與合作。",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020001031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f1000535e8ab8be59ca83330e5a4a9e585a7e4bb98e6acbee38082e6849fe8ac9de682a8e79a84e694afe68c81e88887e59088e4bd9ce38082060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e6c0318e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa10001010622e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa1202870686173652032290002050522e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa120287068617365203329010519041005416c696365120ce9b28de58b83e5aea2e688b7130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303055180201061f20d8d15b65bf081fc4ae56c8505039b47dd52e673fbb0e74568924ed6cdefaa5d2",
+      "wire_hex": "56811b660120ac0b78b25d78a52d42f7b0da3aecc82563dfa71837312e1f60729593ae431ae8eb10eb122bc0a438a8c9fdd953c271815000d0966855d4de302916e89ba1ec6c576148d5145bff90fd7ad3c90173dbc1d230a116621a485b24ad2de1202f5677a2b220f8c9f6c920100008a614f65715ee3148b75a30756ce3b0f4dbaa430824e10150c5177bde86e664dea6e6dfda6643445e1a9b7f87734bc3efcd731f03ad7cc86767074164e861e0c649281c17998925748b7381341086a25c5ee7fc655c1dae3f027e93534faae7c3000180584cb420ead6c80533b001e7480f0013020081306e313b4f485a251014eab41d50268400d5cfea4898af8dbeb79e96907990411214c2fdf2ce77aba840c5d04653b380a61c4040188b7d473e43b076579c8766b366ab6e8531aed439fcb9ff4f1f03",
+      "canonical_len": 361,
+      "wire_len": 310,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-full-emoji-typical",
+      "shape": "full",
+      "language": "emoji",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000V",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice 🚀",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob 💎",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Premium consulting ✅",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Premium consulting ✅ (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Premium consulting ✅ (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "✅ Payment confirmed 🎉 Thank you! 💎 Invoice #️⃣",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020001031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100052ee29c85200720636f6e6669726d656420f09f8e89205468616e6b20796f752120f09f928e20062023efb88fe283a3060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e4b030d5072656d69756d200e20e29c8500010106175072656d69756d200e20e29c852028706861736520322900020505175072656d69756d200e20e29c852028706861736520332901051904100a416c69636520f09f9a801208426f6220f09f928e130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303056180201061f20a2f0d709b78712bb3ef0c39894e60489a42cc9538e51b4f089d48206f14d3094",
+      "wire_hex": "56811b3f01683c146f0ca9f4daa61e6c353aba113a32f9e163b8817935eaa0f4b0a294c96aaa5b5589e020de0e3233f0b2a8fd3d532c603a0020197e3248c5d7141b6cc0f1624f3671af9303e72f0cac2d9194032ae040920b5f4f165e5e249948934cb4d9d024100480b034bd2323fd44297e74c4e458e158c563c63982c418404def2e51c76750dc575bf1576c49571904f7c65a754c5debf5baf7a2210cce1f42712e62c2625a1886801825bdbd4ffa4ff85c4f6ebdf097b5ec2273221c08005926320d77e60db3ab0d11f5f7ee1200043185b8ba7e4b34280845cd1aa80a11288f248befebcc17139e69c4152490c552e17966f74727196813ede55f80c9fc0a534220a6a63ef87b43ae9589b75c7fd4defc8d540c1b2fb83670f9b7e2b210fbf3356f06",
+      "canonical_len": 322,
+      "wire_len": 294,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-full-rtl-typical",
+      "shape": "full",
+      "language": "rtl",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000W",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "أليس المطور",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "بوب العميل",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "خدمات استشارية للبرمجيات",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "خدمات استشارية للبرمجيات (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "خدمات استشارية للبرمجيات (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "يرجى الدفع خلال 30 يوماً. شكراً لتعاملكم معنا.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020001031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f1000551d98ad8b1d8acd98920d8a7d984d8afd981d8b920d8aed984d8a7d98420333020d98ad988d985d8a7d98b2e20d8b4d983d8b1d8a7d98b20d984d8aad8b9d8a7d985d984d983d98520d985d8b9d986d8a72e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090eae01032ed8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa0001010638d8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa202870686173652032290002050538d8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa20287068617365203329010519041015d8a3d984d98ad8b320d8a7d984d985d8b7d988d8b11213d8a8d988d8a820d8a7d984d8b9d985d98ad984130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303057180201061f20f9293d165d546bae72df03e8ad467c94ca1f09ae81eda9ebab2898aa15fb2baa",
+      "wire_hex": "56811bdc01c0e59efdd5024cfbe341ae60b29bf09757253457ce1c93dcee9d4e0edc02a944c358f376a2240b3cb088721b1b9ed6b0171486d1909c46a350e98ad2ce8ad27d8decc6872aa8a1ae8a84ea9b8a2306232bf687c28c460b2cc20c9a09184712e6b10136c77a7175b2f3198c63b3c3e60f633381244cc1268ca35e28a06ba19e45af1f66b245efb46a56501d75703954164f015705bf7999f3bdb51f7df40737e569e5646ab88046a10a05e925e9843714cd51e90e3007f3a887719822601c96610a56601c16d10293049248c2042ca21e66d002e33045a152595e4426acda4f08176b0a8dc94c01aed654a6962151c2b0207203e348a21ed6d1048b32394ca009260843d5ce82a49ce6eca490dccdee7d215352dd55fcd0c898287ba7a84ad4d0a82c1df167edaf4a8a2b982bbfa73fcf4654b79ce8b8730d1f936fd3561d53ca7fdb29",
+      "canonical_len": 479,
+      "wire_len": 328,
+      "compressed": true
+    },
+    {
+      "name": "D-ch1-full-high-entropy-typical",
+      "shape": "full",
+      "language": "high-entropy",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00000X",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "o?jy(\";.uZ[2*`v(QSIl",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "#dlY2nK;7)!~;SJ",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "dPha%C(SLy2(8zP~[fOBBaF~V;!x+yGZ;nS-$RZ3",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "dPha%C(SLy2(8zP~[fOBBaF~V;!x+yGZ;nS-$RZ3 (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "dPha%C(SLy2(8zP~[fOBBaF~V;!x+yGZ;nS-$RZ3 (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "+(dJuC:UPvf%ss.7Rt>rRYF_GmoMAXx@jK?KiU6A6o?q\"-!tXCdDuF*0w+X,",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020001031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100053c2b28644a75433a555076662573732e3752743e725259465f476d6f4d415878406a4b3f4b69553641366f3f71222d21745843644475462a30772b582c060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e9c01032864506861254328534c793228387a507e5b664f424261467e563b21782b79475a3b6e532d24525a33000101063264506861254328534c793228387a507e5b664f424261467e563b21782b79475a3b6e532d24525a3320287068617365203229000205053264506861254328534c793228387a507e5b664f424261467e563b21782b79475a3b6e532d24525a33202870686173652033290105190410146f3f6a7928223b2e755a5b322a6076285153496c120f23646c59326e4b3b3729217e3b534a130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303058180201061f20064c149d7d526d066f8d8e368f63b8f978667bec2eaf48c324b3676cf04ae18f",
+      "wire_hex": "56811bb0015064f875efbdfb761af4218c5228c842a292d08d36b739c689c0407e3ee1b2d008cbb00107c113253cd8550c1886008259dddf527dc8a5df1901b103ac91499cbb961324b220ee17429945fcfcd006973121bab1d0a7ae4eaa8badb7d6c6a604660555544538929beda561b6b09204ad435b65abf19478d427bbf2fd1b0285f22651b2188de89e4461c839e5257905f645091c16a0f1ccab9bb2bf92fc85e1cecf11c4bb9a75da3a951d4084214022e656e5ca41c84300c1cf8f2ecef171f1e3c25b947c7d6b74675a6194d39913d89968f26816b504a59a2ae324deb1a92a0800b43270e77f43ab1440300ae52b2a0140f190546695adb485ef699236a4a62985d98dfc98b890723ac52bbf3c45591966d2093c3a4d71a10c582167521fe6b6be512ca061135c51b1d112795dc95c18a0dddcd1e1cce18ed80a74554fafb62f6ff3bfb9b0ed43ba10bcefbd5254fe13fadc07",
+      "canonical_len": 435,
+      "wire_len": 344,
+      "compressed": true
+    },
+    {
+      "name": "E-ch1-min-ascii-zero",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "zero",
+      "decoded": {
+        "invoice_id": "CORP-00000Y",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "0"
+          }
+        ],
+        "total": "0",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010000100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303059180200001f20a7dd5c20a20f5656f574fccdadacac5786f50041b843539139db006d4e9d5f4c",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010000100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303059180200001f20a7dd5c20a20f5656f574fccdadacac5786f50041b843539139db006d4e9d5f4c",
+      "canonical_len": 172,
+      "wire_len": 172,
+      "compressed": false
+    },
+    {
+      "name": "E-ch1-min-ascii-one",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "one",
+      "decoded": {
+        "invoice_id": "CORP-00000Z",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1"
+          }
+        ],
+        "total": "1",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010100100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030305a180201001f200b27baa73cacb90786b3e8020bbf8eccbb3b32c4a76bf23069c50cb1e1b61d06",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010100100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d30303030305a180201001f200b27baa73cacb90786b3e8020bbf8eccbb3b32c4a76bf23069c50cb1e1b61d06",
+      "canonical_len": 172,
+      "wire_len": 172,
+      "compressed": false
+    },
+    {
+      "name": "E-ch1-min-ascii-typical",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000010",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010106100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303130180201061f20bd525925a9650c07ad6d7286e1496e8c222047185ac90127f2b267902e023fc1",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010106100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303130180201061f20bd525925a9650c07ad6d7286e1496e8c222047185ac90127f2b267902e023fc1",
+      "canonical_len": 172,
+      "wire_len": 172,
+      "compressed": false
+    },
+    {
+      "name": "E-ch1-min-ascii-large",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "large",
+      "decoded": {
+        "invoice_id": "CORP-000011",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000000000000000"
+          }
+        ],
+        "total": "1000000000000000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010112100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303131180201121f20ea16192cf24217e755c49c34b7aafa7c79dce40dbc34a524237cc5171cc55f6e",
+      "wire_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e190113536f667477617265200e20736572766963657300010112100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303131180201121f20ea16192cf24217e755c49c34b7aafa7c79dce40dbc34a524237cc5171cc55f6e",
+      "canonical_len": 172,
+      "wire_len": 172,
+      "compressed": false
+    },
+    {
+      "name": "E-ch1-min-ascii-u256-max",
+      "shape": "minimal",
+      "language": "ascii",
+      "chain": 1,
+      "amount_edge": "u256-max",
+      "decoded": {
+        "invoice_id": "CORP-000012",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+          }
+        ],
+        "total": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e3d0113536f667477617265200e2073657276696365730001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f00100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d3030303031321826ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f001f20b9efd6f7f01174dd969610f1dfb289a25988f70e486c3cf4525356c225e2490c",
+      "wire_hex": "56811bf10060ae0fb839601db38408181101563a34dcaecffb5d4e347873ef752e2790405ca0df430b2c83f3293e13d7fc88b27f7a6b8e0289d685e86ec4b3d1783ad07982b4af9fa6d8de6411627b83ad75deeb81444b5f9da4d7aa2d4b2c3ddde0c031b084923083741f75d863ac2c63e3b9f26f41100022c8da3760f07640058851cab29fae3cb4799e543dbb078300908ba1dc68e42cbf16807f9a0304274f80f1674954f1e237f1a208977e2262baa4a91c1f034168d8210766727ca73faf3f4bf8efd1dddc7656f4cb8be1e40103",
+      "canonical_len": 244,
+      "wire_len": 209,
+      "compressed": true
+    },
+    {
+      "name": "F-ch8453-med-cyrillic-typical",
+      "shape": "medium",
+      "language": "cyrillic",
+      "chain": 8453,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000013",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Алиса Разработчик",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Боб Клиент"
+        },
+        "items": [
+          {
+            "description": "Консультационные услуги по разработке",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Консультационные услуги по разработке (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "Оплата в течение 30 дней. Спасибо за сотрудничество.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000504046553f100055dd09ed0bfd0bbd0b0d182d0b020d0b220d182d0b5d187d0b5d0bdd0b8d0b520333020d0b4d0bdd0b5d0b92e20d0a1d0bfd0b0d181d0b8d0b1d0be20d0b7d0b020d181d0bed182d180d183d0b4d0bdd0b8d187d0b5d181d182d0b2d0be2e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010ea3010247d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b50001010651d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b520287068617365203229000205051021d090d0bbd0b8d181d0b020d0a0d0b0d0b7d180d0b0d0b1d0bed182d187d0b8d0ba1213d091d0bed0b120d09ad0bbd0b8d0b5d0bdd1821410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303133180201061f20b32466eefbaecf0e959e4cf77735826322827d3dedaa7994487966cf4343ed45",
+      "wire_hex": "56811bae0140ac0a6c63744a8fa433c5e2d6651e171a1c57e45783a8d6f2f69ec10287403884f2844201820c3b601fa17b5c545ce45724fedfcdd642cda82ca004d3a37a7e6bb4fe01b62c0fb819334e3579e29e96a9318bd7151831335a8432559e4e4e04be1de822b78038a49695586e79ca3649a8445e84af70ebba66321a07b39676de677876982cc2a288a467851e732abb173c4c167070208a85456501d8fb5c75e2640d2d0bb288008a33c3fcb5c9aacc76bcffc3a33d3d9dcd9dc59f957c93f5d43491a6dcd74aaf03019cb2204becb22d8b3059c5019c9cb2853ec18507a67d21407e60436b4a993bdc10cd96520f18e8269337c63e3b4e16605166c19cace1d8fc0126001e05b1e3d09cb218f47ee0b72f58b8ae6a737b9198d646ca1c89be2687feff70b94fce9abfc76c4767dadd8cd64f745555e56a00",
+      "canonical_len": 433,
+      "wire_len": 317,
+      "compressed": true
+    },
+    {
+      "name": "F-ch8453-med-cjk-typical",
+      "shape": "medium",
+      "language": "cjk",
+      "chain": 8453,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000014",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "鲍勃客户"
+        },
+        "items": [
+          {
+            "description": "软件开发咨询服务",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "软件开发咨询服务 (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "請在30天內付款。感謝您的支持與合作。",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000504046553f1000535e8ab8be59ca83330e5a4a9e585a7e4bb98e6acbee38082e6849fe8ac9de682a8e79a84e694afe68c81e88887e59088e4bd9ce38082060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e450218e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa10001010622e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa120287068617365203229000205051005416c696365120ce9b28de58b83e5aea2e688b71410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303134180201061f2046dd736306d181599f03641ddac28df0148e6e87e12353ad5577c10ab3c10602",
+      "wire_hex": "56811b04016064629c4de67557a16d2fe93ae0ced040ebe4220c48db0e561849125122890718b5403706c760885637ab1b1c0804804220a9813f00d4fabad0fd34386b363c4dce3db5cec8627a68687a6e19795d1c7a6e9a7de96fe1c05f3bda4991f1130cdc300145006128cae979f67f66caca50ddd730f8c9423da89a8bbb30200010e702310000b1f000569f4a4098a854a03806d9a40480a05002d4f6ac2a93306febd6ddec818642b85edafc49a0a11d1ebf576be833a3850102c2f802f75571326caf3136024ee19eeff6fe52faf2daefc481a550f90e6a63070602",
+      "canonical_len": 263,
+      "wire_len": 223,
+      "compressed": true
+    },
+    {
+      "name": "F-ch8453-med-emoji-typical",
+      "shape": "medium",
+      "language": "emoji",
+      "chain": 8453,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000015",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice 🚀",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob 💎"
+        },
+        "items": [
+          {
+            "description": "Premium consulting ✅",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Premium consulting ✅ (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "✅ Payment confirmed 🎉 Thank you! 💎 Invoice #️⃣",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000504046553f100052ee29c85200720636f6e6669726d656420f09f8e89205468616e6b20796f752120f09f928e20062023efb88fe283a3060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e2f020d5072656d69756d200e20e29c8500010106175072656d69756d200e20e29c852028706861736520322900020505100a416c69636520f09f9a801208426f6220f09f928e1410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303135180201061f20bd9c77b547a224bedb25bd98b17558769e6fc2ddd9dd9339b3640d07e1681571",
+      "wire_hex": "56811be8008064609c0e508310e7083ed24a804335a27572e0fc1d0f760a34c204230ef23cb7b1a143b7bb178da2050e040240219038ff1f00aa781bad63c1c71dff4eb437bd2566ca4d0cd878e86e67c158dc9f9d8eb79a1918b872068a00c250949bbb94ffa4d8e5b1f2af71f0a78e7a5e3c1be9c08000409c12845dbf081ceb6db4ce1508a3532c51bb9f6ac40010144a4059529362e258bf13c39524843523ba6443213c2d1efd24d1d036b7cf2357e94cad6780803026eb70b460d335cd3bbae71f0eaee645e48f679c3dde3ef698d763b1f0d7446a16",
+      "canonical_len": 235,
+      "wire_len": 217,
+      "compressed": true
+    },
+    {
+      "name": "F-ch8453-med-rtl-typical",
+      "shape": "medium",
+      "language": "rtl",
+      "chain": 8453,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000016",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "أليس المطور",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "بوب العميل"
+        },
+        "items": [
+          {
+            "description": "خدمات استشارية للبرمجيات",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "خدمات استشارية للبرمجيات (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "يرجى الدفع خلال 30 يوماً. شكراً لتعاملكم معنا.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000504046553f1000551d98ad8b1d8acd98920d8a7d984d8afd981d8b920d8aed984d8a7d98420333020d98ad988d985d8a7d98b2e20d8b4d983d8b1d8a7d98b20d984d8aad8b9d8a7d985d984d983d98520d985d8b9d986d8a72e060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e71022ed8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa0001010638d8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa20287068617365203229000205051015d8a3d984d98ad8b320d8a7d984d985d8b7d988d8b11213d8a8d988d8a820d8a7d984d8b9d985d98ad9841410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303136180201061f20c8eeac1e4820adfaa0f434d6502bf5f44e902e8a556f6ac70c3443e419b2386e",
+      "wire_hex": "56811b6301c09c07b66bb410a72ade1777c6e7f37fb86f4fee6173f9b636d8da209d380a3cf138c07b5b543cf6ff2373bba6bffee0218a96c80891ca088d76f19011bd7ac9e025e059d4da5eafc76e70e0164809e733ee090f236db4a76c9a5264e6f3b149269328158a56ed0ea015caf061511250c9c225853cc82b161ef0192a95e0ad2f5311646120874aae1ac07fd0bfa8922fd64a8d54a573e031fd4e9ae6f317f0a5471c67fa980192484d33a801072e39a830045484301041854f19ba204b161a7c72b028438521914a55690185db5142d4239129951627b635c50d54b2e49052846fb343a3084dcc9c3a99acc372b237571412cb94aae540986bed411192aa5c62fbb4ea45d1ffeadfbb8c7cefff70d5583626fd783c732e05e931",
+      "canonical_len": 358,
+      "wire_len": 287,
+      "compressed": true
+    },
+    {
+      "name": "F-ch8453-med-high-entropy-typical",
+      "shape": "medium",
+      "language": "high-entropy",
+      "chain": 8453,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-000017",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": ",jDRk.m:$9-uQU,;m:^V",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "b*H=mr/eQ8$o~^v"
+        },
+        "items": [
+          {
+            "description": "`#ewG<o#%'=U*XV~|9NIgYOhXW,dB~dx%O'\\S<\"J",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "`#ewG<o#%'=U*XV~|9NIgYOhXW,dB~dx%O'\\S<\"J (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "?hw?%j})?hc2XL[(1xs/<jZah;Edl-tB;PjDDg+RLWq\\4%gnj5#_'4c`vqAQ",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000504046553f100053c3f68773f256a7d293f686332584c5b283178732f3c6a5a61683b45646c2d74423b506a4444672b524c57715c3425676e6a35235f2734636076714151060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e65022860236577473c6f2325273d552a58567e7c394e4967594f6858572c64427e6478254f275c533c224a000101063260236577473c6f2325273d552a58567e7c394e4967594f6858572c64427e6478254f275c533c224a202870686173652032290002050510142c6a44526b2e6d3a24392d7551552c3b6d3a5e56120f622a483d6d722f655138246f7e5e761410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303137180201061f2048bd08a7da4930b99728dee71bef8abbd67d5eff2effc7ee19eb03f922587caf",
+      "wire_hex": "56811b3d01f88dc43826f10345884d13e3f2698f605e284b4676dd75a9c96d69d1061b70229051609adb44720780000fdab8263810080085406ab27e00508fbfbecf2f6d1c51faebab4cf9c9450a637f97ded3585851ef8e56376bbb43eef4c648a44e9d999cd7516c91d6b5365ac565724b55796f473003061e5f8022803014e5f2bae9b7a17a676af4631afc60a19e0cae954731200010570352948b6bfae23c6d62a9dc9ba3cacf1d1d76a626d415a4d5e7e769aa43a3d5fdd234797196479408000261a61028de174c4a00080a2550348d91cc269d4be2d4f664e468dcaed25c12be5215efedd4d76438246da3a5bd14c2fdd6d117a2a1c36999e95a8399d1ce0001617c41fc2162e53ac1b03ba9b87f627f4dec9f8f94feebfe8f3f996fe03f51fef00e",
+      "canonical_len": 320,
+      "wire_len": 294,
+      "compressed": true
+    },
+    {
+      "name": "G-ch42161-full-ascii-large",
+      "shape": "full",
+      "language": "ascii",
+      "chain": 42161,
+      "amount_edge": "large",
+      "decoded": {
+        "invoice_id": "CORP-000018",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob Client",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000000000000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Software consulting services (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000000000000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020002031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e5d0313536f667477617265200e207365727669636573000101121d536f667477617265200e20736572766963657320287068617365203229000205051d536f667477617265200e2073657276696365732028706861736520332901051904100f416c69636520446576656c6f706572120a426f6220436c69656e74130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303138180201121f20f8c78a822880701182b8b25b28d1d3306d5d146c1c63d1f94d0f17b46b4e48f3",
+      "wire_hex": "56811b5c01609c87b133a2979409212ca9fbfca681713a50716b4252761514171afc44a53755b93dab5d27f7ef12251c499c481e688092d70f2d50f3c021e77a3f580b03979e1eb027415b505bd03c0a28d43490c349be6f17be4d8e344a920e824fdabe5b641008000253b2c35af682417ad702312d1ee3b0f4f7da350412f200a8142ee8d2324a2213df1504fd4a9488150f67f2ccf96fe2ec61e0ee1a148ef32d1608e97ce605d2803014e5f935f117ebeeb47d33f0979c7a575ff7260604006231fe8c1f1bee1239731a4e6077070002495c850a843563582a02080a8554998850268480d79b8643a89384324cee37fe208324620ae173fbfc5baca840050d6d2c7b8ae99844cd0001497cc15f0dfac2cd12fb67078eb8b913a75c94242770f36f827e943033",
+      "canonical_len": 351,
+      "wire_len": 296,
+      "compressed": true
+    },
+    {
+      "name": "G-ch42161-full-ascii-u256-max",
+      "shape": "full",
+      "language": "ascii",
+      "chain": 42161,
+      "amount_edge": "u256-max",
+      "decoded": {
+        "invoice_id": "CORP-000019",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob Client",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Software consulting services (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "tax": "10",
+        "discount": "5",
+        "total": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020002031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e81010313536f667477617265200e2073657276696365730001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f001d536f667477617265200e20736572766963657320287068617365203229000205051d536f667477617265200e2073657276696365732028706861736520332901051904100f416c69636520446576656c6f706572120a426f6220436c69656e74130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d3030303031391826ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f001f2084e07e7d55103eaf36511bc4b80f3253ea66c4ca17293617931833b48a90b941",
+      "wire_hex": "56811ba501001e078eeb1c4446e126a51a6b7c29ff73dbdebfad229aac92a1740d452d7b6a2426c6e5834aa0baafc303989694dcc93e5750a10c3c641b45f2d292eae9017b12b405b50501b7e6917ed7031de47092efdb85ff4d5f9778280a1e65764b271080c094f2c1a37c93a15d588169c1242cfda26107c2d3f92f135ab82055f31e25d1a94f0b8291252a4a17cf945522577e28ce1e066effa1705c7cc927d3eeb079810c1086a29c9ccd7f6333fbb57e8ef93132f71bc78b0046006031893d219eed00985c3d0d27b0bd17807fd28239fa2a10f796c95a0980a050a9aa9300a14c0801ef710197550709e5dd13771e7f90411a35857035fd6fbe3261a0a17d7138a850c3008d852134f980e777dfbc2d318273d698b237d6d046de321b7b7660a40f30c2a59ede750f",
+      "canonical_len": 424,
+      "wire_len": 300,
+      "compressed": true
+    },
+    {
+      "name": "G-ch42161-full-cyrillic-large",
+      "shape": "full",
+      "language": "cyrillic",
+      "chain": 42161,
+      "amount_edge": "large",
+      "decoded": {
+        "invoice_id": "CORP-00001A",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Алиса Разработчик",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Боб Клиент",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Консультационные услуги по разработке",
+            "quantity": 1,
+            "rate": "1000000000000000000"
+          },
+          {
+            "description": "Консультационные услуги по разработке (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Консультационные услуги по разработке (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Оплата в течение 30 дней. Спасибо за сотрудничество.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000000000000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020002031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100055dd09ed0bfd0bbd0b0d182d0b020d0b220d182d0b5d187d0b5d0bdd0b8d0b520333020d0b4d0bdd0b5d0b92e20d0a1d0bfd0b0d181d0b8d0b1d0be20d0b7d0b020d181d0bed182d180d183d0b4d0bdd0b8d187d0b5d181d182d0b2d0be2e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090ef9010347d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b50001011251d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b5202870686173652032290002050551d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b520287068617365203329010519041021d090d0bbd0b8d181d0b020d0a0d0b0d0b7d180d0b0d0b1d0bed182d187d0b8d0ba1213d091d0bed0b120d09ad0bbd0b8d0b5d0bdd182130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303141180201121f20a16f9a6083b77429586274a68cbe28479dca50bc7fd780c853c143e9ccc0da6c",
+      "wire_hex": "56811b3f02409c07b66b8bf0aef9c61d717a31442478fedbaffd99754f3bdbccfbe2559279f68a972c5e491cda3624de97c01b914366f0d45efaa205adc815fc5a2a7071a10defc9b9367c56b0e166796313aa4d0a4293ca572192dcd9083e0885184cc2a4583c3d116805710411469a060924990796e674bc9eacca923fd9116c1c10d3dad2b6f8faac740f21fa192bff8eba0b06529ffdc3d9578b9fb167b90808072107c349ffa9e55da78005828300c8113e0a18017c0b8819109d0a849ce055a76dffd2e10a9ed98aabddfceaf0b895d31b7f9dca7f5eb93dbbbfd7fc89894f5dca90dfb054c0bfd42e05ef08fe5b73e409e030817488a890830c201c0693c5b56d17047c1d5089ce1fc05c2da5a2636c60f285ec51cd2ded70f0ce68ad1c197b38c78600051c0c73c00e99407034c608e768001020579830a61be2e1f7b6f7e73daf77720692f1d10a2b6bf4a50d15cd9af3352047f7dbd1c4d2f68df6f223c72fa5c34b7b2e54fa7e3955",
+      "canonical_len": 578,
+      "wire_len": 366,
+      "compressed": true
+    },
+    {
+      "name": "G-ch42161-full-cyrillic-u256-max",
+      "shape": "full",
+      "language": "cyrillic",
+      "chain": 42161,
+      "amount_edge": "u256-max",
+      "decoded": {
+        "invoice_id": "CORP-00001B",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Алиса Разработчик",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Боб Клиент",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Консультационные услуги по разработке",
+            "quantity": 1,
+            "rate": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+          },
+          {
+            "description": "Консультационные услуги по разработке (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Консультационные услуги по разработке (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "Оплата в течение 30 дней. Спасибо за сотрудничество.",
+        "tax": "10",
+        "discount": "5",
+        "total": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020002031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100055dd09ed0bfd0bbd0b0d182d0b020d0b220d182d0b5d187d0b5d0bdd0b8d0b520333020d0b4d0bdd0b5d0b92e20d0a1d0bfd0b0d181d0b8d0b1d0be20d0b7d0b020d181d0bed182d180d183d0b4d0bdd0b8d187d0b5d181d182d0b2d0be2e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e9d020347d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b50001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f0051d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b5202870686173652032290002050551d09ad0bed0bdd181d183d0bbd18cd182d0b0d186d0b8d0bed0bdd0bdd18bd0b520d183d181d0bbd183d0b3d0b820d0bfd0be20d180d0b0d0b7d180d0b0d0b1d0bed182d0bad0b520287068617365203329010519041021d090d0bbd0b8d181d0b020d0a0d0b0d0b7d180d0b0d0b1d0bed182d187d0b8d0ba1213d091d0bed0b120d09ad0bbd0b8d0b5d0bdd182130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d3030303031421826ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f001f201c6105005bbca95f13a98d2f377f4b3d78870d0d1a658501a1b7f818c9b9298d",
+      "wire_hex": "56811b8702008c93e5b2e261c920bbbcbb982aed127029540f06beafa26e365297d255ba244c8ac5d3138156104710611458f33448e072f383a547bae0bf21be4e9e55d23a1417d063188a91d36f996f6b3935d67d09a5d5bbe81d4d0da397b60b79f9cabc1f4aa1102b90e10862d20fb135a41580fc3cec54601d3288491ff621013b0c18d207760f884fb02fdf923ed20f29584f45b9de4d0525cd435bb1323ac276a828d38aaafa0f4ff5bfb515a2e5ee8f15b9777f83eb764e49823a43d11aea65cd65ec33349719b9242c80c509e92303382293a41f62328c7db038c10999c04ee32e90815d085469271687d8a1e87ff48216956313ac9dcbdda77ca7180505cd67f84d2b98c86bdb601647d8277d105b634d640619c13e0e75f5300716126b2ce008fbd8c109e9d7637ce86bbf09d82f9a19d001a9c565e5667b00079f586347af2db0b2362f55a0f28f39c57a9c29afa09eb488d6110d0dd3ca217a7defcff8f2c0650a",
+      "canonical_len": 650,
+      "wire_len": 359,
+      "compressed": true
+    },
+    {
+      "name": "G-ch42161-full-cjk-large",
+      "shape": "full",
+      "language": "cjk",
+      "chain": 42161,
+      "amount_edge": "large",
+      "decoded": {
+        "invoice_id": "CORP-00001C",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "鲍勃客户",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "软件开发咨询服务",
+            "quantity": 1,
+            "rate": "1000000000000000000"
+          },
+          {
+            "description": "软件开发咨询服务 (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "软件开发咨询服务 (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "請在30天內付款。感謝您的支持與合作。",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000000000000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020002031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f1000535e8ab8be59ca83330e5a4a9e585a7e4bb98e6acbee38082e6849fe8ac9de682a8e79a84e694afe68c81e88887e59088e4bd9ce38082060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e6c0318e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa10001011222e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa1202870686173652032290002050522e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa120287068617365203329010519041005416c696365120ce9b28de58b83e5aea2e688b7130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303143180201121f206b5065cd9eafbfa7b68780b35bc3719d2b3c6eb0d9347b684e5c51c6b9f2d4d0",
+      "wire_hex": "56811b660120bc14772c09f144b1821a9519262837c4c47b78ed0f3531ce0630a9d16db750d60144f97d5d4052049ca427abb79960364a51084588420636e0ca6c9c74e193a7a8bd03d0dc8635c39394b1e42a8baf29b6226b2e27589d1c30b71d2c0d136a21a6cd83485a5bc2415eacee446541f093ed93412000084c49b4a7127b0cd29d1e4c8e651cd6ef52871088d700a8ea6bb2e5bd6b4c217d1f1a7faf8d8688bc16cbbfc3b9a9ee8ff2d86747950ff96a6c20880c3d0c5c1c84c271cec1f7cee25c108030945ddd84ff8366bbf3f780df95d4d3f4b823400020965df173ab44c00c6cc039d203c084004020895bccce09492b1e2028d4699b27940921400db33ac57c2fb4bdb75442e64106c9a414c2c3f4ce4faba840150d6db4cd6a4c660c1090c462dfd49ed9ddd19586e2a2f964b740af9519d9ebff6747",
+      "canonical_len": 361,
+      "wire_len": 317,
+      "compressed": true
+    },
+    {
+      "name": "G-ch42161-full-cjk-u256-max",
+      "shape": "full",
+      "language": "cjk",
+      "chain": 42161,
+      "amount_edge": "u256-max",
+      "decoded": {
+        "invoice_id": "CORP-00001D",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "鲍勃客户",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "软件开发咨询服务",
+            "quantity": 1,
+            "rate": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+          },
+          {
+            "description": "软件开发咨询服务 (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "软件开发咨询服务 (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "請在30天內付款。感謝您的支持與合作。",
+        "tax": "10",
+        "discount": "5",
+        "total": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020002031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f1000535e8ab8be59ca83330e5a4a9e585a7e4bb98e6acbee38082e6849fe8ac9de682a8e79a84e694afe68c81e88887e59088e4bd9ce38082060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e90010318e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa10001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f0022e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa1202870686173652032290002050522e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa120287068617365203329010519041005416c696365120ce9b28de58b83e5aea2e688b7130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d3030303031441826ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0f001f200d19d06be687b72d17da6343f7f4b6eeae65e4db70587b59e1262a16f01763ad",
+      "wire_hex": "56811baf010066605d9ef14c3fc0c9596864055441b435454171363b606e3bb0960518072dc2d2c07efea4bfdf5ef8a1b6b93aeaf28842f7ad755f862000821559cdd959cb1ae9d80364f2c1798e551f67af21487cf007803adf8fd6deb40d39daddf40ddf940fba885e15957c1e2e8db5df960cddb59401a2f755950891c26370512f8a730f689578cf93f38224408c52ec1fa67e26c74db617bc74c0374ecaad9ce1283f0602409689c98c911bd704c21a70403afc03c87401f03f9578c0a009eb995d34cb1ccc010845a5d1d11c44b588807a6d9424e661a6fea6b6d48a3e64c8de4e219c8e2fbdd59d127456d13efe4101d6763160efab3119fa804e8fd5aea7de562e5aab0f637dfebe175e27e2af8fb22272232f4c2c54efead871",
+      "canonical_len": 434,
+      "wire_len": 286,
+      "compressed": true
+    },
+    {
+      "name": "H-ch137-med-ascii-typical",
+      "shape": "medium",
+      "language": "ascii",
+      "chain": 137,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00001E",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 137,
+        "currency": "MATIC",
+        "decimals": 18,
+        "from": {
+          "name": "Alice Developer",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob Client"
+        },
+        "items": [
+          {
+            "description": "Software consulting services",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "Software consulting services (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "Payment due within 30 days. Thank you for your business.",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000404046553f100053207206475652077697468696e20333020646179732e205468616e6b20796f7520666f7220796f757220627573696e6573732e060380a3050801120a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200060e3b0213536f667477617265200e207365727669636573000101061d536f667477617265200e2073657276696365732028706861736520322900020505100f416c69636520446576656c6f706572120a426f6220436c69656e741410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303145180201061f202d463ed6a5d88412a74f51dc8f3107c3f9e903ed10811cff136991fb91cc634e",
+      "wire_hex": "56811bff006064625c3ea82836293a14889bfbeeaf8f0ecd754d6a729b9f1eb00705596d51f3209090a300db223a5c6f78ace438a51cec522c70201000e247d4ff0e80aae18248f5ed24d1281504c16612a7a7c263f9526b61e22f390cdc3f0d45004928cac959fa2319591fed7d1e035f6ba9fbadc580030302c0703a1099050d27a8a1030081306e400542fe5fd42200080a25e02d19a373d1494259f321a5c5038570b5baf18a4243dbdc3e8f4c89672a07030484f10532a7f168f6649834eff65e8ca8e0bb9ff7e067c200e79f9cec7e77f7c22e",
+      "canonical_len": 258,
+      "wire_len": 214,
+      "compressed": true
+    },
+    {
+      "name": "H-ch137-med-cjk-typical",
+      "shape": "medium",
+      "language": "cjk",
+      "chain": 137,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-00001F",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 137,
+        "currency": "MATIC",
+        "decimals": 18,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "鲍勃客户"
+        },
+        "items": [
+          {
+            "description": "软件开发咨询服务",
+            "quantity": 1,
+            "rate": "1000000"
+          },
+          {
+            "description": "软件开发咨询服务 (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          }
+        ],
+        "notes": "請在30天內付款。感謝您的支持與合作。",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000404046553f1000535e8ab8be59ca83330e5a4a9e585a7e4bb98e6acbee38082e6849fe8ac9de682a8e79a84e694afe68c81e88887e59088e4bd9ce38082060380a3050801120a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200060e450218e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa10001010622e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa120287068617365203229000205051005416c696365120ce9b28de58b83e5aea2e688b71410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d303030303146180201061f20ddf3ff1c200800908b06cccbc64843f2b822aabe47af83d7c9460823636c3999",
+      "wire_hex": "56811b04016064befdd5fc59d9717d8da1882101a880d3a58de706f2f5d3c9911e48db0e5618491252927880510b7463700c866875b3baa14208d068746efa0fc0789ee7da1efaa75df687f199878629594c77d5b58ff543cff3038fb5d34fbdf51cf873731329327ec2a2aac730788449641f9f16ff16e62c0d547e0ca21edc9cbdd2998c2819022c350af90090587a80ab5f0208825596caf5c7203b0d006230744cf0595530c92fabd656e781864dbf5c487c257049e1e4b4148bbdcf1c313e44b032f9c5dfbf588e07dd6dd8dd9df5a4f0ef9a7236115faa3bda8ae155d925811e",
+      "canonical_len": 263,
+      "wire_len": 227,
+      "compressed": true
+    },
+    {
+      "name": "I-ch10-full-emoji-large",
+      "shape": "full",
+      "language": "emoji",
+      "chain": 10,
+      "amount_edge": "large",
+      "decoded": {
+        "invoice_id": "CORP-00001G",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 10,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice 🚀",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "Bob 💎",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "Premium consulting ✅",
+            "quantity": 1,
+            "rate": "1000000000000000000"
+          },
+          {
+            "description": "Premium consulting ✅ (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "Premium consulting ✅ (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "✅ Payment confirmed 🎉 Thank you! 💎 Invoice #️⃣",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000000000000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020003031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f100052ee29c85200720636f6e6669726d656420f09f8e89205468616e6b20796f752120f09f928e20062023efb88fe283a3060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090e4b030d5072656d69756d200e20e29c8500010112175072656d69756d200e20e29c852028706861736520322900020505175072656d69756d200e20e29c852028706861736520332901051904100a416c69636520f09f9a801208426f6220f09f928e130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303147180201121f2022d5960f4655195e3c568bdad089d5207f2c6bca97ef65400e291f94953a5335",
+      "wire_hex": "56811b3f01683c146f0c69d5da26375ea736bc7c7a84839b9f45a8e106c6e9002648894aabf0a12a21dd49e94dd1ce820d388d327861a9798adadfc1069cc80f9ebdd09d2165550d36e08a28a141e80e985a63d30ccae2f112a3054a2707ce5f18585b222907d2020e24b9f0f564e1e545928934c9449b0d8d0c0201c0604ad57475d51183f4640553ef2e0e4b7faa3e8540720e802a9b6b67c36750b438d0fd576ca5571970701f1960c3d8bc0f063f5a5761e0a655281c97ba3893b315868104084351ee1e4aff8bb33bf30d2d80bff5beac594b0a0800c462d29569771a0463571ba2ec8fb976001048a28bb3c52dd1300041a1663d42991002ca9e6461b738d34442382ad37105324853115eb60e7f74a2020d413ba35ef9b60301492c36f709bc27469cfe70d67dcd6e94e7e44fcea6a4b171ab03",
+      "canonical_len": 322,
+      "wire_len": 311,
+      "compressed": true
+    },
+    {
+      "name": "I-ch10-full-rtl-large",
+      "shape": "full",
+      "language": "rtl",
+      "chain": 10,
+      "amount_edge": "large",
+      "decoded": {
+        "invoice_id": "CORP-00001H",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 10,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "أليس المطور",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+          "email": "alice@example.com"
+        },
+        "client": {
+          "name": "بوب العميل",
+          "wallet_address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+          "email": "bob@example.com"
+        },
+        "items": [
+          {
+            "description": "خدمات استشارية للبرمجيات",
+            "quantity": 1,
+            "rate": "1000000000000000000"
+          },
+          {
+            "description": "خدمات استشارية للبرمجيات (phase 2)",
+            "quantity": 2,
+            "rate": "500000"
+          },
+          {
+            "description": "خدمات استشارية للبرمجيات (phase 3)",
+            "quantity": 0.5,
+            "rate": "250000"
+          }
+        ],
+        "notes": "يرجى الدفع خلال 30 يوماً. شكراً لتعاملكم معنا.",
+        "tax": "10",
+        "discount": "5",
+        "total": "1000000000000000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56011302020003031470997970c51812dc3a010c7d01b50e0d17dc79c804046553f1000551d98ad8b1d8acd98920d8a7d984d8afd981d8b920d8aed984d8a7d98420333020d98ad988d985d8a7d98b2e20d8b4d983d8b1d8a7d98b20d984d8aad8b9d8a7d985d984d983d98520d985d8b9d986d8a72e060380a305070e616c696365406578616d706c65090801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010d0c626f62406578616d706c65090eae01032ed8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa0001011238d8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa202870686173652032290002050538d8aed8afd985d8a7d8aa20d8a7d8b3d8aad8b4d8a7d8b1d98ad8a920d984d984d8a8d8b1d985d8acd98ad8a7d8aa20287068617365203329010519041015d8a3d984d98ad8b320d8a7d984d985d8b7d988d8b11213d8a8d988d8a820d8a7d984d8b9d985d98ad984130231301410deadbeefdeadbeefdeadbeefdeadbeef150135160b434f52502d303030303148180201121f20e7387d84b1d5f762b1ad0775e7610d248b8e3a035dfbf7722168861dd8244e97",
+      "wire_hex": "56811bdc01e08dd325f6263645ffb3bff7031ac804266701ef0faa829a3aef9ddace12913029166f1cb80df28b8eb3ced7c0e7cb36f86003ad373cf6b80e7c8aa6c99094422151a9b29ceed29c4395e4c693ccab24af0bf8ca9bd2131a2d31e295440fc3165886396cd687492460116b617baa27276a3e81496cb55dfcc5d8aa8f04ccc0364ca29a278063a19a41ad19a53305dfb472a2571975b0596406470657e96fa9098bfd558f03d47b67f969d9748c3f8f4222f37971d971fea460814cb585055844354cc28c3e4cc22acc08913ed802d3fa48200153b08c6a98c31698841912992c718f437df3ee63c27112854ecf089c26d3356822398cf22137308904aa61139b60592285296c82297d3dd5ae050929c5814c74377ff00c4f4e7689eb1b121e6ac3ca1c825414b2444fffc1bd92583eff8e5b9e67163ec4f28d5b3b3ca991ffdf7906290d3a601cdc09",
+      "canonical_len": 479,
+      "wire_len": 334,
+      "compressed": true
+    },
+    {
+      "name": "J-cjk-notes-280chars",
+      "shape": "full",
+      "language": "cjk",
+      "chain": 1,
+      "amount_edge": "typical",
+      "decoded": {
+        "invoice_id": "CORP-CJK280",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "软件开发",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "notes": "软件开发咨询服务，包括架构设计、代码审查、部署支持和事故响应，按月计费。本发票适用于2026年第二季度服务合同。感谢您的信任与合作。请在到期日前完成付款，否则将收取逾期费用。如有疑问请联系我们的财务部门。服务范围涵盖前端开发、后端API、数据库设计及持续集成。我们致力于提供高质量的技术解决方案以满足您的业务需求。",
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "canonical_hex": "56010e0202000104046553f10005c903e8bdafe4bbb6e5bc80e58f91e592a8e8afa2e69c8de58aa1efbc8ce58c85e68bace69eb6e69e84e8aebee8aea1e38081e4bba3e7a081e5aea1e69fa5e38081e983a8e7bdb2e694afe68c81e5928ce4ba8be69585e5938de5ba94efbc8ce68c89e69c88e8aea1e8b4b9e38082e69cace58f91e7a5a8e98082e794a8e4ba8e32303236e5b9b4e7acace4ba8ce5ada3e5baa6e69c8de58aa1e59088e5908ce38082e6849fe8b0a2e682a8e79a84e4bfa1e4bbbbe4b88ee59088e4bd9ce38082e8afb7e59ca8e588b0e69c9fe697a5e5898de5ae8ce68890e4bb98e6acbeefbc8ce590a6e58899e5b086e694b6e58f96e980bee69c9fe8b4b9e794a8e38082e5a682e69c89e79691e997aee8afb7e88194e7b3bbe68891e4bbace79a84e8b4a2e58aa1e983a8e997a8e38082e69c8de58aa1e88c83e59bb4e6b6b5e79b96e5898de7abafe5bc80e58f91e38081e5908ee7abaf415049e38081e695b0e68daee5ba93e8aebee8aea1e58f8ae68c81e7bbade99b86e68890e38082e68891e4bbace887b4e58a9be4ba8ee68f90e4be9be9ab98e8b4a8e9878fe79a84e68a80e69cafe8a7a3e586b3e696b9e6a188e4bba5e6bba1e8b6b3e682a8e79a84e4b89ae58aa1e99c80e6b182e38082060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e12010ce8bdafe4bbb6e5bc80e58f91000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef160b434f52502d434a4b323830180201061f203eaaea63d890b868e2411345b159a344d8f0a736a4b3f7cfa8c406b370060863",
+      "wire_hex": "56811b5d02008cd44e31a6ea33ffbffdda8a58db0d65b14475090d6f101287d4dd13c943fb099bb9f7cd603ab636d4122931a25809344b8cd048f7f7a6987988da2809f87f770fccaf9d2de0b62bd2f616e51804e1056a917cc20fe2a6e0e527825094ae49df1d121e8fcbedf34d8c7ccad437ca4a052d80a546f57ee5184facef59c78a5f0a208aeb306fb1d11bc9a243b9ad69798b34a7cf2c7338323cced9f72b478e669532f396d99e1480ac4e21a6a437b400f6a782ad70da829c30ebe0dc7f029e2e7116d630cb36e150ca987eb4f4e5a28f02b69e02d02c0ea80e412d596db0d003cdfb0df1c5f220f54195b02498dd43cc5b7067b5d1fb0c0520fa90555af2295b989bc58152e89494b13687a52280c7e1e625f73ba9e441f33259e4af530081241cb5a6c1ae592d45f20c880c39442e335b2148490ac09b66436ec154f4595089eca4684b49199307dec3dfb3bef4786999fd26233895ee11f32701effc823fe40e4472ce2ff1151fdfa9cdbdd69570e4bfc9b5705b4ce1722732eed8271f5d6e7720e56ffa23d82f1965f3cc68ce763b3b7bdf777663cbc0f060b5a5bba7a1b1aea408b950aeb8d69f628e743afde8cd06f7420b01e73f702e6efe9fc373cdc16c403706",
+      "canonical_len": 608,
+      "wire_len": 457,
+      "compressed": true
+    }
+  ]
+}
