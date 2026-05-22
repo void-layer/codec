@@ -1,8 +1,6 @@
 # @void-layer/codec
 
-> **Status**: Phase 1 scaffolding. Rust + WASM implementation lands Phase 2.
-
-Canonical Invoice codec — TLV + Brotli wire format. v1 schema LOCKED (old URLs decode forever).
+Canonical Invoice codec — TLV + Brotli wire format. v1 schema LOCKED (old invoice URLs decode forever).
 
 ## Install
 
@@ -10,40 +8,63 @@ Canonical Invoice codec — TLV + Brotli wire format. v1 schema LOCKED (old URLs
 npm install @void-layer/codec brotli-wasm
 ```
 
-`brotli-wasm` is a required peer dependency.
+`brotli-wasm` is a required peer dependency (handles Brotli compression in the JS layer).
 
-## API (Phase 2 placeholder)
+## API
+
+### Wire format (async — includes Brotli compression)
 
 ```ts
-import { encode, decode } from '@void-layer/codec';
+import { encodeInvoiceWire, decodeInvoiceWire } from '@void-layer/codec';
 
-// encode: Invoice -> Uint8Array (TLV + Brotli compressed)
-const bytes = encode(invoice);
+// Invoice → compressed wire bytes (Brotli; falls back to canonical if Brotli expands)
+const bytes: Uint8Array = await encodeInvoiceWire(invoice);
 
-// decode: Uint8Array -> Invoice (version-aware, v1 LOCKED)
-const invoice = decode(bytes);
+// Wire bytes → Invoice (handles both compressed and uncompressed)
+const invoice: Invoice = await decodeInvoiceWire(bytes);
 ```
 
-Full API defined in spec 056 §3.6. TypeScript bindings auto-generated from Rust via `wasm-bindgen` + `tsify`.
+### Canonical TLV (sync — no compression)
+
+```ts
+import { encodeInvoiceCanonical, decodeInvoiceCanonical } from '@void-layer/codec';
+
+// Invoice → canonical TLV bytes (pre-compression, used for payment identity)
+const canonical: Uint8Array = encodeInvoiceCanonical(invoice);
+
+// Canonical bytes → Invoice
+const invoice: Invoice = decodeInvoiceCanonical(canonical);
+```
+
+### Content hash (ERC-3009 nonce)
+
+```ts
+import { receiptHash } from '@void-layer/codec';
+
+// keccak-256 of canonical bytes — 32-byte Uint8Array
+const hash: Uint8Array = receiptHash(canonical);
+```
+
+## Wire format
+
+```
+[MAGIC 0x56][VERSION | COMPRESSED_FLAG][brotli([COUNT][TLV records...])]
+```
+
+- `COMPRESSED_FLAG = 0x80` — set when body is Brotli-compressed
+- Falls back to uncompressed canonical bytes when Brotli would expand the payload
+- v1 schema: LOCKED. Old invoice URLs decode forever.
 
 ## Packages
 
 | Package | Description |
 |---------|-------------|
 | `@void-layer/codec` | This package — Rust/WASM codec |
-| `@void-layer/types` | Manual TypeScript types |
+| `@void-layer/types` | TypeScript types (`Invoice`, `InvoiceFrom`, `InvoiceClient`, `InvoiceItem`) |
 | `@void-layer/networks` | Chain configs (5 EVM chains) |
-
-## Design
-
-- Wire format: TLV (BOLT12-style) + Brotli compression
-- Output: `<2B magic> <1B kind> <varint version> <tlv-stream>`
-- v1 schema: LOCKED. Old invoice URLs decode forever.
-- peerDep strategy: brotli-wasm (runtime branch, see spec §3.16)
 
 ## Links
 
-- [Spec 056](https://github.com/ignromanov/voidpay-ai/blob/main/ops/specs/056-void-layer-codec-extraction/spec.md)
 - [TLV Registry](./REGISTRY.md)
 - [Bundle Budget](./docs/bundle-budget.md)
 
