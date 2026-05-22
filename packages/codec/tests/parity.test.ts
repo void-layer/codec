@@ -14,6 +14,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
+import type { Invoice } from '@void-layer/types'
 import {
   encodeInvoiceCanonical,
   decodeInvoiceCanonical,
@@ -66,12 +67,14 @@ type AnyVector = (typeof vectors.vectors)[number]
 
 // Non-malformed vectors have roundtrip:true, canonical_hex, wire_hex, and decoded.
 // This type guard narrows the union so those fields are known to be string/non-null.
+// `decoded` is narrowed to `Invoice` so the codec entry points are type-checked
+// against the real schema; `network_id` is asserted valid at runtime below.
 function isNonMalformed(
   v: AnyVector,
 ): v is AnyVector & {
   canonical_hex: string
   wire_hex: string
-  decoded: NonNullable<AnyVector['decoded']>
+  decoded: Invoice
 } {
   return (
     'roundtrip' in v &&
@@ -82,7 +85,22 @@ function isNonMalformed(
   )
 }
 
+/** Valid EVM chain IDs the v1 schema supports (mirrors `ChainId`). */
+const VALID_CHAIN_IDS = new Set([1, 8453, 42161, 10, 137])
+
 const nonMalformed = vectors.vectors.filter(isNonMalformed)
+
+// ---------------------------------------------------------------------------
+// Schema sanity — every non-malformed vector's network_id must be a valid ChainId
+// ---------------------------------------------------------------------------
+
+describe('golden-vector schema sanity', () => {
+  for (const v of nonMalformed) {
+    it(`network_id is a valid ChainId: ${v.name}`, () => {
+      expect(VALID_CHAIN_IDS.has(v.decoded.network_id)).toBe(true)
+    })
+  }
+})
 
 // ---------------------------------------------------------------------------
 // Non-malformed vectors — canonical (sync) + wire (async) both directions

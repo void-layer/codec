@@ -13,18 +13,29 @@
 import type { BrotliWasmType } from 'brotli-wasm'
 import type { Invoice } from '@void-layer/types'
 
-// Re-export canonical WASM functions directly.
-export {
+// Import the canonical WASM functions for use in the wire shim below, and
+// re-export them as part of the public API.
+import {
   encodeInvoiceCanonical,
   decodeInvoiceCanonical,
   receiptHash,
 } from '../pkg/void_layer_codec.js'
+
+export { encodeInvoiceCanonical, decodeInvoiceCanonical, receiptHash }
 
 // ---------------------------------------------------------------------------
 // Brotli lazy init (mirrors compressPayload reference pattern)
 // ---------------------------------------------------------------------------
 
 const COMPRESSED_FLAG = 0x80
+
+/**
+ * Hard cap on the size of a Brotli-decompressed wire body. A small (~1 KB)
+ * compressed payload can otherwise expand to hundreds of MB — a decompression
+ * bomb that OOMs the client. 64 KB is generous: a valid canonical invoice is
+ * bounded well below the ~2 KB URL budget.
+ */
+const MAX_DECOMPRESSED_BYTES = 65536
 
 let _brotli: BrotliWasmType | null = null
 
@@ -49,12 +60,8 @@ async function getBrotli(): Promise<BrotliWasmType> {
 // ---------------------------------------------------------------------------
 
 export async function encodeInvoiceWire(invoice: Invoice): Promise<Uint8Array> {
-  const { encodeInvoiceCanonical: encodeCanonical } = await import(
-    '../pkg/void_layer_codec.js'
-  )
-  const canonical: Uint8Array = encodeCanonical(invoice)
-
-  if (canonical.length < 3) return canonical
+  // encodeInvoiceCanonical is statically re-exported above — no dynamic import.
+  const canonical: Uint8Array = encodeInvoiceCanonical(invoice)
 
   const brotli = await getBrotli()
   const body = canonical.slice(2) // [COUNT][TLV records...]
@@ -77,22 +84,28 @@ export async function encodeInvoiceWire(invoice: Invoice): Promise<Uint8Array> {
 // ---------------------------------------------------------------------------
 
 export async function decodeInvoiceWire(bytes: Uint8Array): Promise<Invoice> {
-  const { decodeInvoiceCanonical: decodeCanonical } = await import(
-    '../pkg/void_layer_codec.js'
-  )
-
+  // decodeInvoiceCanonical is statically re-exported above — no dynamic import.
   if (bytes.length < 3 || !(bytes[1]! & COMPRESSED_FLAG)) {
-    return decodeCanonical(bytes)
+    return decodeInvoiceCanonical(bytes)
   }
 
   const brotli = await getBrotli()
   const compressedBody = bytes.slice(2)
   const decompressed = brotli.decompress(compressedBody)
 
+  // Decompression-bomb guard: reject a body that expands past the cap before
+  // allocating the canonical buffer.
+  if (decompressed.length > MAX_DECOMPRESSED_BYTES) {
+    throw new Error(
+      `decompressed wire body ${decompressed.length} bytes exceeds ` +
+        `MAX_DECOMPRESSED_BYTES (${MAX_DECOMPRESSED_BYTES})`,
+    )
+  }
+
   const canonical = new Uint8Array(2 + decompressed.length)
   canonical[0] = bytes[0]! // MAGIC
   canonical[1] = bytes[1]! & 0x7f // VERSION without COMPRESSED_FLAG
   canonical.set(decompressed, 2)
 
-  return decodeCanonical(canonical)
+  return decodeInvoiceCanonical(canonical)
 }

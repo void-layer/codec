@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import type { Invoice } from '@void-layer/types'
 import {
   encodeInvoiceCanonical,
   decodeInvoiceCanonical,
@@ -31,7 +32,7 @@ const MINIMAL_INVOICE = {
   ],
   total: '1000000',
   salt: 'deadbeefdeadbeefdeadbeefdeadbeef',
-}
+} satisfies Invoice
 
 // A larger invoice whose body Brotli can beneficially compress. Minimal
 // invoices are too small for Brotli (it expands payloads <~180 B per the
@@ -49,7 +50,7 @@ const LARGE_INVOICE = {
     { description: LONG_DESC.repeat(3), quantity: 3.0, rate: '3000000' },
   ],
   total: '14000000',
-}
+} satisfies Invoice
 
 describe('encodeInvoiceCanonical + decodeInvoiceCanonical (WASM pass-through)', () => {
   it('returns Uint8Array with magic byte 0x56', () => {
@@ -108,6 +109,27 @@ describe('decodeInvoiceWire', () => {
     // decodeInvoiceWire should pass through to canonical decode
     const decoded = (await decodeInvoiceWire(canonical)) as DecodedInvoice
     expect(decoded.invoice_id).toBe('INV-001')
+  })
+})
+
+describe('decodeInvoiceWire decompression-bomb guard', () => {
+  it('rejects a wire payload that decompresses past MAX_DECOMPRESSED_BYTES', async () => {
+    // Build a tiny compressed payload whose Brotli body expands well past the
+    // 64 KB cap: 256 KB of zero bytes compresses to a few bytes.
+    const brotliMod = await import('brotli-wasm')
+    const brotli = await brotliMod.default
+    const huge = new Uint8Array(256 * 1024) // 256 KB of 0x00 — far above the cap
+    const compressedBody = brotli.compress(huge, { quality: 11 })
+
+    // Wire frame: [MAGIC][VERSION | COMPRESSED_FLAG][compressed body...]
+    const wire = new Uint8Array(2 + compressedBody.length)
+    wire[0] = 0x56
+    wire[1] = 0x01 | 0x80
+    wire.set(compressedBody, 2)
+
+    await expect(decodeInvoiceWire(wire)).rejects.toThrow(
+      /MAX_DECOMPRESSED_BYTES/,
+    )
   })
 })
 
