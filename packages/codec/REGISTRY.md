@@ -42,3 +42,20 @@ Each spec's PR proposes specific Type IDs in the appropriate range:
 ## Allocated Entries
 
 _No entries yet. Phase 1 scaffolding._
+
+## Breaking-change Policy
+
+The following surfaces are **semver-locked** — changing them is a breaking
+change requiring a major-version bump:
+
+- **Wire format** — the canonical TLV byte layout (`[MAGIC][VERSION][COUNT][records…]`),
+  the v1 TLV type numbers (1–14), and the dictionary code values. v1 is LOCKED
+  forever (Constitution IV); old links must keep decoding.
+- **`CodecError` display strings** — the `#[error("…")]` format strings on the
+  `CodecError` variants. The TS↔Rust parity test (`tests/parity.test.ts`)
+  matches error substrings (`ERROR_SUBSTRINGS`) as a stable public contract.
+  Renaming a variant or editing its display string breaks downstream consumers
+  that assert on error messages, so it is treated as a breaking change.
+
+Adding a *new* `CodecError` variant or a new optional TLV type in the reserved
+ranges is backward-compatible and does not require a major bump.
