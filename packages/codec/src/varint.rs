@@ -160,6 +160,36 @@ pub(crate) fn read_bigint_varint(
     Ok((result, bytes_read))
 }
 
+/// Reads a LEB128 varint as a length-style value and rejects any value that
+/// exceeds `max` **before** narrowing to `usize`.
+///
+/// This guards the wasm32 target where `usize` is 32-bit: a `u64` varint of
+/// `2^33` would silently truncate under a bare `as usize` cast. By rejecting
+/// against `max` (always `<= usize::MAX` on every supported target) before the
+/// cast, the narrowing is provably lossless.
+///
+/// Returns `(len, bytes_consumed)`.
+///
+/// Errors:
+/// - `CodecError::Truncated` if the decoded value exceeds `max`.
+/// - any error propagated from [`read_varint`] (truncated / overflow).
+pub(crate) fn read_bounded_len(
+    data: &[u8],
+    offset: usize,
+    max: usize,
+) -> Result<(usize, usize), CodecError> {
+    let (raw, consumed) = read_varint(data, offset)?;
+    // Reject before casting: max as u64 is lossless (max <= usize::MAX always).
+    if raw > max as u64 {
+        return Err(CodecError::Truncated {
+            needed: max.saturating_add(1),
+            had: max,
+        });
+    }
+    // Provably lossless: raw <= max <= usize::MAX.
+    Ok((raw as usize, consumed))
+}
+
 // --- Private helpers -------------------------------------------------------
 
 fn strip_leading_zeros(bytes: &[u8]) -> &[u8] {
@@ -281,6 +311,60 @@ mod tests {
             assert_eq!(decoded, *value, "read_varint roundtrip failed for {value}");
             assert_eq!(n, expected.len());
         }
+    }
+
+    #[test]
+    fn read_bounded_len_accepts_value_within_max() {
+        // varint(100), max = 200 → Ok((100, 1))
+        let mut buf = Vec::new();
+        write_varint(100, &mut buf);
+        let (len, consumed) = read_bounded_len(&buf, 0, 200).unwrap();
+        assert_eq!(len, 100);
+        assert_eq!(consumed, buf.len());
+    }
+
+    #[test]
+    fn read_bounded_len_accepts_value_equal_to_max() {
+        let mut buf = Vec::new();
+        write_varint(200, &mut buf);
+        let (len, _) = read_bounded_len(&buf, 0, 200).unwrap();
+        assert_eq!(len, 200);
+    }
+
+    #[test]
+    fn read_bounded_len_rejects_value_exceeding_max() {
+        // varint(201), max = 200 → Err(Truncated)
+        let mut buf = Vec::new();
+        write_varint(201, &mut buf);
+        let err = read_bounded_len(&buf, 0, 200).unwrap_err();
+        assert!(
+            matches!(err, CodecError::Truncated { .. }),
+            "expected Truncated, got {err:?}"
+        );
+    }
+
+    #[test]
+    fn read_bounded_len_rejects_huge_varint_before_cast() {
+        // A varint encoding a value far above any plausible usize on wasm32
+        // (2^40) must be rejected, not truncated.
+        let mut buf = Vec::new();
+        write_varint(1u64 << 40, &mut buf);
+        let err = read_bounded_len(&buf, 0, 4096).unwrap_err();
+        assert!(
+            matches!(err, CodecError::Truncated { .. }),
+            "expected Truncated for oversized length, got {err:?}"
+        );
+    }
+
+    #[test]
+    fn read_bounded_len_propagates_truncated_buffer() {
+        // Continuation bit set, no following byte.
+        let buf = &[0x80u8];
+        let err = read_bounded_len(buf, 0, 4096).unwrap_err();
+        assert!(
+            matches!(err, CodecError::Truncated { .. }),
+            "expected Truncated, got {err:?}"
+        );
     }
 
     #[cfg(not(target_arch = "wasm32"))]

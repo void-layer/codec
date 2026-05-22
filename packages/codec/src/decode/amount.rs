@@ -2,11 +2,21 @@
 
 use crate::error::CodecError;
 use crate::invoice::InvoiceItem;
-use crate::varint::{read_bigint_varint, read_varint};
+use crate::varint::{read_bigint_varint, read_bounded_len, read_varint};
 
 use super::dict::reverse_dict;
 
 const MAX_ITEMS: usize = 50;
+
+/// Maximum trailing-zero count for a mantissa-encoded amount.
+/// A valid U256 has at most 77 decimal digits, so a base-10 value can carry
+/// up to 77 trailing zeros (e.g. 10^77 < 2^256). Decode must accept any count
+/// a valid U256 can produce — capping lower would reject valid encodings.
+const MAX_TRAILING_ZEROS: u32 = 77;
+
+/// Maximum byte length of a single packed-item description value.
+/// Bounds the per-item slice read against hostile varint lengths.
+const MAX_DESC_LEN: usize = 4096;
 
 /// Decode mantissa-encoded amount from bytes (mirrors readMantissa from varint.ts).
 /// Returns amount as a decimal string (BigInt-safe).
@@ -23,9 +33,9 @@ pub(super) fn decode_mantissa(bytes: &[u8]) -> Result<String, CodecError> {
         });
     }
     let zeros = bytes[zeros_offset] as u32;
-    if zeros > 30 {
+    if zeros > MAX_TRAILING_ZEROS {
         return Err(CodecError::CompressionFailed(format!(
-            "mantissa trailing zeros {zeros} exceeds maximum 30"
+            "mantissa trailing zeros {zeros} exceeds maximum {MAX_TRAILING_ZEROS}"
         )));
     }
 
@@ -50,14 +60,9 @@ pub(super) fn decode_mantissa(bytes: &[u8]) -> Result<String, CodecError> {
 /// Decode packed items from Type 14 binary format (mirrors unpackItems from decode.ts).
 pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> {
     let mut offset = 0;
-    let (count, n) = read_varint(data, offset)?;
+    // Bounded read: rejects a hostile count varint before any usize narrowing.
+    let (count, n) = read_bounded_len(data, offset, MAX_ITEMS)?;
     offset += n;
-    let count = count as usize;
-    if count > MAX_ITEMS {
-        return Err(CodecError::CompressionFailed(format!(
-            "item count {count} exceeds max {MAX_ITEMS}"
-        )));
-    }
 
     let mut items = Vec::with_capacity(count);
     for i in 0..count {
@@ -68,18 +73,22 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
                 had: data.len(),
             });
         }
-        let (desc_len, n) = read_varint(data, offset)?;
+        // Bounded read: rejects a hostile desc_len varint before usize narrowing.
+        let (desc_len, n) = read_bounded_len(data, offset, MAX_DESC_LEN)?;
         offset += n;
-        let desc_len = desc_len as usize;
-        if offset + desc_len > data.len() {
+        // checked_add guards against offset + desc_len overflowing usize.
+        let desc_end = offset
+            .checked_add(desc_len)
+            .ok_or(CodecError::Truncated { needed: usize::MAX, had: data.len() })?;
+        if desc_end > data.len() {
             return Err(CodecError::Truncated {
-                needed: offset + desc_len,
+                needed: desc_end,
                 had: data.len(),
             });
         }
-        let desc_bytes = &data[offset..offset + desc_len];
+        let desc_bytes = &data[offset..desc_end];
         let description = reverse_dict(desc_bytes)?;
-        offset += desc_len;
+        offset = desc_end;
 
         // quantity: [scale: u8][scaled_value: varint]
         if offset >= data.len() {
@@ -105,9 +114,9 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
         }
         let zeros = data[offset] as u32;
         offset += 1;
-        if zeros > 30 {
+        if zeros > MAX_TRAILING_ZEROS {
             return Err(CodecError::CompressionFailed(format!(
-                "item {i} rate zeros {zeros} exceeds max 30"
+                "item {i} rate zeros {zeros} exceeds max {MAX_TRAILING_ZEROS}"
             )));
         }
 

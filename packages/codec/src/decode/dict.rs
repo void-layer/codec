@@ -60,7 +60,10 @@ pub(super) fn decode_chain_id(value: &[u8]) -> Result<u32, CodecError> {
         Ok(chain_id)
     } else if prefix == 0x01 {
         let (chain_id, _) = read_varint(value, 1)?;
-        Ok(chain_id as u32)
+        // Reject chain IDs > u32::MAX instead of silently truncating.
+        u32::try_from(chain_id).map_err(|_| {
+            CodecError::InvalidAmount(format!("chain ID {chain_id} overflows u32"))
+        })
     } else {
         Err(CodecError::UnknownExtension(prefix))
     }

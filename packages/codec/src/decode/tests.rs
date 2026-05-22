@@ -1,4 +1,4 @@
-use super::amount::decode_mantissa;
+use super::amount::{decode_mantissa, unpack_items};
 use super::decode_invoice_canonical;
 use super::dict::{decode_chain_id, decode_currency, reverse_dict};
 use super::hex::bytes_to_address;
@@ -241,5 +241,110 @@ fn r1_full_decode_rejects_due_at_overflow() {
             CodecError::InvalidAmount(_) | CodecError::ChecksumMismatch
         ),
         "expected InvalidAmount or ChecksumMismatch for due_at overflow, got {err:?}"
+    );
+}
+
+// --- #12: unpack_items hostile desc_len — must Err, never slice-panic ---
+
+/// A packed-items payload whose first item's desc_len varint encodes a huge
+/// value must return Err, not panic on the `data[offset..offset+desc_len]`
+/// slice. Pre-fix: `desc_len as usize` + `offset + desc_len` overflowed.
+#[test]
+fn unpack_items_hostile_desc_len_errors_not_panics() {
+    use crate::varint::write_varint;
+    let mut data = Vec::new();
+    write_varint(1, &mut data); // count = 1 item
+    write_varint(u64::MAX, &mut data); // desc_len = u64::MAX — hostile
+    // No description bytes follow.
+    let err = unpack_items(&data).unwrap_err();
+    assert!(
+        matches!(err, CodecError::Truncated { .. }),
+        "expected Truncated for hostile desc_len, got {err:?}"
+    );
+}
+
+/// A desc_len that fits in usize but exceeds the available buffer must Err.
+#[test]
+fn unpack_items_desc_len_past_buffer_end_errors() {
+    use crate::varint::write_varint;
+    let mut data = Vec::new();
+    write_varint(1, &mut data); // count = 1
+    write_varint(100, &mut data); // desc_len = 100, but buffer ends here
+    let err = unpack_items(&data).unwrap_err();
+    assert!(
+        matches!(err, CodecError::Truncated { .. }),
+        "expected Truncated for desc_len past buffer end, got {err:?}"
+    );
+}
+
+/// A hostile item count varint must be rejected before allocation.
+#[test]
+fn unpack_items_hostile_count_errors() {
+    use crate::varint::write_varint;
+    let mut data = Vec::new();
+    write_varint(u64::MAX, &mut data); // count = u64::MAX — hostile
+    let err = unpack_items(&data).unwrap_err();
+    assert!(
+        matches!(err, CodecError::Truncated { .. }),
+        "expected Truncated for hostile item count, got {err:?}"
+    );
+}
+
+// --- #8: decode_chain_id raw-varint u32 truncation guard ---
+
+/// A 0x01-prefixed chain ID varint encoding a value > u32::MAX must Err,
+/// not silently truncate via `as u32`.
+#[test]
+fn decode_chain_id_raw_above_u32_max_errors() {
+    use crate::varint::write_varint;
+    let mut value = vec![0x01u8]; // raw-varint prefix
+    write_varint(0x1_0000_0000u64, &mut value); // 2^32 — overflows u32
+    let err = decode_chain_id(&value).unwrap_err();
+    assert!(
+        matches!(err, CodecError::InvalidAmount(_)),
+        "expected InvalidAmount for chain ID > u32::MAX, got {err:?}"
+    );
+}
+
+/// A 0x01-prefixed chain ID varint at exactly u32::MAX must still decode Ok.
+#[test]
+fn decode_chain_id_raw_at_u32_max_ok() {
+    use crate::varint::write_varint;
+    let mut value = vec![0x01u8];
+    write_varint(u32::MAX as u64, &mut value);
+    let decoded = decode_chain_id(&value).unwrap();
+    assert_eq!(decoded, u32::MAX);
+}
+
+// --- #2: mantissa trailing-zeros — decode must accept full U256 range ---
+
+/// Decode must accept a trailing-zero count up to 77 (max a valid U256 carries).
+/// Pre-fix the cap was 30, rejecting valid encodings like 1 * 10^40.
+#[test]
+fn decode_mantissa_accepts_40_trailing_zeros() {
+    // mantissa = 1 (0x01), zeros = 40 → 10^40, well within U256 range.
+    let result = decode_mantissa(&[0x01, 40]).unwrap();
+    let mut expected = String::from("1");
+    expected.push_str(&"0".repeat(40));
+    assert_eq!(result, expected);
+}
+
+/// Decode must accept zeros = 77 (the documented U256 ceiling).
+#[test]
+fn decode_mantissa_accepts_77_trailing_zeros() {
+    // mantissa = 1, zeros = 77 → 10^77 < 2^256.
+    let result = decode_mantissa(&[0x01, 77]).unwrap();
+    let mut expected = String::from("1");
+    expected.push_str(&"0".repeat(77));
+    assert_eq!(result, expected);
+}
+
+/// A zeros count above 77 must still be rejected.
+#[test]
+fn decode_mantissa_rejects_78_trailing_zeros() {
+    let err = decode_mantissa(&[0x01, 78]).unwrap_err();
+    assert!(
+        matches!(err, CodecError::CompressionFailed(_)),
+        "expected CompressionFailed for zeros > 77, got {err:?}"
     );
 }
