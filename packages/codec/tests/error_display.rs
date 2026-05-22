@@ -56,3 +56,30 @@ fn compression_failed_displays_inner_message() {
     let err = CodecError::CompressionFailed("buffer full".to_string());
     assert_eq!(err.to_string(), "compression failed: buffer full");
 }
+
+#[test]
+fn invalid_amount_displays_inner_message() {
+    let err = CodecError::InvalidAmount("not_a_number".to_string());
+    assert_eq!(err.to_string(), "invalid amount: not_a_number");
+}
+
+#[test]
+fn invalid_address_displays_inner_message() {
+    let err = CodecError::InvalidAddress("bad hex".to_string());
+    assert_eq!(err.to_string(), "invalid address: bad hex");
+}
+
+#[test]
+fn missing_field_displays_tlv_type() {
+    let err = CodecError::MissingField(2);
+    assert_eq!(err.to_string(), "missing required TLV field 2");
+}
+
+#[test]
+fn overflow_displays_inner_message() {
+    let err = CodecError::Overflow("TLV count 65 exceeds max 64".to_string());
+    assert_eq!(
+        err.to_string(),
+        "payload overflow: TLV count 65 exceeds max 64"
+    );
+}

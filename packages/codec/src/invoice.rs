@@ -1,3 +1,5 @@
+//! Canonical invoice data structures (v1 schema, LOCKED).
+
 use serde::{Deserialize, Serialize};
 
 /// A single line item in an invoice.
@@ -18,12 +20,16 @@ pub struct InvoiceFrom {
     pub name: String,
     /// EVM wallet address (0x-prefixed hex).
     pub wallet_address: String,
+    /// Optional contact email.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
+    /// Optional contact phone number.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub phone: Option<String>,
+    /// Optional physical/postal address.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub physical_address: Option<String>,
+    /// Optional tax identification number.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tax_id: Option<String>,
 }
@@ -33,14 +39,19 @@ pub struct InvoiceFrom {
 pub struct InvoiceClient {
     /// Display name of the client.
     pub name: String,
+    /// Optional EVM wallet address (0x-prefixed hex).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wallet_address: Option<String>,
+    /// Optional contact email.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
+    /// Optional contact phone number.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub phone: Option<String>,
+    /// Optional physical/postal address.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub physical_address: Option<String>,
+    /// Optional tax identification number.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tax_id: Option<String>,
 }

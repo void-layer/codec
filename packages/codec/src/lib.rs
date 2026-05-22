@@ -18,13 +18,17 @@
 //!
 //! See spec 056 in voidpay-ai for full design.
 
+#![deny(missing_docs)]
+
 pub mod error;
 pub mod invoice;
+pub mod prelude;
 
 pub(crate) mod decode;
 pub(crate) mod dict;
 pub(crate) mod encode;
 pub(crate) mod hash;
+pub(crate) mod limits;
 pub(crate) mod tlv;
 pub(crate) mod varint;
 
