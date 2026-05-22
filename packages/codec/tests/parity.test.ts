@@ -54,6 +54,7 @@ const ERROR_SUBSTRINGS: Record<string, string> = {
   UnsupportedVersion: 'unsupported version',
   DictionaryMismatch: 'dictionary mismatch',
   UnknownExtension: 'unknown extension',
+  InvalidData: 'invalid data',
   SignatureInvalid: 'signature invalid',
 }
 

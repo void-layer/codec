@@ -22,6 +22,13 @@ use crate::encode::{
     TLV_FROM_NAME, TLV_FROM_PHONE, TLV_FROM_TAX_ID, TLV_FROM_WALLET, TLV_INVOICE_ID, TLV_ISSUED_AT,
     TLV_ITEMS, TLV_NOTES, TLV_SALT, TLV_TAX, TLV_TOKEN_ADDRESS, TLV_TOTAL, VERSION,
 };
+
+/// All v1 known TLV tags (25 content tags + TLV_DOMAIN_SEPARATOR=31 = 26 total).
+/// Any tag outside this set is an unknown extension → reject with UnknownExtension.
+const KNOWN_TAGS: &[u8] = &[
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 31, 35,
+    37,
+];
 use crate::error::CodecError;
 use crate::invoice::{Invoice, InvoiceClient, InvoiceFrom};
 use crate::limits::{MAX_TLV_COUNT, MAX_VALUE_SIZE};
@@ -138,8 +145,17 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
         }
     }
 
+    // C-2: reject any tag outside the known v1 set before checksum validation.
+    // An unknown tag means unread bytes are part of the accepted payload, which
+    // creates semantic divergence between readers — different content_hash values.
+    for &tag in records.keys() {
+        if !KNOWN_TAGS.contains(&tag) {
+            return Err(CodecError::UnknownExtension(tag));
+        }
+    }
+
     let salt_bytes = records.get(&TLV_SALT).ok_or(CodecError::ChecksumMismatch)?;
-    if salt_bytes.len() < 16 {
+    if salt_bytes.len() != 16 {
         return Err(CodecError::ChecksumMismatch);
     }
 

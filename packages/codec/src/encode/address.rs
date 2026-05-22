@@ -86,7 +86,7 @@ pub(super) fn encode_token_address(address: &str, network_id: u32) -> Result<Vec
             .iter()
             .find(|&&(chain_id, _, _)| chain_id == network_id)
             .map(|&(_, min, max)| effective_code >= min && effective_code <= max)
-            .unwrap_or(true); // unknown chain → no range restriction
+            .unwrap_or(false); // unknown chain → always raw-encode; dict codes have no chain context
 
         if in_range {
             return Ok(vec![0x00, effective_code]);

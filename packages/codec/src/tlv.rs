@@ -64,15 +64,19 @@ pub(crate) fn write_tlv(record: &TlvRecord, out: &mut Vec<u8>) {
 
 /// Reads a flat sequence of TLV records from `buf` (the entire slice).
 ///
-/// Returns a `BTreeMap<type, value>`. Duplicate types are last-write-wins
-/// (matches TS reader behaviour — the stream is trusted to be canonical).
+/// Returns a `BTreeMap<type, value>`. Duplicate types are rejected with
+/// `CodecError::InvalidData("duplicate TLV tag")` — last-write-wins would
+/// create divergent content_hash between readers with different tie-break policy.
 ///
-/// Errors: propagated from `read_tlv`.
+/// Errors: propagated from `read_tlv`, or `InvalidData` on duplicate tag.
 pub(crate) fn read_tlv_stream(buf: &[u8]) -> Result<BTreeMap<u8, Vec<u8>>, CodecError> {
     let mut map = BTreeMap::new();
     let mut offset = 0;
     while offset < buf.len() {
         let (record, consumed) = read_tlv(buf, offset)?;
+        if map.contains_key(&record.tlv_type) {
+            return Err(CodecError::InvalidData("duplicate TLV tag".to_string()));
+        }
         map.insert(record.tlv_type, record.value);
         offset += consumed;
     }

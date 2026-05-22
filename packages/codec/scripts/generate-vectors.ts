@@ -101,6 +101,91 @@ function isCompressed(hex: string): boolean {
   return (parseInt(hex.slice(2, 4), 16) & COMPRESSED_FLAG) !== 0
 }
 
+/**
+ * Mirrors compute_domain_separator from src/encode/fields.rs.
+ *
+ * domain_separator = keccak256("VOIDPAY_INVOICE_V1" || TLV_stream_excluding_tag_31)
+ * where TLV_stream is the wire serialization of each record in ascending tag order.
+ * Used to compute a valid domain separator for an arbitrary record set so that
+ * malformed-canonical vectors reach the C-1/C-2 guard rather than ChecksumMismatch.
+ *
+ * @param records Map<tag, value_bytes> of ALL records (tag 31 is excluded automatically).
+ */
+function computeDomainSeparatorBytes(records: Map<number, Uint8Array>): Uint8Array {
+  const prefix = new TextEncoder().encode('VOIDPAY_INVOICE_V1')
+  const parts: Uint8Array[] = [prefix]
+
+  // Ascending tag order — mirrors BTreeMap iteration
+  const sortedTags = [...records.keys()].filter((t) => t !== 31).sort((a, b) => a - b)
+
+  for (const tag of sortedTags) {
+    const value = records.get(tag)!
+    // type byte (1)
+    parts.push(new Uint8Array([tag]))
+    // length as LEB128 varint
+    parts.push(writeLEB128(value.length))
+    // value bytes
+    parts.push(value)
+  }
+
+  const total = parts.reduce((n, p) => n + p.length, 0)
+  const body = new Uint8Array(total)
+  let offset = 0
+  for (const p of parts) {
+    body.set(p, offset)
+    offset += p.length
+  }
+  // receiptHash IS keccak256 of arbitrary bytes — it is compute_content_hash under
+  // the hood. Reusing it avoids a new devDep (no @noble/hashes needed).
+  return receiptHash(body)
+}
+
+/** Encode a non-negative integer as LEB128 (unsigned). */
+function writeLEB128(value: number): Uint8Array {
+  const bytes: number[] = []
+  let v = value
+  do {
+    const byte = v & 0x7f
+    v >>>= 7
+    bytes.push(v !== 0 ? byte | 0x80 : byte)
+  } while (v !== 0)
+  return new Uint8Array(bytes)
+}
+
+/**
+ * Build a canonical payload from an ordered record map + a pre-computed domain separator.
+ * Layout: MAGIC(1) VERSION(1) COUNT(1) TLV_stream
+ * Records are written in ascending tag order (BTreeMap order).
+ */
+function buildCanonicalPayload(records: Map<number, Uint8Array>): Uint8Array {
+  const domSep = computeDomainSeparatorBytes(records)
+  const allRecords = new Map(records)
+  allRecords.set(31, domSep)
+
+  const sortedTags = [...allRecords.keys()].sort((a, b) => a - b)
+  const count = sortedTags.length
+
+  const parts: Uint8Array[] = []
+  for (const tag of sortedTags) {
+    const value = allRecords.get(tag)!
+    parts.push(new Uint8Array([tag]))
+    parts.push(writeLEB128(value.length))
+    parts.push(value)
+  }
+
+  const bodyLen = parts.reduce((n, p) => n + p.length, 0)
+  const buf = new Uint8Array(3 + bodyLen)
+  buf[0] = 0x56 // MAGIC
+  buf[1] = 0x01 // VERSION
+  buf[2] = count
+  let offset = 3
+  for (const p of parts) {
+    buf.set(p, offset)
+    offset += p.length
+  }
+  return buf
+}
+
 interface NonMalformedVector {
   name: string
   canonical_hex: string
@@ -466,6 +551,150 @@ async function main(): Promise<void> {
       canonical_hex: toHex(bytes),
       diagnostic: 'malformed:canonical',
       expected_error: 'BadMagic',
+    })
+  }
+
+  // 7. Tranche B malformed vectors — C-1/C-2 regression anchors.
+  //    Both carry a VALID domain separator computed over the malformed record set
+  //    so the decoder reaches the duplicate/unknown-tag guard rather than short-
+  //    circuiting at ChecksumMismatch.
+
+  // 7a. malformed-unknown-tlv-tag — unknown tag 99 in the TLV stream.
+  //     Domain separator computed over all records including tag 99 → decoder
+  //     passes checksum but hits the C-2 unknown-tag guard → UnknownExtension.
+  {
+    // Extract the 12 content records from the minimal-single-tlv canonical hex
+    // (tags 2,4,6,8,10,12,14,16,18,20,22,24).  Re-parse from the frozen hex so
+    // this vector is independent of the live encoder.
+    const minHex =
+      '56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be5'
+    const minBytes = new Uint8Array(Buffer.from(minHex, 'hex'))
+
+    // Parse TLV stream (skip 3-byte header, skip tag-31 domain separator)
+    const contentRecords = new Map<number, Uint8Array>()
+    let off = 3
+    while (off < minBytes.length) {
+      const tag = minBytes[off]!
+      off++
+      let len = 0
+      let shift = 0
+      while (true) {
+        const b = minBytes[off]!
+        off++
+        len |= (b & 0x7f) << shift
+        shift += 7
+        if (!(b & 0x80)) break
+      }
+      const val = minBytes.slice(off, off + len)
+      off += len
+      if (tag !== 31) contentRecords.set(tag, val)
+    }
+
+    // Inject unknown tag 99 with a 2-byte dummy value
+    contentRecords.set(99, new Uint8Array([0xde, 0xad]))
+
+    const payload = buildCanonicalPayload(contentRecords)
+    vectors.push({
+      name: 'malformed-unknown-tlv-tag',
+      canonical_hex: toHex(payload),
+      diagnostic: 'malformed:canonical',
+      expected_error: 'UnknownExtension',
+    })
+  }
+
+  // 7b. malformed-duplicate-tlv-tag — TLV_TOTAL (tag 24) appears twice.
+  //     The domain separator is computed over the last-write-wins projection of
+  //     the duplicate (i.e. only the second TLV_TOTAL value appears in the
+  //     BTreeMap used for the separator hash). The raw wire bytes contain both
+  //     occurrences so read_tlv_stream detects the duplicate → InvalidData.
+  {
+    // Re-use the same minimal content records (no tag 31)
+    const minHex =
+      '56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be5'
+    const minBytes = new Uint8Array(Buffer.from(minHex, 'hex'))
+
+    const contentRecords = new Map<number, Uint8Array>()
+    let off = 3
+    while (off < minBytes.length) {
+      const tag = minBytes[off]!
+      off++
+      let len = 0
+      let shift = 0
+      while (true) {
+        const b = minBytes[off]!
+        off++
+        len |= (b & 0x7f) << shift
+        shift += 7
+        if (!(b & 0x80)) break
+      }
+      const val = minBytes.slice(off, off + len)
+      off += len
+      if (tag !== 31) contentRecords.set(tag, val)
+    }
+
+    // Compute separator over last-write-wins projection (second TLV_TOTAL value)
+    // The second TLV_TOTAL carries value 0x0201 (same as first — makes LWW detectable)
+    const firstTotal = contentRecords.get(24)! // 0x0201
+    const domSep = computeDomainSeparatorBytes(contentRecords)
+
+    // Build the raw wire stream manually with two TLV_TOTAL records
+    // Layout: all content records in ascending order, BUT tag 24 appears twice
+    // (first occurrence before tag 24's normal position, second in normal position),
+    // then tag 31 with the valid separator.
+    // Simplest: emit all records in order, then append a second tag 24 after tag 31.
+    // But the BTreeMap in Rust reads all records before checksum — so both TLVs must
+    // be in the stream. Place the first TLV_TOTAL at its natural position and append
+    // a second TLV_TOTAL with a different value BEFORE tag 31 so the parser sees it.
+    //
+    // Chosen layout (ascending except second tag-24 injected after tag-22):
+    //   tags 2,4,6,8,10,12,14,16,18,20,22 | 24 (first, value=0x0202) | 24 (second=0x0201) | 31
+    // The separator is over {2,4,6,8,10,12,14,16,18,20,22,24(0x0201)} — LWW.
+
+    const altTotalValue = new Uint8Array([0x02, 0x02]) // different from original 0x0201
+
+    // Build the TLV stream bytes directly
+    function tlvRecord(tag: number, value: Uint8Array): Uint8Array {
+      const lenBytes = writeLEB128(value.length)
+      const rec = new Uint8Array(1 + lenBytes.length + value.length)
+      rec[0] = tag
+      rec.set(lenBytes, 1)
+      rec.set(value, 1 + lenBytes.length)
+      return rec
+    }
+
+    const sortedTags = [...contentRecords.keys()].sort((a, b) => a - b)
+    const streamParts: Uint8Array[] = []
+    for (const tag of sortedTags) {
+      if (tag === 24) {
+        // First occurrence: alternative value
+        streamParts.push(tlvRecord(24, altTotalValue))
+        // Second occurrence: original value (this is what LWW projection keeps)
+        streamParts.push(tlvRecord(24, firstTotal))
+      } else {
+        streamParts.push(tlvRecord(tag, contentRecords.get(tag)!))
+      }
+    }
+    // Append domain separator (tag 31)
+    streamParts.push(tlvRecord(31, domSep))
+
+    const streamLen = streamParts.reduce((n, p) => n + p.length, 0)
+    // COUNT = contentRecords.size + 1 (tag-31) + 1 (extra tag-24) = 14
+    const count = sortedTags.length + 1 + 1
+    const payload = new Uint8Array(3 + streamLen)
+    payload[0] = 0x56 // MAGIC
+    payload[1] = 0x01 // VERSION
+    payload[2] = count
+    let woff = 3
+    for (const p of streamParts) {
+      payload.set(p, woff)
+      woff += p.length
+    }
+
+    vectors.push({
+      name: 'malformed-duplicate-tlv-tag',
+      canonical_hex: toHex(payload),
+      diagnostic: 'malformed:canonical',
+      expected_error: 'InvalidData',
     })
   }
 
