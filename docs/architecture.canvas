@@ -1,0 +1,321 @@
+{
+  "nodes": [
+    {
+      "id": "1a2b3c4d5e6f0001",
+      "type": "text",
+      "x": -480,
+      "y": -440,
+      "width": 960,
+      "height": 120,
+      "text": "# @void-layer/codec — Architecture Map\n\n**Canonical Invoice codec — TLV + Brotli wire format.** v1 schema LOCKED · old invoice URLs decode forever (Constitution IV). v1 decoder is fail-loud: `Ok(Invoice)` means every byte was read with exactly one interpretation."
+    },
+    {
+      "id": "1a2b3c4d5e6f0002",
+      "type": "group",
+      "x": -480,
+      "y": -280,
+      "width": 660,
+      "height": 220,
+      "label": "Packages (3-package monorepo)",
+      "color": "5"
+    },
+    {
+      "id": "1a2b3c4d5e6f0010",
+      "type": "text",
+      "x": -460,
+      "y": -220,
+      "width": 200,
+      "height": 140,
+      "text": "**@void-layer/codec**\n\nRust + WASM\ncanonical TLV codec\n\n*deps: none*",
+      "color": "5"
+    },
+    {
+      "id": "1a2b3c4d5e6f0011",
+      "type": "text",
+      "x": -240,
+      "y": -220,
+      "width": 200,
+      "height": 140,
+      "text": "**@void-layer/types**\n\nmanual TS types\n`Invoice`, `InvoiceFrom`,\n`InvoiceClient`, `InvoiceItem`\n\n*deps: none*",
+      "color": "4"
+    },
+    {
+      "id": "1a2b3c4d5e6f0012",
+      "type": "text",
+      "x": -20,
+      "y": -220,
+      "width": 200,
+      "height": 140,
+      "text": "**@void-layer/networks**\n\nchain configs +\ntoken list\n\n*deps: types*",
+      "color": "4"
+    },
+    {
+      "id": "1a2b3c4d5e6f0020",
+      "type": "text",
+      "x": 220,
+      "y": -280,
+      "width": 260,
+      "height": 220,
+      "text": "## ⚙️ Hard Limits\n\n| Limit | Value |\n|---|---|\n| WASM gzip | < 80 KB |\n| npm package | < 200 KB |\n| URL (base64url) | 2000 bytes |\n| Notes | 280 chars *(app-layer)* |\n| Salt | exactly 16 bytes |\n| TLV value | < 4096 bytes |\n| TLV count | ≤ 64 |\n| LEB128 varint | ≤ 37 bytes |",
+      "color": "3"
+    },
+    {
+      "id": "1a2b3c4d5e6f0003",
+      "type": "group",
+      "x": -480,
+      "y": -20,
+      "width": 960,
+      "height": 240,
+      "label": "Encode pipeline (Invoice → canonical → hash | wire)",
+      "color": "6"
+    },
+    {
+      "id": "1a2b3c4d5e6f0030",
+      "type": "text",
+      "x": -460,
+      "y": 40,
+      "width": 200,
+      "height": 100,
+      "text": "**Invoice**\nplain JS object\n\n*input*",
+      "color": "6"
+    },
+    {
+      "id": "1a2b3c4d5e6f0031",
+      "type": "text",
+      "x": -200,
+      "y": 40,
+      "width": 240,
+      "height": 100,
+      "text": "**canonical bytes**\n`[MAGIC 0x56][VER][COUNT][TLV…]`\n\n*via* `encodeInvoiceCanonical` (sync)"
+    },
+    {
+      "id": "1a2b3c4d5e6f0032",
+      "type": "text",
+      "x": 80,
+      "y": -20,
+      "width": 200,
+      "height": 100,
+      "text": "**receiptHash**\n`keccak256(canonical)` →\n32-byte ERC-3009 nonce",
+      "color": "5"
+    },
+    {
+      "id": "1a2b3c4d5e6f0033",
+      "type": "text",
+      "x": 80,
+      "y": 100,
+      "width": 200,
+      "height": 100,
+      "text": "**wire bytes**\n`[MAGIC][VER⎮0x80][brotli body]`\n\n*via* `encodeInvoiceWire` (async)\nor = canonical when Brotli expands"
+    },
+    {
+      "id": "1a2b3c4d5e6f0034",
+      "type": "text",
+      "x": 320,
+      "y": 100,
+      "width": 160,
+      "height": 100,
+      "text": "**URL fragment**\nbase64url\n≤ 2000 bytes"
+    },
+    {
+      "id": "1a2b3c4d5e6f0004",
+      "type": "group",
+      "x": -480,
+      "y": 260,
+      "width": 960,
+      "height": 280,
+      "label": "Decode strictness invariants (v1 fail-loud)",
+      "color": "1"
+    },
+    {
+      "id": "1a2b3c4d5e6f0040",
+      "type": "text",
+      "x": -460,
+      "y": 320,
+      "width": 180,
+      "height": 200,
+      "text": "**bytes in**\n\n→ MAGIC = 0x56?\n→ compressed flag?\n→ Brotli decompress\n   (≤ MAX_DECOMPRESSED)"
+    },
+    {
+      "id": "1a2b3c4d5e6f0041",
+      "type": "text",
+      "x": -260,
+      "y": 320,
+      "width": 180,
+      "height": 90,
+      "text": "**varint canonical?**\n\nno redundant trailing\nzero group →\n`InvalidData`",
+      "color": "1"
+    },
+    {
+      "id": "1a2b3c4d5e6f0042",
+      "type": "text",
+      "x": -260,
+      "y": 430,
+      "width": 180,
+      "height": 90,
+      "text": "**duplicate tag?**\n\n→ `InvalidData`\n*(no last-write-wins)*",
+      "color": "1"
+    },
+    {
+      "id": "1a2b3c4d5e6f0043",
+      "type": "text",
+      "x": -60,
+      "y": 320,
+      "width": 180,
+      "height": 90,
+      "text": "**unknown tag?**\n\ntag ∉ KNOWN_TAGS{26} →\n`UnknownExtension`",
+      "color": "1"
+    },
+    {
+      "id": "1a2b3c4d5e6f0044",
+      "type": "text",
+      "x": -60,
+      "y": 430,
+      "width": 180,
+      "height": 90,
+      "text": "**domain separator**\n\nkeccak256 mismatch →\n`ChecksumMismatch`",
+      "color": "1"
+    },
+    {
+      "id": "1a2b3c4d5e6f0045",
+      "type": "text",
+      "x": 140,
+      "y": 370,
+      "width": 160,
+      "height": 100,
+      "text": "**read fields**\n\nU256 amounts\nUTF-8 strings\nsalt == 16"
+    },
+    {
+      "id": "1a2b3c4d5e6f0046",
+      "type": "text",
+      "x": 320,
+      "y": 370,
+      "width": 160,
+      "height": 100,
+      "text": "**Ok(Invoice)**\n\nevery byte read,\nexactly one\ninterpretation",
+      "color": "4"
+    },
+    {
+      "id": "1a2b3c4d5e6f0050",
+      "type": "text",
+      "x": -480,
+      "y": 580,
+      "width": 660,
+      "height": 200,
+      "text": "## ⚠️ Receipt-hash safety (footgun)\n\n`receiptHash(canonical_bytes)` hashes **whatever bytes** you pass it. ERC-3009 nonce contract requires the hash over the **canonical** form.\n\n**ALWAYS** pass the output of `encodeInvoiceCanonical(invoice)`. If you have received bytes, decode then re-encode before hashing.\n\n**NEVER** hash received bytes directly — a producer's encoder quirks would propagate into the nonce, even though the v1 decoder rejects non-canonical varints and duplicate tags.\n\nA type-safe `receiptHash(invoice: Invoice)` surface is on the v0.2 roadmap.",
+      "color": "1"
+    },
+    {
+      "id": "1a2b3c4d5e6f0051",
+      "type": "text",
+      "x": 220,
+      "y": 580,
+      "width": 260,
+      "height": 200,
+      "text": "## 📚 References\n\n- [architecture-overview.md](./architecture-overview.md) — Mermaid diagrams + dependency rules\n- [packages/codec/REGISTRY.md](../packages/codec/REGISTRY.md) — TLV type-IDs (canonical source)\n- [contributing-tlv-registry.md](./contributing-tlv-registry.md) — how to allocate v2+ tags (BOLT12 odd/even)\n- [packages/codec/docs/golden-vectors.md](../packages/codec/docs/golden-vectors.md) — append-only regression suite\n- [SECURITY.md](../SECURITY.md) — strictness invariants + advisories\n- Constitution IV — Perpetual + Schema versioning"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge000000000001",
+      "fromNode": "1a2b3c4d5e6f0012",
+      "fromSide": "left",
+      "toNode": "1a2b3c4d5e6f0011",
+      "toSide": "right",
+      "toEnd": "arrow",
+      "label": "depends on"
+    },
+    {
+      "id": "edge000000000002",
+      "fromNode": "1a2b3c4d5e6f0030",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0031",
+      "toSide": "left",
+      "toEnd": "arrow",
+      "label": "encode"
+    },
+    {
+      "id": "edge000000000003",
+      "fromNode": "1a2b3c4d5e6f0031",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0032",
+      "toSide": "left",
+      "toEnd": "arrow",
+      "label": "keccak"
+    },
+    {
+      "id": "edge000000000004",
+      "fromNode": "1a2b3c4d5e6f0031",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0033",
+      "toSide": "left",
+      "toEnd": "arrow",
+      "label": "brotli"
+    },
+    {
+      "id": "edge000000000005",
+      "fromNode": "1a2b3c4d5e6f0033",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0034",
+      "toSide": "left",
+      "toEnd": "arrow",
+      "label": "base64url"
+    },
+    {
+      "id": "edge000000000010",
+      "fromNode": "1a2b3c4d5e6f0040",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0041",
+      "toSide": "left",
+      "toEnd": "arrow"
+    },
+    {
+      "id": "edge000000000011",
+      "fromNode": "1a2b3c4d5e6f0040",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0042",
+      "toSide": "left",
+      "toEnd": "arrow"
+    },
+    {
+      "id": "edge000000000012",
+      "fromNode": "1a2b3c4d5e6f0041",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0043",
+      "toSide": "left",
+      "toEnd": "arrow"
+    },
+    {
+      "id": "edge000000000013",
+      "fromNode": "1a2b3c4d5e6f0042",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0044",
+      "toSide": "left",
+      "toEnd": "arrow"
+    },
+    {
+      "id": "edge000000000014",
+      "fromNode": "1a2b3c4d5e6f0043",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0045",
+      "toSide": "left",
+      "toEnd": "arrow"
+    },
+    {
+      "id": "edge000000000015",
+      "fromNode": "1a2b3c4d5e6f0044",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0045",
+      "toSide": "left",
+      "toEnd": "arrow"
+    },
+    {
+      "id": "edge000000000016",
+      "fromNode": "1a2b3c4d5e6f0045",
+      "fromSide": "right",
+      "toNode": "1a2b3c4d5e6f0046",
+      "toSide": "left",
+      "toEnd": "arrow",
+      "label": "ok"
+    }
+  ]
+}

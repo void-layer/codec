@@ -78,8 +78,9 @@ assert that `encodeInvoiceCanonical` throws the named error variant.
 
 ## Starter Set (v4-codec.json, schema_version=1)
 
-18 vectors, regenerated 2026-05-20 for U256 widening (T-P2-12a / C9 amendment) and
-corrected malformed vector set (T-P2-12 follow-up, Kai decision 2026-05-20).
+25 vectors. Last extended 2026-05-22 with 5 unicode coverage vectors and 2 malformed
+vectors anchoring the v1 decoder strictness invariants (Tranche B hardening — see
+[../../SECURITY.md#decoder-strictness-invariants-v1](../../SECURITY.md#decoder-strictness-invariants-v1)).
 
 | # | Name | Category | wire compressed |
 |---|------|----------|----------------|
@@ -101,6 +102,13 @@ corrected malformed vector set (T-P2-12 follow-up, Kai decision 2026-05-20).
 | 16 | `malformed-corrupted-brotli` | Malformed | — |
 | 17 | `malformed-oversize` | Malformed | — |
 | 18 | `malformed-bad-magic` | Malformed | — |
+| 19 | `unicode-cyrillic` | Unicode coverage (2-byte UTF-8) | varies |
+| 20 | `unicode-cjk` | Unicode coverage (3-byte UTF-8) | varies |
+| 21 | `unicode-emoji` | Unicode coverage (4-byte surrogate pairs) | varies |
+| 22 | `unicode-rtl` | Unicode coverage (Arabic — verifies no normalize/reorder) | varies |
+| 23 | `unicode-mixed` | Unicode coverage (combined: cyrillic + cjk + emoji + rtl) | varies |
+| 24 | `malformed-unknown-tlv-tag` | Malformed — anchors C-2 (G-03) | — |
+| 25 | `malformed-duplicate-tlv-tag` | Malformed — anchors C-1 (G-04) | — |
 
 **Changes from initial 16-vector set (C9 amendment, 2026-05-20)**:
 - `bigint-amount-u128-max` replaced by `bigint-amount-uint256-max` (U256::MAX =
@@ -118,10 +126,50 @@ corrected malformed vector set (T-P2-12 follow-up, Kai decision 2026-05-20).
   varint decoder fires `VarintOverflow` at `bytes_read == MAX_BYTES (37)` before the
   checksum stage. Empirically confirmed on both WASM and Rust surfaces.
 
+**Changes from 18-vector set (2026-05-22 extension)**:
+- 5 unicode coverage vectors (`#19–23`) appended to close a coverage gap — the
+  original 18 were 100% ASCII; multi-byte UTF-8 paths through TLV length encoding,
+  dict reverse-lookup, and Brotli on high-entropy non-Latin text were unexercised.
+- 2 malformed vectors (`#24–25`) appended as regression anchors for the Tranche B
+  decoder hardening (Shade co-review PASS, commit `b1f37da`). Both carry a *valid*
+  domain separator computed over the malformed content — otherwise the decoder
+  hits `ChecksumMismatch` before reaching the strictness guard and the vector
+  proves nothing.
+  - `malformed-unknown-tlv-tag`: contains TLV tag 99 (∉ v1 set of 26 known tags).
+    Expected: `UnknownExtension(99)`.
+  - `malformed-duplicate-tlv-tag`: contains two `TLV_TOTAL` records. Expected:
+    `InvalidData("duplicate TLV tag")` — caught inside `read_tlv_stream` before
+    `verify_domain_separator` runs.
+
 **Why some vectors are uncompressed**: the T-P2-0a Brotli spike measured that
 payloads under ~180 bytes expand under Brotli q11. All single-item minimal invoices
 fall below this threshold. The `bigint-amount-uint256-max`, `extension-magic-dust`,
-and `extension-og-param` vectors are compressed due to larger payloads.
+and `extension-og-param` vectors are compressed due to larger payloads. Unicode
+vectors vary: high-entropy / non-Latin text exercises both the fallback and
+compressed paths depending on the field content and length.
+
+---
+
+## Tier 2 — `vectors/corpus.json` (regenerable, property-checked)
+
+The golden vectors above are the **frozen** byte-exact regression contract (Tier 1).
+Sitting alongside is **`vectors/corpus.json`** — 54 parametric entries forming the
+property-checked Tier 2:
+
+- **Generator**: `scripts/generate-corpus.ts` (deterministic — fixed timestamps,
+  seeded PRNG → re-running produces a byte-identical file).
+- **Sampling**: curated cross-product across {chain × fill-level × language ×
+  amount-edge}, capped at 54 to avoid 5×3×6×5=450 explosion.
+- **Tests** (`tests/compression.test.ts`): every entry must (a) roundtrip through
+  `decodeInvoiceWire`, (b) satisfy `wire_len ≤ canonical_len` (shim fallback
+  invariant), (c) strictly `wire_len < canonical_len` when `compressed=true`,
+  (d) fit the 2000-byte URL cap after base64url for medium/full-fill shapes.
+- **Rust mirror**: `tests/corpus.rs` runs canonical roundtrip on the same corpus.
+
+Why two tiers: Tier 1 proves "the codec emits **exactly** these bytes" (breaking-
+change detector). Tier 2 proves "for **any** honest invoice, properties hold"
+(logic-regression detector). Mixing them would either freeze parametric noise
+forever or lose the breaking-change anchor.
 
 ---
 
@@ -164,11 +212,16 @@ any change to an existing vector's hex fields is a perpetuity violation.
 | Variant | Trigger |
 |---------|---------|
 | `BadMagic` | First byte is not `0x56` |
-| `VarintOverflow` | LEB128 continuation bytes exceed MAX_BYTES (37) |
-| `Truncated` | Buffer ends before a TLV value is fully read |
-| `CompressionFailed` | Brotli decompression error on a wire payload |
 | `UnsupportedVersion` | Version byte signals an unknown codec version |
+| `VarintOverflow` | LEB128 continuation bytes exceed `MAX_BYTES = 37` |
+| `Truncated` | Buffer ends before a TLV value is fully read, or `tlv_count` mismatches actual records |
+| `InvalidData` | Invalid UTF-8 in a string field; **duplicate TLV tag** (Tranche B C-1, anchored by `malformed-duplicate-tlv-tag`); **non-canonical LEB128 varint** (Tranche B C-3); compressed flag set on a canonical-decode input |
+| `UnknownExtension` | **Unknown TLV tag in a v1 payload** (Tranche B C-2, anchored by `malformed-unknown-tlv-tag`); or unknown dict code for chain / currency / token |
+| `ChecksumMismatch` | Domain separator validation failed, or salt length ≠ 16 (Tranche B C-5) |
+| `CompressionFailed` | Brotli decompression error on a wire payload |
 | `DictionaryMismatch` | Dict hash in payload does not match compiled dict |
-| `InvalidAmount` | Amount string exceeds U256::MAX or is not a valid decimal |
+| `InvalidAmount` | Amount string exceeds `U256::MAX`, is not a valid decimal, `mantissa × 10^zeros` overflows U256, or `issued_at + due_delta` overflows u32 |
 
-See `src/error.rs` for the full 10-variant enum.
+See `src/error.rs` for the full enum definitions and the [decode-flow Mermaid diagram in
+`docs/architecture-overview.md`](../../../docs/architecture-overview.md#decode-flow--strictness-invariants-v1)
+for the order in which guards fire.

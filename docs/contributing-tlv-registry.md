@@ -18,12 +18,20 @@ The canonical source-of-truth lives in [`packages/codec/REGISTRY.md`](../package
 | 1000–9999 | Vendor namespace | PR-merged FCFS |
 | 10000+ | Experimental / reclaimable | 12-month inactivity policy |
 
-## BOLT12 odd/even rule
+## BOLT12 odd/even rule (activates from v2+)
+
+The BOLT12 odd/even extensibility mechanism applies to **future v2+ schemas**, not v1.
 
 - **Even** TLV types are mandatory — unknown even type → decode error
 - **Odd** TLV types are optional — unknown odd type → ignore and pass through
 
-This enables forward compatibility: future codecs add odd TLV types that older decoders skip cleanly.
+This enables forward compatibility from v2 onward: v2+ codecs add odd TLV types that older v2+ decoders skip cleanly.
+
+### v1 is closed-set
+
+In v1 the TLV tag set is **locked** (Constitution IV — schema versioning). The v1 decoder rejects **any** unknown tag — even *or* odd — with `CodecError::UnknownExtension(tag)`. This is a deliberate strictness invariant: an unknown tag in an `Ok(Invoice)` payload would be silently dropped by a v1 reader but read by a v2-or-other-platform reader, producing different `keccak256(canonical)` → different ERC-3009 nonces → semantic divergence on a hashed payload. See [`SECURITY.md#decoder-strictness-invariants-v1`](../SECURITY.md#decoder-strictness-invariants-v1) for the threat model.
+
+The BOLT12 mechanism documented above is therefore a v2+ design parameter; do not assume any v1 leniency on unknown odd tags.
 
 ## How to Allocate
 
