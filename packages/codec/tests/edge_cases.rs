@@ -388,10 +388,9 @@ fn g10_write_quantity_zero_encodes_as_two_zeros() {
 }
 
 // ---------------------------------------------------------------------------
-// G-11: write_quantity(0.1234567891) — scale clamps at 9, silent rounding
-// The value 0.1234567891 has 10 significant decimal digits, but scale caps at 9.
-// After clamping: scaled = 0.1234567891 × 10^9 = 123456789.1 → rounded to 123456789.
-// Policy: Ok is returned (no error), value is silently quantized.
+// G-11: write_quantity(0.1234567891) — >9 decimals now rejected (T5 fix)
+// The value 0.1234567891 has 10 significant decimal digits. T5 changed policy
+// from silent clamp to explicit Err — precision loss is surfaced to the caller.
 // ---------------------------------------------------------------------------
 
 #[test]
@@ -402,20 +401,15 @@ fn g11_write_quantity_clamps_scale_at_9_silently() {
         quantity: 0.1234567891,
         rate: "1000000".to_string(),
     }];
-    // Must encode without error — scale clamps at 9 (silent rounding policy).
+    // T5: value has >9 significant decimals → encode must return Err (no silent rounding).
     let result = encode_invoice_canonical(&invoice);
     assert!(
-        result.is_ok(),
-        "write_quantity(0.1234567891) must succeed (scale clamps at 9, no error)"
+        result.is_err(),
+        "write_quantity(0.1234567891) must fail with >9 decimals (T5 precision guard)"
     );
-
-    // Decoded quantity must be close to but not exactly 0.1234567891.
-    let decoded = decode_invoice_canonical(&result.unwrap()).expect("decode");
-    let qty = decoded.items[0].quantity;
-    // Allow 1e-9 tolerance — the last digit is silently discarded.
     assert!(
-        (qty - 0.1234567891_f64).abs() < 1e-6,
-        "rounded quantity must be within 1e-6 of original, got {qty}"
+        matches!(result.unwrap_err(), CodecError::InvalidAmount(_)),
+        "expected InvalidAmount for >9 significant decimals"
     );
 }
 
@@ -1170,16 +1164,22 @@ fn g34_decode_mantissa_missing_zeros_byte_errors_truncated() {
 
 #[test]
 fn g36_weth_base_encodes_as_code_43_decodes_correctly() {
+    // T1 fix: WETH on Base (0x4200…0006) has dict code 24 (OP range 20-29), which
+    // is outside Base's range [40-49]. TS encodeTokenAddress returns null → raw encode.
+    // The encoder must emit 0x01 + 20 raw bytes, NOT dict code 43.
+    // Code 43 exists only in the decode reverse table (TOKEN_DICT_REVERSE) for
+    // legacy/manual payloads — the canonical encoder never emits it.
     let weth = "0x4200000000000000000000000000000000000006";
     let mut invoice = minimal_invoice();
     invoice.network_id = 8453; // Base
     invoice.token_address = Some(weth.to_string());
     let bytes = encode_invoice_canonical(&invoice).expect("encode WETH on Base");
 
-    // Find TLV_TOKEN_ADDRESS (type=1) and verify code is 43 (0x2B).
+    // Find TLV_TOKEN_ADDRESS (type=1) and verify prefix is 0x01 (raw), length 21 bytes.
     let header_len = 3usize;
     let mut i = header_len;
-    let mut found_code: Option<u8> = None;
+    let mut found_prefix: Option<u8> = None;
+    let mut found_len: Option<usize> = None;
     while i < bytes.len() {
         let tlv_type = bytes[i];
         let (length, varint_n) = read_varint_from(&bytes, i + 1);
@@ -1187,24 +1187,29 @@ fn g36_weth_base_encodes_as_code_43_decodes_correctly() {
         let value_end = value_start + length;
 
         if tlv_type == 1 {
-            assert_eq!(bytes[value_start], 0x00, "should be dict-encoded");
-            found_code = Some(bytes[value_start + 1]);
+            found_prefix = Some(bytes[value_start]);
+            found_len = Some(length);
             break;
         }
         i = value_end;
     }
     assert_eq!(
-        found_code,
-        Some(43),
-        "WETH on Base must encode as dict code 43"
+        found_prefix,
+        Some(0x01),
+        "WETH on Base must be raw-encoded (prefix 0x01), not dict"
+    );
+    assert_eq!(
+        found_len,
+        Some(21),
+        "raw token address TLV value must be 21 bytes (0x01 + 20 addr bytes)"
     );
 
-    // Decode and verify the address roundtrips correctly.
+    // Decode must roundtrip to the original address.
     let decoded = decode_invoice_canonical(&bytes).expect("decode WETH on Base");
     assert_eq!(
         decoded.token_address.as_deref(),
         Some(weth),
-        "WETH dict code 43 must decode to the WETH address"
+        "raw-encoded WETH on Base must decode back to the WETH address"
     );
 }
 

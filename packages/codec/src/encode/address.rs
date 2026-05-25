@@ -12,9 +12,17 @@ pub(super) fn address_to_bytes(address: &str) -> Result<[u8; 20], CodecError> {
             hex.len()
         )));
     }
+    let hex_bytes = hex.as_bytes();
+    if !hex_bytes.iter().all(|b| b.is_ascii()) {
+        return Err(CodecError::InvalidAddress(
+            "invalid address hex".to_string(),
+        ));
+    }
     let mut out = [0u8; 20];
     for i in 0..20 {
-        out[i] = u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16)
+        let slice = std::str::from_utf8(&hex_bytes[i * 2..i * 2 + 2])
+            .map_err(|_| CodecError::InvalidAddress("invalid address hex".to_string()))?;
+        out[i] = u8::from_str_radix(slice, 16)
             .map_err(|_| CodecError::InvalidAddress("invalid address hex".to_string()))?;
     }
     Ok(out)
@@ -73,23 +81,22 @@ pub(super) fn encode_token_address(address: &str, network_id: u32) -> Result<Vec
         .iter()
         .find(|&&(k, _)| k == addr_lower.as_str())
     {
-        // WETH at 0x4200…0006 is shared by Optimism (code 24) and Base (code 43).
-        // On Base, override to 43 so the decoder resolves the correct chain context.
-        let effective_code =
-            if addr_lower == "0x4200000000000000000000000000000000000006" && network_id == 8453 {
-                43u8
-            } else {
-                code
-            };
-
-        let in_range = CHAIN_CODE_RANGES
+        // Mirrors TS encodeTokenAddress: if CHAIN_CODE_RANGES has an entry for this
+        // chain and the code is outside that range, encode as raw bytes.
+        // If the chain is unknown (not in CHAIN_CODE_RANGES), encode as dict — mirrors
+        // TS: `if (range && ...)` is falsy for undefined → returns entry → dict encode.
+        let maybe_range = CHAIN_CODE_RANGES
             .iter()
             .find(|&&(chain_id, _, _)| chain_id == network_id)
-            .map(|&(_, min, max)| effective_code >= min && effective_code <= max)
-            .unwrap_or(false); // unknown chain → always raw-encode; dict codes have no chain context
+            .map(|&(_, min, max)| (min, max));
+
+        let in_range = match maybe_range {
+            Some((min, max)) => code >= min && code <= max,
+            None => true, // unknown chain: no range constraint → dict-encode
+        };
 
         if in_range {
-            return Ok(vec![0x00, effective_code]);
+            return Ok(vec![0x00, code]);
         }
     }
 
@@ -108,10 +115,16 @@ pub(super) fn hex_decode_salt(hex: &str) -> Result<Vec<u8>, CodecError> {
             hex.len()
         )));
     }
+    let hex_bytes = hex.as_bytes();
+    if !hex_bytes.iter().all(|b| b.is_ascii()) {
+        return Err(CodecError::InvalidAddress("invalid salt hex".to_string()));
+    }
     let mut bytes = Vec::with_capacity(16);
     for i in 0..16 {
+        let slice = std::str::from_utf8(&hex_bytes[i * 2..i * 2 + 2])
+            .map_err(|_| CodecError::InvalidAddress("invalid salt hex".to_string()))?;
         bytes.push(
-            u8::from_str_radix(&hex[i * 2..i * 2 + 2], 16)
+            u8::from_str_radix(slice, 16)
                 .map_err(|_| CodecError::InvalidAddress("invalid salt hex".to_string()))?,
         );
     }
