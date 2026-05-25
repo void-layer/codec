@@ -25,6 +25,7 @@ import { base } from './lib/invoice-base.js'
 import { toHex, isCompressed } from './lib/utils.js'
 import { writeLEB128, buildCanonicalPayload, computeDomainSeparatorBytes } from './lib/canonical-builder.js'
 import { nonMalformed, WIRE_DIAG, type NonMalformedVector } from './scenarios/non-malformed.js'
+import { demoinvoiceVectors } from './scenarios/demo-invoices.js'
 
 const _filename = fileURLToPath(import.meta.url)
 const _dirname = path.dirname(_filename)
@@ -522,6 +523,11 @@ async function main(): Promise<void> {
     })
   }
 
+  // 9. Demo invoice vectors (6) — sourced from vl/app landing + video constants.
+  for (const v of await demoinvoiceVectors()) {
+    vectors.push(v)
+  }
+
   // ---------------------------------------------------------------------------
   // Write output
   // ---------------------------------------------------------------------------
@@ -529,7 +535,7 @@ async function main(): Promise<void> {
   const output = {
     schema_version: 1,
     generated_by: '@void-layer/codec v0.1.0',
-    generated_at: '2026-05-20',
+    generated_at: '2026-05-25',
     vectors,
   }
 

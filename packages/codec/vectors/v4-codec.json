@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_by": "@void-layer/codec v0.1.0",
-  "generated_at": "2026-05-20",
+  "generated_at": "2026-05-25",
   "vectors": [
     {
       "name": "minimal-single-tlv",
@@ -640,6 +640,299 @@
       "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be52702dead",
       "diagnostic": "malformed:canonical — TLV tag 39 (0x27) is outside the v1 KNOWN_TAGS set. Decoder must reject with UnknownExtension before checksum validation.",
       "expected_error": "UnknownExtension"
+    },
+    {
+      "name": "demo-landing-eth-001",
+      "canonical_hex": "560117020200010314beef000000000000000000000000000000000002040468325d80060380ea49071562696c6c696e674065746865727363616c652e696f080112090f2b31203431352035353520303134320a145afe0000000000000000000000000000000000010b36353438204d61726b65742053742c2053756974652032333030300a53616e204672616e636973636f2c2043412039343130340a5553410c0200040d1a7472656173757279406465666966726f6e74696572732e78797a0e4d021d536d61727420436f6e747261637420536563757269747920417564697400287d0f25476173204f7074696d697a6174696f6e20436f6e73756c74696e6720283820686f75727329000801110f0f2b3431203431203535352030313938101445746865725363616c6520536f6c7574696f6e731134632f6f204c6567616c20456e746974790a31323320426c6f636b636861696e204176650a5a75672c20537769747a65726c616e641212446546692046726f6e74696572732044414f1410a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d615023525160c494e562d323032362d3034321803a704101f2090a2928c2fec4982aa42d370079e469b2db6a0668b5ee4d480fdbb7b197b60c3230d55532031322d33343536373839250f4348452d3132332e3435362e373839",
+      "wire_hex": "56811be901602c06ec66b582f985451b592ccc4ee1ae80512e0d8cd3014880b3793081c84faf5404d4ee6eb73f1f2c3460034e24d604021b1f3ad7ac68b859db5592aeca3e0be87be80872d8baf35b16987f7f0259d8b1a0d596879667e92da084134cddf6f0f064b54d4461631e1fd2412000104c597d03d4060481e4b0f63070cba31b4e5d1dc9dd679b562b04be85f863070f4842926912416522a54c08152c20f91f1019106d94c290473e5a01dcf156cbc91808990acc6c2b28118151330604806077d6b497ca73ad6959b75ccccbdcf55caedcab0ee70731881f266898d6d0992b3372af00f18fc0b19c1d2cb9e6ee72dfdb8cfe959de4eeb3d96223a9d412070124e2f1323d1eca684d48b12386a8ebad2c44fd8c0f1eedc25e74cdbdd6a2e840450dafb3a9b96a0daaca6c797fe68e44b2653a623b001cb36de62085d03fb9757af33b3a7f7078f13938bd734e0519ca30ee40bce208bb0e89601178144260b11be868573dbbdb262c27256e8fa35331db97f54fbf3e6df95baa8feb877958a36cca20175269634b56975d3161380a481b0b",
+      "receipt_hash_hex": "b5bab216ec33378511d5eda9815a4b36d6641bc31bb9bc43c9635ca087d5007b",
+      "decoded": {
+        "invoice_id": "INV-2026-042",
+        "issued_at": 1748131200,
+        "due_at": 1749340800,
+        "network_id": 1,
+        "currency": "ETH",
+        "decimals": 18,
+        "from": {
+          "name": "EtherScale Solutions",
+          "wallet_address": "0x5afe000000000000000000000000000000000001",
+          "email": "billing@etherscale.io",
+          "phone": "+1 415 555 0142",
+          "physical_address": "548 Market St, Suite 23000\nSan Francisco, CA 94104\nUSA",
+          "tax_id": "US 12-3456789"
+        },
+        "client": {
+          "name": "DeFi Frontiers DAO",
+          "wallet_address": "0xbeef000000000000000000000000000000000002",
+          "email": "treasury@defifrontiers.xyz",
+          "phone": "+41 41 555 0198",
+          "physical_address": "c/o Legal Entity\n123 Blockchain Ave\nZug, Switzerland",
+          "tax_id": "CHE-123.456.789"
+        },
+        "items": [
+          {
+            "description": "Smart Contract Security Audit",
+            "quantity": 40,
+            "rate": "125000000000000000"
+          },
+          {
+            "description": "Gas Optimization Consulting (8 hours)",
+            "quantity": 8,
+            "rate": "100000000000000000"
+          }
+        ],
+        "discount": "5%",
+        "total": "5510000000000000000",
+        "salt": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+      },
+      "roundtrip": true,
+      "diagnostic": "Landing demo: Ethereum (chain 1), ETH, smart contract audit. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "demo-landing-base-002",
+      "canonical_hex": "56011801020028020200050314feed000000000000000000000000000000000010040468325d80053d506173736b65792077616c6c657420696e746567726174696f6e20666f72206d6f62696c6520644170702e204d696c6573746f6e652032206f6620342e060380ea4907157465616d40626173656275696c646572732e78797a080106090f2b31203632382035353520303332310a14dead0000000000000000000000000000000000090b3031303020496e6e6f766174696f6e2044726976650a53616e204672616e636973636f2c2043412039343130350a5553410c0200010d1b66696e616e6365406f6e636861696e636f6d6d657263652e78797a0e64031c536d6172742057616c6c65742053444b20496e746567726174696f6e000123081d506173736b65792041757468656e7469636174696f6e204d6f64756c6500011c081b55736572204f6e626f617264696e6720466c6f772044657369676e00010c080f0f2b3120373138203535352030343536101142617365204275696c6465727320436f2e112534322057656233205374726565740a42726f6f6b6c796e2c204e592031313230310a55534112144f6e636861696e20436f6d6d657263652044414f1301351410b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7160c494e562d323032362d3231371803c33d061f20925b1b4b2d8e74143ad6969683fc375d1886ab538f391a23f1cb03e41f2f48a8250d55532039382d37363534333231",
+      "wire_hex": "56811b1c02203c15704306ff942c3b60a52ea2670eb979f55919e0f88aecb6c89fcc74d38f7bdffbb20629ed1601a5b9aefd5066762b024cbbd9f3739b21e217cae4def7b88ca5415ac8545ac84c12954e0efd3bc87b5a4110488d108314af6e1ceb0dae3000d320cfba9da6dceaa48b18ddd44da1177f001cb3654f95ade50516d80b760147e1988021a6dba4e8f0eeb49578a82611c48308a04b26a291acff17407d1a0a55206d745024935f9cdbe82f31736b64154b18978eeceb2da84e95e902f053c602b2f931aec74665872e9a42ff6d6e55b5e55f130e62f033a3b0e2618c41a584c3f5e9286823f8918d5595f44d23a786043fe8018721685666d8588f1100924f8715844ad6840810fe11252715198edc83666ee4bd18730ba01231fa5c5f904bba307bb07b954a004538a131464f7f6c410c4f4c964b0049382a44e0586a63e774d38d173b312f73b9855a0bbeb939df83bc864095f2e292c632133a13a45404152e5929404422fbcb0c7bafa07b4d9b5a3cbaf9ed5f58dfbbf8ec9e593eb9e390e2f8e48a10cd9fd1ed918b41a4b2b24e09e6356bffbddeb63f9f56e7704697df51f926f25a6a6df5a411c1e7acd14a08",
+      "receipt_hash_hex": "72f4c20611d35d119a28ef84ade6c22be159217ae9fb13297c7dfb487fde3db0",
+      "decoded": {
+        "invoice_id": "INV-2026-217",
+        "issued_at": 1748131200,
+        "due_at": 1749340800,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Base Builders Co.",
+          "wallet_address": "0xdead000000000000000000000000000000000009",
+          "email": "team@basebuilders.xyz",
+          "phone": "+1 628 555 0321",
+          "physical_address": "100 Innovation Drive\nSan Francisco, CA 94105\nUSA"
+        },
+        "client": {
+          "name": "Onchain Commerce DAO",
+          "wallet_address": "0xfeed000000000000000000000000000000000010",
+          "email": "finance@onchaincommerce.xyz",
+          "phone": "+1 718 555 0456",
+          "physical_address": "42 Web3 Street\nBrooklyn, NY 11201\nUSA",
+          "tax_id": "US 98-7654321"
+        },
+        "items": [
+          {
+            "description": "Smart Wallet SDK Integration",
+            "quantity": 1,
+            "rate": "3500000000"
+          },
+          {
+            "description": "Passkey Authentication Module",
+            "quantity": 1,
+            "rate": "2800000000"
+          },
+          {
+            "description": "User Onboarding Flow Design",
+            "quantity": 1,
+            "rate": "1200000000"
+          }
+        ],
+        "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "notes": "Passkey wallet integration for mobile dApp. Milestone 2 of 4.",
+        "tax": "5",
+        "total": "7875000000",
+        "salt": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7"
+      },
+      "roundtrip": true,
+      "diagnostic": "Landing demo: Base (chain 8453), USDC, smart wallet integration. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "demo-landing-arb-003",
+      "canonical_hex": "5601180102000a020200020314face000000000000000000000000000000000004040468325d80053c46696e616c2064656c697665727920696e636c7564657320736f757263652066696c657320616e6420636f6d6d65726369616c206c6963656e73652e060480d493010718696e766f69636573406c3264657369676e2e73747564696f080106090f2b31203531322035353520303137370a14cafe0000000000000000000000000000000000030b2e37383920437265617469766520426c76642c20556e697420340a41757374696e2c2054582037383730310a5553410c0200010d157061796d656e74734061726267616d696e672e696f0e6f032443686172616374657220537072697465205365742028313020616e696d6174696f6e732900010c0822554920416e696d6174696f6e205061636b20286d656e75732c20627574746f6e73290001080819536f756e64204566666563747320496e746567726174696f6e000104080f0d2b36352036353535203032333410104c322044657369676e2053747564696f112b3435362047616d696e6720546f7765722c20466c6f6f722031320a53696e6761706f726520303138393536120e41726247616d696e6720496e632e1301381410c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8150135160c494e562d323032362d3038371803a813061f2010bf2840cd8214362774d55fd5a2671cc29582e81c13dc1c9c888cbcbeb80815",
+      "wire_hex": "56811b1302c09c058e73a178789536b7f7fe3842a2aa9a18974f32eafa3779f3f5dd12db6e6d69be0e238959f4e1d779d2e8d7067ea80dcc87d057ea42e873ca4168a1e5adb6031d408e778303b0244ede87eed79d661800f7ffd00e162451fa16871c680b2bb020c4a0b6b936cce1f0a6381c5a90c500820028a71304a67cef029681a802d5fa1e54c26589c522548056c83630741a235de0351d77da704631aea68680295874e9f13d02084336d4048250082170224a25ddcd7f2d1518ad53dacc43e76be5339a69ee2b9e5c6e1b8bd51a143128ad4e242979c9400020b697c2e78026954f5615abf3ba6f7135909090555eeb6263569067235891135e84d8146baa1b94968d4188ca0f2e1b6e1adcaf8241ef9348a35140209870873a46da86ae11000841e0b15b2920dd2b29e34d42d444baf0962c4d547321f192075ff500982d129ad0b4d9896823641b1774593ef84ceb3ab6a34b583abe7f1f1cdfd8bf7eee1d5e397dfca402ad7d4c08d5be12bedc9fb41a8287c830bea039b73a5f33c5b6ccc7ff3df9e962d7ef89433ee374b7744ccf8e23a8",
+      "receipt_hash_hex": "222455cb49766bc39ea3b3fa55bc8e117967de28631f85a88011e61ede0f99d9",
+      "decoded": {
+        "invoice_id": "INV-2026-087",
+        "issued_at": 1748131200,
+        "due_at": 1750550400,
+        "network_id": 42161,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "L2 Design Studio",
+          "wallet_address": "0xcafe000000000000000000000000000000000003",
+          "email": "invoices@l2design.studio",
+          "phone": "+1 512 555 0177",
+          "physical_address": "789 Creative Blvd, Unit 4\nAustin, TX 78701\nUSA"
+        },
+        "client": {
+          "name": "ArbGaming Inc.",
+          "wallet_address": "0xface000000000000000000000000000000000004",
+          "email": "payments@arbgaming.io",
+          "phone": "+65 6555 0234",
+          "physical_address": "456 Gaming Tower, Floor 12\nSingapore 018956"
+        },
+        "items": [
+          {
+            "description": "Character Sprite Set (10 animations)",
+            "quantity": 1,
+            "rate": "1200000000"
+          },
+          {
+            "description": "UI Animation Pack (menus, buttons)",
+            "quantity": 1,
+            "rate": "800000000"
+          },
+          {
+            "description": "Sound Effects Integration",
+            "quantity": 1,
+            "rate": "400000000"
+          }
+        ],
+        "token_address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "notes": "Final delivery includes source files and commercial license.",
+        "tax": "8",
+        "discount": "5",
+        "total": "2472000000",
+        "salt": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8"
+      },
+      "roundtrip": true,
+      "diagnostic": "Landing demo: Arbitrum (chain 42161), USDC, game asset design. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "demo-landing-op-004",
+      "canonical_hex": "5601170115014200000000000000000000000000000000000042020200030314c0de000000000000000000000000000000000006040468325d8005385468616e6b20796f7520666f7220737570706f7274696e67207075626c696320676f6f64732e204d696c6573746f6e652031206f6620332e0604809a9e01071d6772616e7473406f7074696d69737469636275696c646572732e6f7267080112090f2b31203830302035353520303130300a14babe0000000000000000000000000000000000050b3831205075626c696320476f6f6473205761790a4f7074696d69736d20436974792c204f502031303030310a446563656e7472616c697a65640c03014f500d1a64697362757273656d656e747340726574726f7067662e6574680e72032b5075626c696320476f6f647320496e667261737472756374757265204772616e74202d205068617365203100010f151d436f6d6d756e69747920546f6f6c696e6720446576656c6f706d656e74000108151a446f63756d656e746174696f6e2026204f6e626f617264696e67000102150f0f2b3120383838203535352030313030101e4f7074696d6973746963204275696c6465727320436f6c6c656374697665112f4f7074696d69736d20466f756e646174696f6e0a31323320436f6c6c6563746976652044726976650a52656d6f74651213526574726f50474620466f756e646174696f6e1410d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9160c494e562d323032362d313335180219151f2042dedb7478b2f92d7bffec1bdc5d2217bdfcb5604b813afecb2ea4587b1dc192230d55532035352d31323334353637",
+      "wire_hex": "56811b5b02a06478ffda41aa5ec4bfcb13e9616da4560a933c7553f0c1b8356c0f9a8bfe127ad0344cc3ec81324d7b9e1c36c7ad45a5d62c8cd35c381b6e06abd7cd10081812c91a3d6ed86250a818716009da305c498a5715242a39cddfa13ba19e5a4406cc5166f50902c95140a28541959457c3b152b3ee36dd243925233631363d23369c1b76645aba1afd170767e0a9ea1030d4d1017a7a7a4007d2d121b0fa87613943130d21c34a6dee2ebc437309ce38c5c47f4e509c5d3422830816911cc78bcd8b8c2021e1ce2e6441446c7a58665a7a6462e4683ea74566a425a74447694566c450d290ea98771c276add4cd2dcae3e8360702a5b4ae6e48dd3243760091d61701c5be0bb254ac039492c04640e8323d854a281a161409376669006cc0af384e63a362b92ae4d2b7476340a892520d4fdd232e1e02d9bc174231175b1b682c766d136afde5a7ae756cf9e1a3aa7b66f3eda38245b272f4d23fabe2624d1e321f86c1960767c9091d3fea999ffff283c0c94e30efd7485d8971aff2d6835fae44b8d95c9933ddd819e5eea8825ba7afa06",
+      "receipt_hash_hex": "0462019945c32dff3dc21685477d963ff3aacdf3e6fbfa87b72322fbf084949b",
+      "decoded": {
+        "invoice_id": "INV-2026-135",
+        "issued_at": 1748131200,
+        "due_at": 1750723200,
+        "network_id": 10,
+        "currency": "OP",
+        "decimals": 18,
+        "from": {
+          "name": "Optimistic Builders Collective",
+          "wallet_address": "0xbabe000000000000000000000000000000000005",
+          "email": "grants@optimisticbuilders.org",
+          "phone": "+1 800 555 0100",
+          "physical_address": "1 Public Goods Way\nOptimism City, OP 10001\nDecentralized",
+          "tax_id": "US 55-1234567"
+        },
+        "client": {
+          "name": "RetroPGF Foundation",
+          "wallet_address": "0xc0de000000000000000000000000000000000006",
+          "email": "disbursements@retropgf.eth",
+          "phone": "+1 888 555 0100",
+          "physical_address": "Optimism Foundation\n123 Collective Drive\nRemote"
+        },
+        "items": [
+          {
+            "description": "Public Goods Infrastructure Grant - Phase 1",
+            "quantity": 1,
+            "rate": "15000000000000000000000"
+          },
+          {
+            "description": "Community Tooling Development",
+            "quantity": 1,
+            "rate": "8000000000000000000000"
+          },
+          {
+            "description": "Documentation & Onboarding",
+            "quantity": 1,
+            "rate": "2000000000000000000000"
+          }
+        ],
+        "token_address": "0x4200000000000000000000000000000000000042",
+        "notes": "Thank you for supporting public goods. Milestone 1 of 3.",
+        "total": "25000000000000000000000",
+        "salt": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9"
+      },
+      "roundtrip": true,
+      "diagnostic": "Landing demo: Optimism (chain 10), OP token, public goods grant. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "demo-landing-poly-005",
+      "canonical_hex": "56011a0102001e020200040314feed000000000000000000000000000000000008040468325d8005415131203230323620737562736372697074696f6e2e204175746f2d72656e6577616c20756e6c6573732063616e63656c6c656420372064617973207072696f722e0604809a9e01071c62696c6c696e6740706f6c796d61726b6574616e616c79746963730908010609102b3931203232203535353520303435360a14f00d0000000000000000000000000000000000070b34343220446174612043656e74657220526f61640a4d756d6261692c204d61686172617368747261203430303030310a496e6469610c0200010d1866696e616e63654070726564696374696f6e64616f2e696f0e6603244d61726b657420446174612046656564202d205072656d69756d2054696572202851312900030f081c41504920416363657373202d20556e6c696d697465642043616c6c730001050816437573746f6d2044617368626f61726420536574757000014b070f102b3434203230203535353520303738391019506f6c794d61726b657420416e616c7974696373204c74642e112944414f204d756c74697369670a476c6f62616c20446563656e7472616c697a6564204e6574776f726b121750726564696374696f6e2050726f746f636f6c2044414f130231381410e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b015023130160c494e562d323032362d3139381803ed04071f208a4b098a48a4024e99ad34593937d2dc45d7527b2634d67d00f4f8bd4a479ad72317494e20475354494e323941424344453132333446315a35250c474220313233343536373839",
+      "wire_hex": "56811b5902408c94ee7ef486f6f77e1037e2de77c300345079a1c18c6c809294165d03e7441d805652446b25ea00f76abde001afdbf4ec787a0cd56084630490a031280566250ecbfb7f46ad2d120e978ed4e34d6110512f74c7a1c127d6e5db7c424236014a4d4ac8fdec15a583207091dbae045c7d531b9a284b732f2337cd989f975d911abcc92f9049680299e56480004180c6fe08dcd51a2d85f74647594aa4aad5088719493524d9fc2925a824273121c3190425a427142614a517172600b5bb7190326456a0615068baa878acf1ceedcfc8cb4d4ec873cdc863a462ad1b1cf60df1b2591701e9fb91192985c03e0c3aa0b04c92cc14eaf7ac15b880a8dc2ac0ead4390a8d270920b8e79950949e795886fb200a1d4064b29cd46a80b847d9d7e90d2c71685e76c5e93888eb061627bbb21d3c4d214ad77e51461a05870a9e29cd136454a62453502c8e3034268c010e3af89a8b817a1eebe1a77f616bfbe6a37b66edf0e96f70828f81ee029a5f70b44b6d7fc7051af422ec338ea8040d01e406df1e4c70e3a83acea0db3df73a0aafb2551fd6a0befe56fd7d9a8eac847ec1c02722d22f183198cc1e9e5e1051a9bd61bcc686e66306db54a3d5e90d",
+      "receipt_hash_hex": "16e376019e0b17714e7446f44eeb19b65472caad12b0db62cce8e5a31fab1345",
+      "decoded": {
+        "invoice_id": "INV-2026-198",
+        "issued_at": 1748131200,
+        "due_at": 1750723200,
+        "network_id": 137,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "PolyMarket Analytics Ltd.",
+          "wallet_address": "0xf00d000000000000000000000000000000000007",
+          "email": "billing@polymarketanalytics.com",
+          "phone": "+91 22 5555 0456",
+          "physical_address": "42 Data Center Road\nMumbai, Maharashtra 400001\nIndia",
+          "tax_id": "IN GSTIN29ABCDE1234F1Z5"
+        },
+        "client": {
+          "name": "Prediction Protocol DAO",
+          "wallet_address": "0xfeed000000000000000000000000000000000008",
+          "email": "finance@predictiondao.io",
+          "phone": "+44 20 5555 0789",
+          "physical_address": "DAO Multisig\nGlobal Decentralized Network",
+          "tax_id": "GB 123456789"
+        },
+        "items": [
+          {
+            "description": "Market Data Feed - Premium Tier (Q1)",
+            "quantity": 3,
+            "rate": "1500000000"
+          },
+          {
+            "description": "API Access - Unlimited Calls",
+            "quantity": 1,
+            "rate": "500000000"
+          },
+          {
+            "description": "Custom Dashboard Setup",
+            "quantity": 1,
+            "rate": "750000000"
+          }
+        ],
+        "token_address": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+        "notes": "Q1 2026 subscription. Auto-renewal unless cancelled 7 days prior.",
+        "tax": "18",
+        "discount": "10",
+        "total": "6210000000",
+        "salt": "e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0"
+      },
+      "roundtrip": true,
+      "diagnostic": "Landing demo: Polygon (chain 137), USDC, data analytics. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "demo-video-base-treasury-006",
+      "canonical_hex": "56010e010200280202000504046a0a5680060480c4ff0e0801060a14a8a1f79c4daa2ec25af2c91349a6f60c5b41160e0c0200010e15010f537570706f727420566f6964506179000101061007566f69645061791203596f751410f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1160c494e562d323032362d3230331804fb853d001f200705975545a36061bf2fa89c0485f71a9051d991a606ed841a4c587d35470a50",
+      "wire_hex": "56010e010200280202000504046a0a5680060480c4ff0e0801060a14a8a1f79c4daa2ec25af2c91349a6f60c5b41160e0c0200010e15010f537570706f727420566f6964506179000101061007566f69645061791203596f751410f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1160c494e562d323032362d3230331804fb853d001f200705975545a36061bf2fa89c0485f71a9051d991a606ed841a4c587d35470a50",
+      "receipt_hash_hex": "cb019ebf77d75599c37ac7c6bf6f6fa4d26da379c55afb60f0237a70957bdbeb",
+      "decoded": {
+        "invoice_id": "INV-2026-203",
+        "issued_at": 1779062400,
+        "due_at": 1810512000,
+        "network_id": 8453,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "VoidPay",
+          "wallet_address": "0xa8a1f79c4daa2ec25af2c91349a6f60c5b41160e"
+        },
+        "client": {
+          "name": "You"
+        },
+        "items": [
+          {
+            "description": "Support VoidPay",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "token_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "total": "1000187",
+        "salt": "f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1"
+      },
+      "roundtrip": true,
+      "diagnostic": "Video demo: Base (chain 8453), USDC, VoidPay treasury, total includes Magic Dust (+187 atomic units). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
     }
   ]
 }
