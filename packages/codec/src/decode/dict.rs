@@ -65,21 +65,6 @@ pub(super) fn decode_chain_id(value: &[u8]) -> Result<u32, CodecError> {
     }
 }
 
-/// Currency code → symbol (mirrors CURRENCY_DICT_REVERSE in tlv-map.ts). Static: zero per-call alloc.
-static CURRENCY_CODE_TO_SYMBOL: &[(u8, &str)] = &[
-    (1, "USDC"),
-    (2, "USDT"),
-    (3, "DAI"),
-    (4, "ETH"),
-    (5, "WETH"),
-    (6, "MATIC"),
-    (7, "POL"),
-    (8, "WBTC"),
-    (9, "USDC.E"),
-    (10, "EURC"),
-    (11, "USDT0"),
-];
-
 /// Token dict code → lowercase address (mirrors TOKEN_DICT_REVERSE in tlv-map.ts). Static: zero per-call alloc.
 /// Code 43 = Base WETH (same address as Optimism code 24, different chain context).
 static TOKEN_CODE_TO_ADDRESS: &[(u8, &str)] = &[
@@ -127,7 +112,7 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
             return Err(CodecError::Truncated { needed: 2, had: 1 });
         }
         let code = value[1];
-        CURRENCY_CODE_TO_SYMBOL
+        crate::dict::currency::CURRENCY_DICT
             .iter()
             .find_map(|&(c, s)| (c == code).then_some(s.to_string()))
             .ok_or(CodecError::UnknownExtension(code))
@@ -137,7 +122,7 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
         // T6: reject non-canonical encoding — if this currency is in the dict,
         // the encoder must have used dict form [0x00, code].
         let upper = currency.to_uppercase();
-        if CURRENCY_CODE_TO_SYMBOL
+        if crate::dict::currency::CURRENCY_DICT
             .iter()
             .any(|&(_, sym)| sym == upper.as_str())
         {

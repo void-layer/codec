@@ -1,5 +1,6 @@
 pub(crate) mod app;
 pub(crate) mod chain;
+pub(crate) mod currency;
 
 #[cfg(test)]
 mod tests {

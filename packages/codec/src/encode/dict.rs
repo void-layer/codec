@@ -82,29 +82,14 @@ pub(super) fn encode_chain_id(network_id: u32) -> Vec<u8> {
     }
 }
 
-/// Currency symbol → dict code (mirrors CURRENCY_DICT in tlv-map.ts). Static: zero per-call alloc.
-static CURRENCY_SYMBOL_TO_CODE: &[(&str, u8)] = &[
-    ("USDC", 1),
-    ("USDT", 2),
-    ("DAI", 3),
-    ("ETH", 4),
-    ("WETH", 5),
-    ("MATIC", 6),
-    ("POL", 7),
-    ("WBTC", 8),
-    ("USDC.E", 9),
-    ("EURC", 10),
-    ("USDT0", 11),
-];
-
 /// Encode currency per spec §5.1:
 ///   0x00 <code>  — dict known currency
 ///   0x01 <utf8>  — raw UTF-8
 pub(super) fn encode_currency(currency: &str) -> Vec<u8> {
     let upper = currency.to_uppercase();
-    if let Some(&(_, code)) = CURRENCY_SYMBOL_TO_CODE
+    if let Some(&(code, _)) = crate::dict::currency::CURRENCY_DICT
         .iter()
-        .find(|&&(k, _)| k == upper.as_str())
+        .find(|&&(_, sym)| sym == upper.as_str())
     {
         vec![0x00, code]
     } else {
