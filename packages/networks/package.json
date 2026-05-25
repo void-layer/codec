@@ -1,12 +1,16 @@
 {
   "name": "@void-layer/networks",
   "version": "0.1.0",
-  "description": "Chain configs + token list for @void-layer ecosystem. NO RPC keys.",
+  "description": "Chain configs, token list, block explorer helpers, and wagmi chain configs for @void-layer ecosystem. NO RPC keys.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" }
+    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    "./get-chain": { "import": "./dist/get-chain.js", "types": "./dist/get-chain.d.ts" },
+    "./explorer": { "import": "./dist/explorer.js", "types": "./dist/explorer.d.ts" },
+    "./tokens": { "import": "./dist/tokens.js", "types": "./dist/tokens.d.ts" },
+    "./wagmi": { "import": "./dist/wagmi.js", "types": "./dist/wagmi.d.ts" }
   },
   "files": ["dist/", "README.md", "LICENSE", "CHANGELOG.md"],
   "repository": {
@@ -23,6 +27,12 @@
   "dependencies": {
     "@void-layer/types": "workspace:*"
   },
+  "peerDependencies": {
+    "viem": ">=2.0.0 <3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "viem": { "optional": true }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
@@ -30,6 +40,7 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "3.2.4",
+    "viem": "^2.31.3",
     "vitest": "^3.0.0"
   },
   "engines": { "node": ">=18" }
