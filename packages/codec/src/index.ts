@@ -32,10 +32,13 @@ const COMPRESSED_FLAG = 0x80
 /**
  * Hard cap on the size of a Brotli-decompressed wire body. A small (~1 KB)
  * compressed payload can otherwise expand to hundreds of MB — a decompression
- * bomb that OOMs the client. 64 KB is generous: a valid canonical invoice is
- * bounded well below the ~2 KB URL budget.
+ * bomb that OOMs the client.
+ *
+ * = MAX_TLV_COUNT(64) * MAX_VALUE_SIZE(4096) — must accept any valid canonical payload.
+ * A valid invoice is bounded well below the ~2 KB URL budget in practice;
+ * this cap exists to reject decompression bombs, not to restrict valid payloads.
  */
-const MAX_DECOMPRESSED_BYTES = 65536
+const MAX_DECOMPRESSED_BYTES = 262144
 
 let _brotli: BrotliWasmType | null = null
 

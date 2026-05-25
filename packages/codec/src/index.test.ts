@@ -118,7 +118,7 @@ describe('decodeInvoiceWire decompression-bomb guard', () => {
     // 64 KB cap: 256 KB of zero bytes compresses to a few bytes.
     const brotliMod = await import('brotli-wasm')
     const brotli = await brotliMod.default
-    const huge = new Uint8Array(256 * 1024) // 256 KB of 0x00 — far above the cap
+    const huge = new Uint8Array(300 * 1024) // 300 KB of 0x00 — above the 262144-byte cap
     const compressedBody = brotli.compress(huge, { quality: 11 })
 
     // Wire frame: [MAGIC][VERSION | COMPRESSED_FLAG][compressed body...]
