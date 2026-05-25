@@ -57,10 +57,10 @@ jobs:
   ts-rust-parity:
     # Requires VOIDPAY_READ_TOKEN secret (fine-grained PAT: contents:read on ignromanov/voidpay).
     # Skipped automatically on fork PRs where the secret is absent.
-    # To enable: add secret VOIDPAY_READ_TOKEN in repo Settings → Secrets → Actions.
+    # To enable: set vars.TS_RUST_PARITY_ENABLED=true AND add secret VOIDPAY_READ_TOKEN in repo Settings.
     needs: [lint-and-build]
     runs-on: ubuntu-latest
-    if: ${{ secrets.VOIDPAY_READ_TOKEN != '' }}
+    if: ${{ vars.TS_RUST_PARITY_ENABLED == 'true' }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
       - name: Checkout vl/app at pinned SHA (sparse — codec files only)
