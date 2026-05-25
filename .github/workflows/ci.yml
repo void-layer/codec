@@ -108,19 +108,45 @@ jobs:
       - name: Run wasm-pack test --node (AC-9 boundary tests)
         run: wasm-pack test --node packages/codec
   ci-gate:
-    # Single required branch-protection check. Fails if any upstream job
-    # failed OR was skipped (SKIPPED != PASS for ts-rust-parity).
-    # To merge: set this job as the only required status in branch protection.
+    # Single required branch-protection check. All non-parity jobs must succeed;
+    # ts-rust-parity may be SKIPPED only when vars.TS_RUST_PARITY_ENABLED != 'true'
+    # (opt-out for forks or repos without VOIDPAY_READ_TOKEN secret).
     needs: [lint-and-build, macos-sanity, vector-parity, test-wasm-node, ts-rust-parity]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Check all jobs passed (skipped counts as failure)
+      - name: Verify required jobs (parity opt-out aware)
         run: |
-          results='${{ toJSON(needs.*.result) }}'
-          echo "Job results: $results"
-          if echo "$results" | grep -qE '"(failure|cancelled|skipped)"'; then
-            echo "One or more required jobs failed or were skipped."
-            exit 1
+          fail=0
+
+          check() {
+            local name=$1 result=$2
+            if [ "$result" != "success" ]; then
+              echo "❌ $name: $result"
+              fail=1
+            else
+              echo "✅ $name: $result"
+            fi
+          }
+
+          check "lint-and-build" "${{ needs.lint-and-build.result }}"
+          check "macos-sanity"   "${{ needs.macos-sanity.result }}"
+          check "vector-parity"  "${{ needs.vector-parity.result }}"
+          check "test-wasm-node" "${{ needs.test-wasm-node.result }}"
+
+          parity_result="${{ needs.ts-rust-parity.result }}"
+          parity_enabled="${{ vars.TS_RUST_PARITY_ENABLED }}"
+
+          if [ "$parity_enabled" = "true" ]; then
+            check "ts-rust-parity (enabled)" "$parity_result"
+          else
+            # opt-out path: skipped or success both acceptable
+            if [ "$parity_result" = "skipped" ] || [ "$parity_result" = "success" ]; then
+              echo "✅ ts-rust-parity ($parity_result; disabled via vars.TS_RUST_PARITY_ENABLED)"
+            else
+              echo "❌ ts-rust-parity: $parity_result"
+              fail=1
+            fi
           fi
-          echo "All required jobs passed."
+
+          exit $fail
