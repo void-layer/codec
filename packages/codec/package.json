@@ -40,6 +40,7 @@
     "test:rust": "cargo test --manifest-path Cargo.toml",
     "test:wasm": "wasm-pack test --node",
     "generate-vectors": "vitest run --config scripts/generate-vectors.config.ts",
+    "test:ts-rust-parity": "tsx scripts/ts-rust-parity.ts",
     "lint": "cargo clippy --all-targets --all-features --locked -- -D warnings && cargo fmt --manifest-path Cargo.toml -- --check && eslint src",
     "size": "ls -la pkg/void_layer_codec_bg.wasm"
   },

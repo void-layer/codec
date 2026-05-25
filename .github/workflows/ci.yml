@@ -54,6 +54,39 @@ jobs:
         run: pnpm -C packages/codec exec vitest run tests/parity.test.ts
       - name: Rust parity (cargo)
         run: cargo test --manifest-path packages/codec/Cargo.toml --test parity
+  ts-rust-parity:
+    # Requires VOIDPAY_READ_TOKEN secret (fine-grained PAT: contents:read on ignromanov/voidpay).
+    # Skipped automatically on fork PRs where the secret is absent.
+    # To enable: add secret VOIDPAY_READ_TOKEN in repo Settings → Secrets → Actions.
+    needs: [lint-and-build]
+    runs-on: ubuntu-latest
+    if: ${{ secrets.VOIDPAY_READ_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - name: Checkout vl/app at pinned SHA (sparse — codec files only)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+        with:
+          repository: ignromanov/voidpay
+          ref: e4926b7f7b08ca4f72b707df8796bfd4a4b0a3b3
+          token: ${{ secrets.VOIDPAY_READ_TOKEN }}
+          path: vl-app
+          sparse-checkout: |
+            src/features/invoice-codec
+            src/shared/lib/tlv-codec
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa     # v4
+        with: { version: 10.24.0 }
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020    # v4
+        with: { node-version: 24, cache: pnpm }
+      - uses: actions-rust-lang/setup-rust-toolchain@46268bd060767258de96ed93c1251119784f2ab6  # v1
+        with: { rustflags: "" }
+      - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
+      - run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack 0.14.0
+        run: cargo install wasm-pack --version 0.14.0 --locked
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - name: Run cross-impl parity (Rust WASM vs TS reference)
+        run: VL_APP_PATH=${{ github.workspace }}/vl-app pnpm -C packages/codec run test:ts-rust-parity
   macos-sanity:
     runs-on: macos-latest
     steps:
