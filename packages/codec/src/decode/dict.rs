@@ -167,7 +167,7 @@ pub(super) fn decode_token_address(value: &[u8]) -> Result<String, CodecError> {
             .iter()
             .find_map(|&(c, addr)| (c == code).then_some(addr.to_string()))
             .ok_or(CodecError::UnknownExtension(code))
-    } else {
+    } else if value[0] == 0x01 {
         bytes_to_address(&value[1..])
         // NOTE: T6 canonical-aliasing check is NOT applied here.
         // Token addresses may legitimately appear raw even when the address is
@@ -175,6 +175,8 @@ pub(super) fn decode_token_address(value: &[u8]) -> Result<String, CodecError> {
         // outside Base range → encoder emits raw. Applying a raw→dict rejection
         // here would break valid cross-chain payloads. Chain ID and Currency
         // have clean bijective dict mappings; token addresses do not.
+    } else {
+        Err(CodecError::UnknownExtension(value[0]))
     }
 }
 
@@ -262,6 +264,18 @@ mod tests {
         assert!(
             matches!(err, crate::error::CodecError::UnknownExtension(0x02)),
             "expected UnknownExtension(0x02) for unknown currency prefix, got {err:?}"
+        );
+    }
+
+    /// P1-F3: decode_token_address must reject any prefix that is neither 0x00 nor 0x01.
+    #[test]
+    fn decode_token_address_rejects_unknown_prefix() {
+        let mut value = vec![0x02u8];
+        value.extend_from_slice(&[0u8; 20]); // 20 bytes of zeros (valid address body)
+        let err = decode_token_address(&value).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::UnknownExtension(0x02)),
+            "expected UnknownExtension(0x02) for unknown token-address prefix, got {err:?}"
         );
     }
 
