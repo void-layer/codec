@@ -628,6 +628,18 @@
       "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d30303118020202180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be5",
       "diagnostic": "malformed:canonical",
       "expected_error": "InvalidData"
+    },
+    {
+      "name": "malformed-non-canonical-varint",
+      "canonical_hex": "56018000",
+      "diagnostic": "malformed:canonical — LEB128 varint [0x80, 0x00] encodes value 0 with a spurious continuation byte; canonical form requires the shortest encoding (single 0x00 byte). Decoder must reject.",
+      "expected_error": "Truncated"
+    },
+    {
+      "name": "malformed-unknown-content-tag",
+      "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be52702dead",
+      "diagnostic": "malformed:canonical — TLV tag 39 (0x27) is outside the v1 KNOWN_TAGS set. Decoder must reject with UnknownExtension before checksum validation.",
+      "expected_error": "UnknownExtension"
     }
   ]
 }
