@@ -79,18 +79,22 @@ The v1 decoder is **fail-loud**: any `Ok(Invoice)` means every byte was read wit
 <details>
 <summary><b>Full <code>CodecError</code> variants</b></summary>
 
-| Variant | Trigger |
-|---------|---------|
-| `BadMagic` | First byte is not `0x56` |
-| `UnsupportedVersion` | Version byte signals an unknown codec version |
-| `Truncated { needed, had }` | Buffer ends before a TLV value is fully read |
-| `VarintOverflow` | LEB128 continuation bytes exceed `MAX_BYTES = 37` |
-| `InvalidData(msg)` | Invalid UTF-8, duplicate TLV tag, non-canonical varint, decode of canonical input with the compressed flag set, etc. |
-| `UnknownExtension(tag)` | Unknown TLV tag in a v1 payload, or unknown dict code for chain/currency/token |
-| `ChecksumMismatch` | Domain separator validation failed, or salt length ≠ 16 |
-| `CompressionFailed` | Brotli decompression error on a wire payload |
-| `DictionaryMismatch` | Dict hash in payload does not match compiled dict |
-| `InvalidAmount` | Amount string exceeds `U256::MAX`, is not a valid decimal, or `mantissa × 10^zeros` overflows U256 |
+| Variant | Signature | When emitted |
+|---------|-----------|--------------|
+| `BadMagic` | unit | First byte is not `0x56` |
+| `UnsupportedVersion` | `(u8)` | Version byte is not a supported codec version |
+| `Truncated` | `{ needed: usize, had: usize }` | Payload ended before a required number of bytes could be read |
+| `VarintOverflow` | `(usize)` | LEB128 varint exceeded `MAX_BYTES = 37` at the given offset |
+| `UnknownExtension` | `(u8)` | Unknown TLV tag in a v1 payload; unknown dict code for chain/currency/token; or unknown prefix byte (≠ 0x00/0x01) on a prefixed TLV |
+| `ChecksumMismatch` | unit | Domain separator (`keccak256`) validation failed, or salt length ≠ 16 bytes |
+| `CompressionFailed` | `(String)` | Brotli compression or decompression failed |
+| `DictionaryMismatch` | `{ expected: u8, actual: u8 }` | Dict hash in payload does not match compiled dict |
+| `SignatureInvalid` | unit | Signature failed validation (reserved for future authenticated payloads) |
+| `InvalidAmount` | `(String)` | Amount string exceeds `U256::MAX`, is not a valid decimal, `mantissa × 10^zeros` overflows U256, or `issued_at + due_delta` overflows `u32` |
+| `InvalidAddress` | `(String)` | EVM address string is malformed — bad length or non-hex bytes |
+| `MissingField` | `(u8)` | Required TLV field absent from the canonical payload |
+| `Overflow` | `(String)` | Structural size or count limit exceeded (e.g. TLV count > 64, value > 4096 bytes) |
+| `InvalidData` | `(String)` | Bytes structurally present but not valid — invalid UTF-8, duplicate TLV tag, non-canonical LEB128 varint, non-canonical dict encoding, compressed flag on canonical-decode input, etc. |
 
 The 280-character notes limit is **not** enforced by the codec — it is an application-layer concern. The reference voidpay.xyz implementation validates in Unicode code points before encode; platforms adopting `@void-layer/codec` must apply equivalent validation.
 
