@@ -107,3 +107,20 @@ jobs:
         run: cargo install wasm-pack --version 0.14.0 --locked
       - name: Run wasm-pack test --node (AC-9 boundary tests)
         run: wasm-pack test --node packages/codec
+  ci-gate:
+    # Single required branch-protection check. Fails if any upstream job
+    # failed OR was skipped (SKIPPED != PASS for ts-rust-parity).
+    # To merge: set this job as the only required status in branch protection.
+    needs: [lint-and-build, macos-sanity, vector-parity, test-wasm-node, ts-rust-parity]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all jobs passed (skipped counts as failure)
+        run: |
+          results='${{ toJSON(needs.*.result) }}'
+          echo "Job results: $results"
+          if echo "$results" | grep -qE '"(failure|cancelled|skipped)"'; then
+            echo "One or more required jobs failed or were skipped."
+            exit 1
+          fi
+          echo "All required jobs passed."
