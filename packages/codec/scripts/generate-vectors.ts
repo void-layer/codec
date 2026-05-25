@@ -20,181 +20,16 @@ import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   encodeInvoiceCanonical,
-  decodeInvoiceCanonical,
-  receiptHash,
 } from '../pkg-node/void_layer_codec.js'
-// brotli-wasm: resolve the Node-compatible entry via bare specifier.
-// vitest.config.ts aliases 'brotli-wasm' → the CJS-friendly Node build.
-import brotliWasmInit from 'brotli-wasm'
+import { base } from './lib/invoice-base.js'
+import { toHex, isCompressed } from './lib/utils.js'
+import { writeLEB128, buildCanonicalPayload, computeDomainSeparatorBytes } from './lib/canonical-builder.js'
+import { nonMalformed, WIRE_DIAG, type NonMalformedVector } from './scenarios/non-malformed.js'
 
 const _filename = fileURLToPath(import.meta.url)
 const _dirname = path.dirname(_filename)
 const VECTORS_DIR = path.resolve(_dirname, '../vectors')
 const OUT_PATH = path.join(VECTORS_DIR, 'v4-codec.json')
-
-const COMPRESSED_FLAG = 0x80
-
-// ---------------------------------------------------------------------------
-// Wire encode/decode — mirrors src/index.ts logic exactly
-// ---------------------------------------------------------------------------
-
-async function wireEncode(invoice: unknown): Promise<Uint8Array> {
-  const brotli = await brotliWasmInit
-  const canonical: Uint8Array = encodeInvoiceCanonical(invoice)
-  if (canonical.length < 3) return canonical
-  const body = canonical.slice(2)
-  const compressed = brotli.compress(body, { quality: 11 })
-  if (compressed.length >= body.length) return canonical
-  const result = new Uint8Array(2 + compressed.length)
-  result[0] = canonical[0]!
-  result[1] = canonical[1]! | COMPRESSED_FLAG
-  result.set(compressed, 2)
-  return result
-}
-
-async function wireDecode(bytes: Uint8Array): Promise<unknown> {
-  if (bytes.length < 3 || !(bytes[1]! & COMPRESSED_FLAG)) {
-    return decodeInvoiceCanonical(bytes)
-  }
-  const brotli = await brotliWasmInit
-  const decompressed = brotli.decompress(bytes.slice(2))
-  const canonical = new Uint8Array(2 + decompressed.length)
-  canonical[0] = bytes[0]!
-  canonical[1] = bytes[1]! & 0x7f
-  canonical.set(decompressed, 2)
-  return decodeInvoiceCanonical(canonical)
-}
-
-// ---------------------------------------------------------------------------
-// Invoice fixtures
-// ---------------------------------------------------------------------------
-
-const ISSUED_AT = 1_700_000_000
-const DUE_AT = 1_700_086_400
-const FROM_WALLET = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'
-const CLIENT_WALLET = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
-const SALT = 'deadbeefdeadbeefdeadbeefdeadbeef'
-
-function base(overrides: Record<string, unknown>): Record<string, unknown> {
-  return {
-    invoice_id: 'INV-001',
-    issued_at: ISSUED_AT,
-    due_at: DUE_AT,
-    network_id: 1,
-    currency: 'USDC',
-    decimals: 6,
-    from: { name: 'Alice', wallet_address: FROM_WALLET },
-    client: { name: 'Bob' },
-    items: [{ description: 'Consulting', quantity: 1.0, rate: '1000000' }],
-    total: '1000000',
-    salt: SALT,
-    ...overrides,
-  }
-}
-
-function toHex(bytes: Uint8Array): string {
-  return Buffer.from(bytes).toString('hex')
-}
-
-function isCompressed(hex: string): boolean {
-  if (hex.length < 4) return false
-  return (parseInt(hex.slice(2, 4), 16) & COMPRESSED_FLAG) !== 0
-}
-
-/**
- * Mirrors compute_domain_separator from src/encode/fields.rs.
- *
- * domain_separator = keccak256("VOIDPAY_INVOICE_V1" || TLV_stream_excluding_tag_31)
- * where TLV_stream is the wire serialization of each record in ascending tag order.
- * Used to compute a valid domain separator for an arbitrary record set so that
- * malformed-canonical vectors reach the C-1/C-2 guard rather than ChecksumMismatch.
- *
- * @param records Map<tag, value_bytes> of ALL records (tag 31 is excluded automatically).
- */
-function computeDomainSeparatorBytes(records: Map<number, Uint8Array>): Uint8Array {
-  const prefix = new TextEncoder().encode('VOIDPAY_INVOICE_V1')
-  const parts: Uint8Array[] = [prefix]
-
-  // Ascending tag order — mirrors BTreeMap iteration
-  const sortedTags = [...records.keys()].filter((t) => t !== 31).sort((a, b) => a - b)
-
-  for (const tag of sortedTags) {
-    const value = records.get(tag)!
-    // type byte (1)
-    parts.push(new Uint8Array([tag]))
-    // length as LEB128 varint
-    parts.push(writeLEB128(value.length))
-    // value bytes
-    parts.push(value)
-  }
-
-  const total = parts.reduce((n, p) => n + p.length, 0)
-  const body = new Uint8Array(total)
-  let offset = 0
-  for (const p of parts) {
-    body.set(p, offset)
-    offset += p.length
-  }
-  // receiptHash IS keccak256 of arbitrary bytes — it is compute_content_hash under
-  // the hood. Reusing it avoids a new devDep (no @noble/hashes needed).
-  return receiptHash(body)
-}
-
-/** Encode a non-negative integer as LEB128 (unsigned). */
-function writeLEB128(value: number): Uint8Array {
-  const bytes: number[] = []
-  let v = value
-  do {
-    const byte = v & 0x7f
-    v >>>= 7
-    bytes.push(v !== 0 ? byte | 0x80 : byte)
-  } while (v !== 0)
-  return new Uint8Array(bytes)
-}
-
-/**
- * Build a canonical payload from an ordered record map + a pre-computed domain separator.
- * Layout: MAGIC(1) VERSION(1) COUNT(1) TLV_stream
- * Records are written in ascending tag order (BTreeMap order).
- */
-function buildCanonicalPayload(records: Map<number, Uint8Array>): Uint8Array {
-  const domSep = computeDomainSeparatorBytes(records)
-  const allRecords = new Map(records)
-  allRecords.set(31, domSep)
-
-  const sortedTags = [...allRecords.keys()].sort((a, b) => a - b)
-  const count = sortedTags.length
-
-  const parts: Uint8Array[] = []
-  for (const tag of sortedTags) {
-    const value = allRecords.get(tag)!
-    parts.push(new Uint8Array([tag]))
-    parts.push(writeLEB128(value.length))
-    parts.push(value)
-  }
-
-  const bodyLen = parts.reduce((n, p) => n + p.length, 0)
-  const buf = new Uint8Array(3 + bodyLen)
-  buf[0] = 0x56 // MAGIC
-  buf[1] = 0x01 // VERSION
-  buf[2] = count
-  let offset = 3
-  for (const p of parts) {
-    buf.set(p, offset)
-    offset += p.length
-  }
-  return buf
-}
-
-interface NonMalformedVector {
-  name: string
-  canonical_hex: string
-  wire_hex: string
-  receipt_hash_hex: string
-  decoded: unknown
-  roundtrip: boolean
-  diagnostic: string
-}
 
 interface MalformedVector {
   name: string
@@ -206,33 +41,6 @@ interface MalformedVector {
 }
 
 type Vector = NonMalformedVector | MalformedVector
-
-const WIRE_DIAG =
-  'wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)'
-
-async function nonMalformed(
-  name: string,
-  invoice: Record<string, unknown>,
-  diagnostic?: string,
-): Promise<NonMalformedVector> {
-  const canonical = encodeInvoiceCanonical(invoice)
-  const wire = await wireEncode(invoice)
-  const canonical_hex = toHex(canonical)
-  const wire_hex = toHex(wire)
-  const receipt_hash_hex = toHex(receiptHash(canonical))
-  const decodedC = decodeInvoiceCanonical(canonical)
-  const decodedW = await wireDecode(wire)
-  const roundtrip = JSON.stringify(decodedC) === JSON.stringify(decodedW)
-  return {
-    name,
-    canonical_hex,
-    wire_hex,
-    receipt_hash_hex,
-    decoded: decodedC,
-    roundtrip,
-    diagnostic: diagnostic ?? WIRE_DIAG,
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Main
@@ -402,8 +210,8 @@ async function main(): Promise<void> {
       'extension-og-param',
       base({
         invoice_id: 'INV-EXT-OG',
-        from: { name: 'Alice Dev Studio', wallet_address: FROM_WALLET, email: 'alice@dev.io' },
-        client: { name: 'Acme Corp', wallet_address: CLIENT_WALLET },
+        from: { name: 'Alice Dev Studio', wallet_address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', email: 'alice@dev.io' },
+        client: { name: 'Acme Corp', wallet_address: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8' },
         notes: 'Please pay within 30 days',
         total: '5000000',
         items: [{ description: 'Design work', quantity: 1.0, rate: '5000000' }],
@@ -439,7 +247,7 @@ async function main(): Promise<void> {
       'unicode-cyrillic',
       base({
         invoice_id: 'INV-UNI-CYR',
-        from: { name: 'Алиса Разработчик', wallet_address: FROM_WALLET },
+        from: { name: 'Алиса Разработчик', wallet_address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' },
         client: { name: 'Боб Клиент' },
         items: [{ description: 'Консультационные услуги', quantity: 1.0, rate: '2000000' }],
         total: '2000000',
@@ -455,7 +263,7 @@ async function main(): Promise<void> {
       'unicode-cjk',
       base({
         invoice_id: 'INV-UNI-CJK',
-        from: { name: 'Alice', wallet_address: FROM_WALLET },
+        from: { name: 'Alice', wallet_address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' },
         client: { name: 'Bob' },
         items: [{ description: '软件开发咨询服务', quantity: 1.0, rate: '3000000' }],
         total: '3000000',
@@ -471,7 +279,7 @@ async function main(): Promise<void> {
       'unicode-emoji',
       base({
         invoice_id: 'INV-UNI-EMJ',
-        from: { name: 'Alice 🚀', wallet_address: FROM_WALLET },
+        from: { name: 'Alice 🚀', wallet_address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' },
         client: { name: 'Bob' },
         items: [{ description: 'Premium consulting', quantity: 1.0, rate: '5000000' }],
         total: '5000000',
@@ -489,7 +297,7 @@ async function main(): Promise<void> {
       'unicode-rtl',
       base({
         invoice_id: 'INV-UNI-RTL',
-        from: { name: 'أليس المطور', wallet_address: FROM_WALLET },
+        from: { name: 'أليس المطور', wallet_address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' },
         client: { name: 'Bob' },
         items: [{ description: 'خدمات استشارية', quantity: 1.0, rate: '1500000' }],
         total: '1500000',
@@ -505,7 +313,7 @@ async function main(): Promise<void> {
       'unicode-mixed',
       base({
         invoice_id: 'INV-UNI-MIX',
-        from: { name: 'Alice 🌍', wallet_address: FROM_WALLET },
+        from: { name: 'Alice 🌍', wallet_address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' },
         client: { name: 'Боб / 鲍勃' },
         items: [
           { description: '咨询服务 / Consulting / Консультации', quantity: 1.0, rate: '4000000' },
@@ -635,24 +443,9 @@ async function main(): Promise<void> {
     // Compute separator over last-write-wins projection (second TLV_TOTAL value)
     // The second TLV_TOTAL carries value 0x0201 (same as first — makes LWW detectable)
     const firstTotal = contentRecords.get(24)! // 0x0201
-    const domSep = computeDomainSeparatorBytes(contentRecords)
+    const domSepBytes = computeDomainSeparatorBytes(contentRecords)
 
     // Build the raw wire stream manually with two TLV_TOTAL records
-    // Layout: all content records in ascending order, BUT tag 24 appears twice
-    // (first occurrence before tag 24's normal position, second in normal position),
-    // then tag 31 with the valid separator.
-    // Simplest: emit all records in order, then append a second tag 24 after tag 31.
-    // But the BTreeMap in Rust reads all records before checksum — so both TLVs must
-    // be in the stream. Place the first TLV_TOTAL at its natural position and append
-    // a second TLV_TOTAL with a different value BEFORE tag 31 so the parser sees it.
-    //
-    // Chosen layout (ascending except second tag-24 injected after tag-22):
-    //   tags 2,4,6,8,10,12,14,16,18,20,22 | 24 (first, value=0x0202) | 24 (second=0x0201) | 31
-    // The separator is over {2,4,6,8,10,12,14,16,18,20,22,24(0x0201)} — LWW.
-
-    const altTotalValue = new Uint8Array([0x02, 0x02]) // different from original 0x0201
-
-    // Build the TLV stream bytes directly
     function tlvRecord(tag: number, value: Uint8Array): Uint8Array {
       const lenBytes = writeLEB128(value.length)
       const rec = new Uint8Array(1 + lenBytes.length + value.length)
@@ -662,27 +455,25 @@ async function main(): Promise<void> {
       return rec
     }
 
+    const altTotalValue = new Uint8Array([0x02, 0x02]) // different from original 0x0201
+
     const sortedTags = [...contentRecords.keys()].sort((a, b) => a - b)
     const streamParts: Uint8Array[] = []
     for (const tag of sortedTags) {
       if (tag === 24) {
-        // First occurrence: alternative value
         streamParts.push(tlvRecord(24, altTotalValue))
-        // Second occurrence: original value (this is what LWW projection keeps)
         streamParts.push(tlvRecord(24, firstTotal))
       } else {
         streamParts.push(tlvRecord(tag, contentRecords.get(tag)!))
       }
     }
-    // Append domain separator (tag 31)
-    streamParts.push(tlvRecord(31, domSep))
+    streamParts.push(tlvRecord(31, domSepBytes))
 
     const streamLen = streamParts.reduce((n, p) => n + p.length, 0)
-    // COUNT = contentRecords.size + 1 (tag-31) + 1 (extra tag-24) = 14
     const count = sortedTags.length + 1 + 1
     const payload = new Uint8Array(3 + streamLen)
-    payload[0] = 0x56 // MAGIC
-    payload[1] = 0x01 // VERSION
+    payload[0] = 0x56
+    payload[1] = 0x01
     payload[2] = count
     let woff = 3
     for (const p of streamParts) {
@@ -695,6 +486,39 @@ async function main(): Promise<void> {
       canonical_hex: toHex(payload),
       diagnostic: 'malformed:canonical',
       expected_error: 'InvalidData',
+    })
+  }
+
+  // 8. Extra malformed — hand-added post-tranche-B, kept in generator for parity.
+
+  // 8a. Non-canonical varint: COUNT byte is [0x80, 0x00] which encodes 0 with
+  //     a spurious continuation byte — canonical LEB128 requires shortest encoding.
+  {
+    const bytes = new Uint8Array([0x56, 0x01, 0x80, 0x00])
+    vectors.push({
+      name: 'malformed-non-canonical-varint',
+      canonical_hex: toHex(bytes),
+      diagnostic:
+        'malformed:canonical — LEB128 varint [0x80, 0x00] encodes value 0 with a spurious continuation byte; canonical form requires the shortest encoding (single 0x00 byte). Decoder must reject.',
+      expected_error: 'Truncated',
+    })
+  }
+
+  // 8b. Unknown content tag 39 (0x27) appended after a valid domain separator —
+  //     the decoder must reject with UnknownExtension before checksum validation.
+  {
+    const bytes = new Uint8Array(
+      Buffer.from(
+        '56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be52702dead',
+        'hex',
+      ),
+    )
+    vectors.push({
+      name: 'malformed-unknown-content-tag',
+      canonical_hex: toHex(bytes),
+      diagnostic:
+        'malformed:canonical — TLV tag 39 (0x27) is outside the v1 KNOWN_TAGS set. Decoder must reject with UnknownExtension before checksum validation.',
+      expected_error: 'UnknownExtension',
     })
   }
 
