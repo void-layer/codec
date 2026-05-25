@@ -70,6 +70,11 @@ The v1 decoder is **fail-loud**: any `Ok(Invoice)` means every byte was read wit
 | Non-canonical LEB128 varint (redundant trailing zero group) | `InvalidData("non-canonical varint")` |
 | Salt length ≠ 16 bytes | `ChecksumMismatch` |
 | TLV value > 4096 bytes · TLV count > 64 · varint > 37 bytes | `Truncated` / `VarintOverflow` |
+| Raw-form encoding of a dict-known chain ID (non-canonical) | `InvalidData("non-canonical chain encoding: …")` |
+| Raw-form encoding of a dict-known currency symbol (non-canonical) | `InvalidData("non-canonical currency encoding: …")` |
+| Unknown prefix byte (≠ 0x00/0x01) on currency or token-address TLV | `UnknownExtension(prefix)` |
+| `TLV_DECIMALS` value length ≠ 1 byte | `InvalidData("non-canonical TLV_DECIMALS length: …")` |
+| Per-item quantity scale > 9 (non-canonical; encoder cap is 9) | `InvalidData("non-canonical quantity scale …")` |
 
 <details>
 <summary><b>Full <code>CodecError</code> variants</b></summary>
