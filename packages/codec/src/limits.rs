@@ -18,11 +18,6 @@ pub(crate) const MAX_ITEMS: usize = 50;
 /// a valid U256 can produce — capping lower would reject valid encodings.
 pub(crate) const MAX_TRAILING_ZEROS: u32 = 77;
 
-/// Maximum `scale` byte in the packed-items quantity encoding.
-/// scale is the number of decimal places: 0..=18. Values above 18 cannot be
-/// represented in f64 without precision loss beyond the f64 mantissa domain.
-pub(crate) const MAX_QUANTITY_SCALE: u32 = 18;
-
 /// Maximum safe integer for f64 mantissa precision (2^53).
 /// scaled_value above this cannot be represented exactly in f64.
 pub(crate) const MAX_SAFE_F64_INT: u64 = 9_007_199_254_740_992; // 2^53

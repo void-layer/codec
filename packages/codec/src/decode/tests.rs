@@ -361,7 +361,7 @@ fn decode_mantissa_rejects_scale_255() {
     write_varint(1, &mut data); // count=1
     write_varint(1, &mut data); // desc_len=1
     data.push(b'A'); // description
-    data.push(255u8); // scale=255 > MAX_QUANTITY_SCALE=18
+    data.push(255u8); // scale=255 > encoder cap of 9
     write_varint(1, &mut data); // scaled_value=1
     // rate mantissa + zeros (0 mantissa, 0 zeros)
     write_varint(0, &mut data); // mantissa varint (0)
@@ -369,8 +369,29 @@ fn decode_mantissa_rejects_scale_255() {
 
     let err = unpack_items(&data).unwrap_err();
     assert!(
-        matches!(err, CodecError::InvalidAmount(_)),
-        "expected InvalidAmount for scale=255, got {err:?}"
+        matches!(err, CodecError::InvalidData(_)),
+        "expected InvalidData for scale=255, got {err:?}"
+    );
+}
+
+/// P1-F1: scale=10 must be rejected — encoder caps at 9, decoder must match.
+/// A payload with scale=10 cannot be produced by the canonical encoder.
+#[test]
+fn decode_quantity_rejects_scale_above_encoder_cap() {
+    use crate::varint::write_varint;
+    let mut data = Vec::new();
+    write_varint(1, &mut data); // count=1
+    write_varint(1, &mut data); // desc_len=1
+    data.push(b'A');
+    data.push(10u8); // scale=10 > MAX_SCALE=9 (encoder cap)
+    write_varint(1, &mut data); // scaled_value=1
+    data.push(0x01u8); // mantissa=1
+    data.push(0u8); // zeros=0
+
+    let err = unpack_items(&data).unwrap_err();
+    assert!(
+        matches!(err, CodecError::InvalidData(_)),
+        "expected InvalidData for non-canonical scale=10, got {err:?}"
     );
 }
 
@@ -394,15 +415,16 @@ fn decode_mantissa_rejects_scaled_value_above_2_53() {
     );
 }
 
-/// Scale=18 with a safe scaled_value must decode successfully.
+/// Scale=9 (encoder max) with a safe scaled_value must decode successfully.
+/// Scale=18 is now rejected as non-canonical (encoder cap is 9).
 #[test]
-fn decode_mantissa_accepts_scale_18_safe_value() {
+fn decode_mantissa_accepts_scale_9_safe_value() {
     use crate::varint::write_varint;
     let mut data = Vec::new();
     write_varint(1, &mut data); // count=1
     write_varint(1, &mut data); // desc_len=1
     data.push(b'A');
-    data.push(18u8); // scale=18 (at MAX_QUANTITY_SCALE)
+    data.push(9u8); // scale=9 (at encoder MAX_SCALE)
     write_varint(1_000_000u64, &mut data); // well within 2^53
     // rate: mantissa=1, zeros=6 → 1_000_000
     data.push(0x01u8); // mantissa bigint varint: 1
