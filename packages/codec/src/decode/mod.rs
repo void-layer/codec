@@ -194,9 +194,15 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
     let decimals_bytes = records
         .get(&TLV_DECIMALS)
         .ok_or(CodecError::Truncated { needed: 1, had: 0 })?;
-    let decimals = *decimals_bytes
-        .first()
-        .ok_or(CodecError::Truncated { needed: 1, had: 0 })?;
+    // Canonical encoder always emits exactly 1 byte for TLV_DECIMALS.
+    // len > 1 silently truncated via .first() before this fix — reject instead.
+    if decimals_bytes.len() != 1 {
+        return Err(CodecError::InvalidData(format!(
+            "non-canonical TLV_DECIMALS length: expected 1, got {}",
+            decimals_bytes.len()
+        )));
+    }
+    let decimals = decimals_bytes[0];
 
     let from_wallet_bytes = records
         .get(&TLV_FROM_WALLET)

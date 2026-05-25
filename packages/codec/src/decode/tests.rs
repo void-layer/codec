@@ -436,3 +436,84 @@ fn decode_mantissa_accepts_scale_9_safe_value() {
     assert!(q.is_finite(), "quantity must be finite");
     assert!(q > 0.0, "quantity must be positive");
 }
+
+// --- P1-F4: TLV_DECIMALS strict length ---
+
+/// decode_invoice_canonical must reject a TLV_DECIMALS field with length != 1.
+/// Previously .first() silently truncated any trailing bytes.
+#[test]
+fn decode_rejects_non_canonical_decimals_length() {
+    use crate::encode::encode_invoice_canonical;
+    use crate::invoice::{Invoice, InvoiceClient, InvoiceFrom, InvoiceItem};
+    use crate::varint::write_varint;
+
+    let invoice = Invoice {
+        invoice_id: "INV-F4".to_string(),
+        issued_at: 1_700_000_000,
+        due_at: 1_700_604_800,
+        network_id: 1,
+        currency: "USDC".to_string(),
+        decimals: 6,
+        from: InvoiceFrom {
+            name: "Alice".to_string(),
+            wallet_address: "0xaabbccddee0011223344556677889900aabbccdd".to_string(),
+            email: None,
+            phone: None,
+            physical_address: None,
+            tax_id: None,
+        },
+        client: InvoiceClient {
+            name: "Bob".to_string(),
+            wallet_address: None,
+            email: None,
+            phone: None,
+            physical_address: None,
+            tax_id: None,
+        },
+        items: vec![InvoiceItem {
+            description: "Work".to_string(),
+            quantity: 1.0,
+            rate: "1000000".to_string(),
+        }],
+        token_address: None,
+        notes: None,
+        tax: None,
+        discount: None,
+        total: "1000000".to_string(),
+        salt: "00112233445566778899aabbccddeeff".to_string(),
+    };
+    let mut bytes = encode_invoice_canonical(&invoice).unwrap();
+
+    // Patch TLV_DECIMALS (type = TLV_DECIMALS) to length=2 by rebuilding its TLV entry.
+    let header_len = 3usize;
+    let mut i = header_len;
+    while i < bytes.len() {
+        let tlv_type = bytes[i];
+        let (length, n) = crate::varint::read_varint(&bytes, i + 1).unwrap();
+        let value_start = i + 1 + n;
+        let value_end = value_start + length as usize;
+        if tlv_type == crate::encode::TLV_DECIMALS {
+            // Replace with a 2-byte decimals value — non-canonical.
+            let mut tlv_new = Vec::new();
+            tlv_new.push(tlv_type);
+            write_varint(2u64, &mut tlv_new); // length=2
+            tlv_new.push(6u8); // decimals byte
+            tlv_new.push(0u8); // spurious extra byte
+            let mut rebuilt = bytes[..i].to_vec();
+            rebuilt.extend_from_slice(&tlv_new);
+            rebuilt.extend_from_slice(&bytes[value_end..]);
+            bytes = rebuilt;
+            break;
+        }
+        i = value_end;
+    }
+
+    let err = decode_invoice_canonical(&bytes).unwrap_err();
+    assert!(
+        matches!(
+            err,
+            CodecError::InvalidData(_) | CodecError::ChecksumMismatch
+        ),
+        "expected InvalidData or ChecksumMismatch for 2-byte TLV_DECIMALS, got {err:?}"
+    );
+}
