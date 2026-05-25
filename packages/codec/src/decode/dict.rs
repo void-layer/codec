@@ -8,6 +8,17 @@ use crate::varint::read_varint;
 
 use super::hex::bytes_to_address;
 
+/// Reverse-lookup a slice-based dict table by code byte.
+///
+/// Audit C finding #4: eliminates parallel find_map patterns for CURRENCY_DICT + TOKEN_DICT.
+/// Uses lazy `.then(|| v.clone())` to avoid the B-4 eager-alloc regression.
+pub(super) fn lookup_by_code<T: Clone>(table: &[(u8, T)], code: u8) -> Result<T, CodecError> {
+    table
+        .iter()
+        .find_map(|(c, v)| (*c == code).then(|| v.clone()))
+        .ok_or(CodecError::UnknownExtension(code))
+}
+
 /// Reverse app-level dictionary substitution (mirrors reverseDict from app-dict.ts).
 ///
 /// Reuses `encode::APP_DICT_ENTRIES` — the single ordered source of truth — so
@@ -40,6 +51,7 @@ pub(super) fn decode_chain_id(value: &[u8]) -> Result<u32, CodecError> {
         }
         let code = value[1];
         // Reverse lookup: code → chain_id
+        // CHAIN_DICT uses phf_map — different iterator shape; intentional non-uniformity per Audit C.
         let chain_id = CHAIN_DICT
             .entries()
             .find_map(|(&k, &v)| (v == code).then_some(k))
@@ -77,10 +89,7 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
             return Err(CodecError::Truncated { needed: 2, had: 1 });
         }
         let code = value[1];
-        crate::dict::currency::CURRENCY_DICT
-            .iter()
-            .find_map(|&(c, s)| (c == code).then_some(s.to_string()))
-            .ok_or(CodecError::UnknownExtension(code))
+        lookup_by_code(crate::dict::currency::CURRENCY_DICT, code).map(|s: &str| s.to_string())
     } else if value[0] == RAW_FORM {
         let currency = super::utf8_or(&value[1..], "currency")?;
         // T6: reject non-canonical encoding — if this currency is in the dict,
@@ -112,10 +121,7 @@ pub(super) fn decode_token_address(value: &[u8]) -> Result<String, CodecError> {
             return Err(CodecError::Truncated { needed: 2, had: 1 });
         }
         let code = value[1];
-        crate::dict::token::TOKEN_DICT
-            .iter()
-            .find_map(|&(c, addr)| (c == code).then_some(addr.to_string()))
-            .ok_or(CodecError::UnknownExtension(code))
+        lookup_by_code(crate::dict::token::TOKEN_DICT, code).map(|addr: &str| addr.to_string())
     } else if value[0] == RAW_FORM {
         bytes_to_address(&value[1..])
         // NOTE: T6 canonical-aliasing check is NOT applied here.
