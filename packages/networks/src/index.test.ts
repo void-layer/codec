@@ -1,15 +1,19 @@
 import { describe, it, expect } from 'vitest';
-import { SUPPORTED_CHAINS, SUPPORTED_TOKENS, getPublicRpcUrl } from './index.js';
+import { SUPPORTED_CHAINS, CHAINS, getPublicRpcUrl } from './index.js';
 
-describe('SUPPORTED_CHAINS', () => {
+describe('CHAINS / SUPPORTED_CHAINS', () => {
   const CHAIN_IDS = [1, 8453, 42161, 10, 137] as const;
 
   it('has exactly 5 supported chains', () => {
-    expect(Object.keys(SUPPORTED_CHAINS)).toHaveLength(5);
+    expect(Object.keys(CHAINS)).toHaveLength(5);
+  });
+
+  it('SUPPORTED_CHAINS is an alias for CHAINS', () => {
+    expect(SUPPORTED_CHAINS).toBe(CHAINS);
   });
 
   it.each(CHAIN_IDS)('chain %i has required shape fields', (id) => {
-    const chain = SUPPORTED_CHAINS[id];
+    const chain = CHAINS[id];
     expect(chain).toBeDefined();
     expect(typeof chain.name).toBe('string');
     expect(chain.name.length).toBeGreaterThan(0);
@@ -18,15 +22,21 @@ describe('SUPPORTED_CHAINS', () => {
     expect(typeof chain.nativeCurrency.symbol).toBe('string');
     expect(chain.nativeCurrency.decimals).toBe(18);
   });
-});
 
-describe('SUPPORTED_TOKENS', () => {
-  it('is an array', () => {
-    expect(Array.isArray(SUPPORTED_TOKENS)).toBe(true);
+  it.each(CHAIN_IDS)('chain %i has publicRpcUrls with 2+ entries', (id) => {
+    const chain = CHAINS[id];
+    expect(Array.isArray(chain.publicRpcUrls)).toBe(true);
+    expect(chain.publicRpcUrls.length).toBeGreaterThanOrEqual(2);
+    for (const url of chain.publicRpcUrls) {
+      expect(url).toMatch(/^https?:\/\//);
+    }
   });
 
-  it('is empty at 0.1.0 (@alpha stub)', () => {
-    expect(SUPPORTED_TOKENS).toHaveLength(0);
+  it.each(CHAIN_IDS)('chain %i publicRpcUrls contains no API keys', (id) => {
+    const chain = CHAINS[id];
+    for (const url of chain.publicRpcUrls) {
+      expect(url).not.toMatch(/alchemy|infura|quicknode/i);
+    }
   });
 });
 
@@ -42,7 +52,6 @@ describe('getPublicRpcUrl', () => {
   );
 
   it('throws for unknown chainId (numeric cast)', () => {
-    // Cast through unknown to simulate a caller passing an unsupported id
     expect(() => getPublicRpcUrl(999 as Parameters<typeof getPublicRpcUrl>[0])).toThrow(
       'Unsupported chainId',
     );
