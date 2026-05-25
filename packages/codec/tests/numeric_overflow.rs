@@ -5,7 +5,9 @@
 mod common;
 use common::*;
 
-use void_layer_codec::{CodecError, InvoiceItem, decode_invoice_canonical, encode_invoice_canonical};
+use void_layer_codec::{
+    CodecError, InvoiceItem, decode_invoice_canonical, encode_invoice_canonical,
+};
 
 // ---------------------------------------------------------------------------
 // G-05: issued_at=u32::MAX, due_delta=1 → checked_add overflow → InvalidAmount

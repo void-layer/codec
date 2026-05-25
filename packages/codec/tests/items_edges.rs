@@ -5,7 +5,9 @@
 mod common;
 use common::*;
 
-use void_layer_codec::{CodecError, InvoiceItem, decode_invoice_canonical, encode_invoice_canonical};
+use void_layer_codec::{
+    CodecError, InvoiceItem, decode_invoice_canonical, encode_invoice_canonical,
+};
 
 // ---------------------------------------------------------------------------
 // G-08: unpack_items with count=0 → Ok(empty vec)

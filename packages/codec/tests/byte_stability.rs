@@ -5,7 +5,10 @@
 mod common;
 use common::*;
 
-use void_layer_codec::{Invoice, InvoiceClient, InvoiceFrom, InvoiceItem, decode_invoice_canonical, encode_invoice_canonical};
+use void_layer_codec::{
+    Invoice, InvoiceClient, InvoiceFrom, InvoiceItem, decode_invoice_canonical,
+    encode_invoice_canonical,
+};
 
 #[test]
 fn g01_encode_decode_encode_is_byte_stable() {
