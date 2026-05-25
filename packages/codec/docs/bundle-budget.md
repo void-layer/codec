@@ -6,12 +6,20 @@
 
 | Component | Bytes | Cap | Margin |
 |-----------|-------|-----|--------|
-| `void_layer_codec_bg.wasm` raw | 180,042 | — | — |
-| `void_layer_codec_bg.wasm` gzip | 78,060 | 81,920 (80 KB) | ~4.7% |
+| `void_layer_codec_bg.wasm` raw | 180,017 | — | — |
+| `void_layer_codec_bg.wasm` gzip | 78,412 | 81,920 (80 KB) | ~4.3% |
 | Package tarball (`pkg/` + `dist/`) | 92,160 | 204,800 (200 KB) | ~55% |
 
-> Measured post fix-batch-4 (2026-05-22). gzip figure uses `gzip -c` (the
-> `scripts/assert-size.sh` gate method); `gzip -9` yields ~77,283 bytes.
+> Measured 2026-05-25 post R1-R9 DRY refactor. gzip figure uses `gzip -c` (the
+> `scripts/assert-size.sh` gate method).
+
+## Recent Deltas
+
+| Change | gzip delta |
+|--------|-----------|
+| U256 widening (ruint, D-B8) | +6 KB |
+| T6 decoder strictness gates (4 checks) | +~0.7 KB |
+| R1-R9 intra-codec DRY refactor | ~0 net |
 
 ## Notes
 
@@ -26,7 +34,12 @@
 
 ## Caps (spec §3)
 
-| Gate | Cap |
-|------|-----|
-| WASM gzip | 81,920 bytes (80 KB) |
-| Package tarball | 204,800 bytes (200 KB) |
+| Gate | Cap | Enforcement |
+|------|-----|-------------|
+| WASM gzip | 81,920 bytes (80 KB) | Hard — CI exits 1 on breach |
+| Package tarball | 204,800 bytes (200 KB) | Advisory — CI logs warning, does not fail (Phase 2 amend) |
+
+> **200 KB cap doctrine** (Phase 2 amend, Kai decision 2026-05-20): the 200 KB
+> package-tarball cap was demoted from hard-exit to advisory. CI logs the measurement
+> but does not block merges on tarball size alone. The 80 KB WASM gzip cap remains
+> hard. See `scripts/assert-size.sh` for the gate implementation.

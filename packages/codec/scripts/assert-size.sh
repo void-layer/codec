@@ -8,5 +8,6 @@ echo "WASM gzip: ${gzip_wasm} bytes (cap: ${MAX_WASM_GZIP_BYTES})"
 [[ "$gzip_wasm" -le "$MAX_WASM_GZIP_BYTES" ]] || { echo "FAIL: wasm gzip exceeds cap"; exit 1; }
 actual_pkg=$(tar czf - pkg/ dist/ | wc -c)
 echo "Package tarball: ${actual_pkg} bytes (cap: ${MAX_PACKAGE_BYTES})"
-[[ "$actual_pkg" -le "$MAX_PACKAGE_BYTES" ]] || { echo "FAIL: package exceeds cap"; exit 1; }
+# 200 KB cap is advisory (Phase 2 amend, 2026-05-20) — log warning, do not exit 1.
+[[ "$actual_pkg" -le "$MAX_PACKAGE_BYTES" ]] || echo "WARN: package tarball exceeds advisory 200 KB cap"
 echo "OK"
