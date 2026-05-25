@@ -348,3 +348,69 @@ fn decode_mantissa_rejects_78_trailing_zeros() {
         "expected Overflow for zeros > 77, got {err:?}"
     );
 }
+
+// --- T4: decode quantity scale + scaled_value caps ---
+
+/// A scale byte of 255 in packed-items quantity must be rejected.
+#[test]
+fn decode_mantissa_rejects_scale_255() {
+    use crate::varint::write_varint;
+    // Build a minimal packed-items payload: count=1, desc_len=1, desc="A",
+    // scale=255 (invalid), scaled_value=1.
+    let mut data = Vec::new();
+    write_varint(1, &mut data); // count=1
+    write_varint(1, &mut data); // desc_len=1
+    data.push(b'A'); // description
+    data.push(255u8); // scale=255 > MAX_QUANTITY_SCALE=18
+    write_varint(1, &mut data); // scaled_value=1
+    // rate mantissa + zeros (0 mantissa, 0 zeros)
+    write_varint(0, &mut data); // mantissa varint (0)
+    data.push(0u8); // trailing zeros=0
+
+    let err = unpack_items(&data).unwrap_err();
+    assert!(
+        matches!(err, CodecError::InvalidAmount(_)),
+        "expected InvalidAmount for scale=255, got {err:?}"
+    );
+}
+
+/// A scaled_value above 2^53 must be rejected (f64 precision loss).
+#[test]
+fn decode_mantissa_rejects_scaled_value_above_2_53() {
+    use crate::varint::write_varint;
+    let mut data = Vec::new();
+    write_varint(1, &mut data); // count=1
+    write_varint(1, &mut data); // desc_len=1
+    data.push(b'A');
+    data.push(0u8); // scale=0 (valid)
+    write_varint(9_007_199_254_740_993u64, &mut data); // 2^53 + 1 — exceeds MAX_SAFE_F64_INT
+    write_varint(1, &mut data); // mantissa=1
+    data.push(0u8); // zeros=0
+
+    let err = unpack_items(&data).unwrap_err();
+    assert!(
+        matches!(err, CodecError::InvalidAmount(_)),
+        "expected InvalidAmount for scaled_value > 2^53, got {err:?}"
+    );
+}
+
+/// Scale=18 with a safe scaled_value must decode successfully.
+#[test]
+fn decode_mantissa_accepts_scale_18_safe_value() {
+    use crate::varint::write_varint;
+    let mut data = Vec::new();
+    write_varint(1, &mut data); // count=1
+    write_varint(1, &mut data); // desc_len=1
+    data.push(b'A');
+    data.push(18u8); // scale=18 (at MAX_QUANTITY_SCALE)
+    write_varint(1_000_000u64, &mut data); // well within 2^53
+    // rate: mantissa=1, zeros=6 → 1_000_000
+    data.push(0x01u8); // mantissa bigint varint: 1
+    data.push(6u8); // zeros=6
+
+    let items = unpack_items(&data).unwrap();
+    assert_eq!(items.len(), 1);
+    let q = items[0].quantity;
+    assert!(q.is_finite(), "quantity must be finite");
+    assert!(q > 0.0, "quantity must be positive");
+}

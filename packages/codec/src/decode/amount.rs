@@ -2,7 +2,9 @@
 
 use crate::error::CodecError;
 use crate::invoice::InvoiceItem;
-use crate::limits::{MAX_ITEMS, MAX_TRAILING_ZEROS, MAX_VALUE_SIZE};
+use crate::limits::{
+    MAX_ITEMS, MAX_QUANTITY_SCALE, MAX_SAFE_F64_INT, MAX_TRAILING_ZEROS, MAX_VALUE_SIZE,
+};
 use crate::varint::{read_bigint_varint, read_bounded_len, read_varint};
 
 use super::dict::reverse_dict;
@@ -93,8 +95,18 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
         }
         let scale = data[offset] as u32;
         offset += 1;
+        if scale > MAX_QUANTITY_SCALE {
+            return Err(CodecError::InvalidAmount(format!(
+                "quantity scale {scale} exceeds MAX_DECIMALS {MAX_QUANTITY_SCALE}"
+            )));
+        }
         let (scaled_value, n) = read_varint(data, offset)?;
         offset += n;
+        if scaled_value > MAX_SAFE_F64_INT {
+            return Err(CodecError::InvalidAmount(format!(
+                "scaled_value {scaled_value} exceeds f64 mantissa precision (2^53)"
+            )));
+        }
         let quantity = scaled_value as f64 / 10f64.powi(scale as i32);
 
         // rate: mantissa + trailing zeros
