@@ -78,7 +78,7 @@ assert that `encodeInvoiceCanonical` throws the named error variant.
 
 ## Starter Set (v4-codec.json, schema_version=1)
 
-25 vectors. Last extended 2026-05-22 with 5 unicode coverage vectors and 2 malformed
+27 vectors. Last extended 2026-05-22 with 5 unicode coverage vectors and 4 malformed
 vectors anchoring the v1 decoder strictness invariants (Tranche B hardening — see
 [../../SECURITY.md#decoder-strictness-invariants-v1](../../SECURITY.md#decoder-strictness-invariants-v1)).
 
@@ -109,6 +109,8 @@ vectors anchoring the v1 decoder strictness invariants (Tranche B hardening — 
 | 23 | `unicode-mixed` | Unicode coverage (combined: cyrillic + cjk + emoji + rtl) | varies |
 | 24 | `malformed-unknown-tlv-tag` | Malformed — anchors C-2 (G-03) | — |
 | 25 | `malformed-duplicate-tlv-tag` | Malformed — anchors C-1 (G-04) | — |
+| 26 | `malformed-non-canonical-varint` | Malformed — anchors C-3 non-canonical LEB128 | — |
+| 27 | `malformed-unknown-content-tag` | Malformed — unknown dict content tag | — |
 
 **Changes from initial 16-vector set (C9 amendment, 2026-05-20)**:
 - `bigint-amount-u128-max` replaced by `bigint-amount-uint256-max` (U256::MAX =
@@ -140,6 +142,13 @@ vectors anchoring the v1 decoder strictness invariants (Tranche B hardening — 
   - `malformed-duplicate-tlv-tag`: contains two `TLV_TOTAL` records. Expected:
     `InvalidData("duplicate TLV tag")` — caught inside `read_tlv_stream` before
     `verify_domain_separator` runs.
+
+**Changes from 25-vector set (2026-05-22 T6 hardening extension)**:
+- 2 malformed vectors (`#26–27`) appended as regression anchors for T6 decoder hardening:
+  - `malformed-non-canonical-varint`: anchors C-3 (non-canonical LEB128 varint). Expected:
+    `InvalidData("non-canonical varint")`.
+  - `malformed-unknown-content-tag`: contains an unknown dict content-tag byte. Expected:
+    `UnknownExtension(tag)`.
 
 **Why some vectors are uncompressed**: the T-P2-0a Brotli spike measured that
 payloads under ~180 bytes expand under Brotli q11. All single-item minimal invoices
