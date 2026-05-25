@@ -24,6 +24,7 @@ pub mod error;
 pub mod invoice;
 pub mod prelude;
 
+pub(crate) mod canonical;
 pub(crate) mod decode;
 pub(crate) mod dict;
 pub(crate) mod encode;

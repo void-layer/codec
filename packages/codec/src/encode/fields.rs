@@ -3,13 +3,11 @@
 use std::collections::BTreeMap;
 
 use crate::error::CodecError;
-use crate::hash::keccak256;
 use crate::limits::MAX_ITEMS;
 use crate::varint::write_varint;
 
 use super::amount::{mantissa_bytes, write_quantity};
 use super::dict::apply_dict;
-use super::tags::TLV_DOMAIN_SEPARATOR;
 
 /// Encode items array into packed binary (Type 14, mirrors packItems from encode.ts).
 /// Format: [count: varint] per item: [desc_len: varint][desc_bytes][qty: scale+varint][rate: mantissa]
@@ -40,23 +38,9 @@ pub(super) fn pack_items(items: &[crate::invoice::InvoiceItem]) -> Result<Vec<u8
 }
 
 /// Compute domain separator: keccak256("VOIDPAY_INVOICE_V1" || serialized TLV records except type 31).
-/// Mirrors computeDomainSeparator from security.ts.
+/// Mirrors computeDomainSeparator from security.ts. Delegates to crate::canonical — single source of truth.
 pub(super) fn compute_domain_separator(records: &BTreeMap<u8, Vec<u8>>) -> Vec<u8> {
-    let prefix = b"VOIDPAY_INVOICE_V1";
-    let mut body: Vec<u8> = prefix.to_vec();
-
-    // Serialize each record except domain separator (type 31) in key-ascending order
-    for (&tlv_type, value) in records {
-        if tlv_type == TLV_DOMAIN_SEPARATOR {
-            continue;
-        }
-        // type(1) + length(varint) + value — mirrors TLV wire format
-        body.push(tlv_type);
-        write_varint(value.len() as u64, &mut body);
-        body.extend_from_slice(value);
-    }
-
-    keccak256(&body).to_vec()
+    crate::canonical::compute_domain_separator(records).to_vec()
 }
 
 #[cfg(test)]
