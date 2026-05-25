@@ -134,29 +134,27 @@ describe('decodeInvoiceWire decompression-bomb guard', () => {
 })
 
 // ---------------------------------------------------------------------------
-// G-11 TS parity: write_quantity(0.1234567891) scale clamps at 9, silent rounding.
-// The TS shim calls the WASM encodeInvoiceCanonical which calls the Rust write_quantity.
+// G-11 T5: write_quantity rejects > 9 significant decimals (PrecisionLoss).
+// T5 changed silent clamp → explicit CodecError::PrecisionLoss throw.
 // ---------------------------------------------------------------------------
 
-describe('G-11: write_quantity clamps scale at 9 (TS parity)', () => {
-  it('encodes 0.1234567891 without error (scale clamps at 9)', () => {
+describe('G-11: write_quantity PrecisionLoss on >9 decimals (T5)', () => {
+  it('G-11: write_quantity rejects > 9 significant decimals (T5)', () => {
     const inv: Invoice = {
       ...MINIMAL_INVOICE,
-      items: [{ description: 'Fractional qty', quantity: 0.1234567891, rate: '1000000' }],
+      items: [{ description: 'precision-test', quantity: 0.1234567891, rate: '1000000' }],
     }
-    // Must not throw — scale clamps silently at 9.
-    expect(() => encodeInvoiceCanonical(inv)).not.toThrow()
+    expect(() => encodeInvoiceCanonical(inv)).toThrow(/more than 9 significant decimals/)
   })
 
-  it('decoded quantity is close to 0.1234567891 (within 1e-6)', async () => {
+  it('G-11: write_quantity accepts exactly 9 significant decimals (T5 boundary)', () => {
     const inv: Invoice = {
       ...MINIMAL_INVOICE,
-      items: [{ description: 'Fractional qty', quantity: 0.1234567891, rate: '1000000' }],
+      items: [{ description: 'boundary-test', quantity: 0.123456789, rate: '1000000' }],
     }
-    const canonical = encodeInvoiceCanonical(inv)
-    const decoded = decodeInvoiceCanonical(canonical) as { items: { quantity: number }[] }
-    const qty = decoded.items[0]!.quantity
-    expect(Math.abs(qty - 0.1234567891)).toBeLessThan(1e-6)
+    const encoded = encodeInvoiceCanonical(inv)
+    const decoded = decodeInvoiceCanonical(encoded) as { items: { quantity: number }[] }
+    expect(decoded.items[0]!.quantity).toBeCloseTo(0.123456789, 9)
   })
 })
 
