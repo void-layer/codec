@@ -3,6 +3,7 @@ name = "void-layer-codec"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+readme = "README.md"
 description = "Canonical Invoice codec — TLV wire format, Brotli via JS shim"
 repository = "https://github.com/void-layer/codec"
 
