@@ -10,13 +10,7 @@ pub(super) fn bytes_to_address(bytes: &[u8]) -> Result<String, CodecError> {
             had: bytes.len(),
         });
     }
-    use std::fmt::Write as _;
-    let mut hex = String::with_capacity(42);
-    hex.push_str("0x");
-    for b in bytes {
-        let _ = write!(hex, "{b:02x}");
-    }
-    Ok(hex)
+    Ok(format!("0x{}", bytes_to_hex(bytes)))
 }
 
 /// Decode raw bytes to a lowercase hex string (for salt, arbitrary length).

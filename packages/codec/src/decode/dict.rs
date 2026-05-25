@@ -42,8 +42,7 @@ pub(super) fn decode_chain_id(value: &[u8]) -> Result<u32, CodecError> {
         // Reverse lookup: code → chain_id
         let chain_id = CHAIN_DICT
             .entries()
-            .find(|&(&_k, &v)| v == code)
-            .map(|(&k, _)| k)
+            .find_map(|(&k, &v)| (v == code).then_some(k))
             .ok_or(CodecError::UnknownExtension(code))?;
         Ok(chain_id)
     } else if prefix == 0x01 {
@@ -130,8 +129,7 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
         let code = value[1];
         CURRENCY_CODE_TO_SYMBOL
             .iter()
-            .find(|&&(c, _)| c == code)
-            .map(|&(_, s)| s.to_string())
+            .find_map(|&(c, s)| (c == code).then_some(s.to_string()))
             .ok_or(CodecError::UnknownExtension(code))
     } else {
         let currency = String::from_utf8(value[1..].to_vec())
@@ -165,8 +163,7 @@ pub(super) fn decode_token_address(value: &[u8]) -> Result<String, CodecError> {
         let code = value[1];
         TOKEN_CODE_TO_ADDRESS
             .iter()
-            .find(|&&(c, _)| c == code)
-            .map(|&(_, addr)| addr.to_string())
+            .find_map(|&(c, addr)| (c == code).then_some(addr.to_string()))
             .ok_or(CodecError::UnknownExtension(code))
     } else {
         bytes_to_address(&value[1..])

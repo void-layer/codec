@@ -13,6 +13,30 @@ use super::dict::reverse_dict;
 /// Bounds the per-item slice read against hostile varint lengths.
 const MAX_DESC_LEN: usize = MAX_VALUE_SIZE;
 
+/// Convert a big-endian mantissa byte slice + trailing-zero count to a decimal string.
+/// `overflow_ctx` is used verbatim in error messages to identify the call site.
+fn mantissa_to_decimal_string(
+    mantissa_be: &[u8],
+    zeros: u32,
+    overflow_ctx: &str,
+) -> Result<String, CodecError> {
+    use ruint::aliases::U256;
+    if mantissa_be.len() > 32 {
+        return Err(CodecError::InvalidAmount(format!(
+            "{overflow_ctx} mantissa varint too large: {} bytes exceeds U256",
+            mantissa_be.len()
+        )));
+    }
+    let mut be32 = [0u8; 32];
+    be32[32 - mantissa_be.len()..].copy_from_slice(mantissa_be);
+    let mantissa = U256::from_be_bytes(be32);
+    let scale = U256::from(10u64).pow(U256::from(zeros));
+    mantissa
+        .checked_mul(scale)
+        .map(|v| v.to_string())
+        .ok_or_else(|| CodecError::InvalidAmount(format!("{overflow_ctx} overflow U256")))
+}
+
 /// Decode mantissa-encoded amount from bytes (mirrors readMantissa from varint.ts).
 /// Returns amount as a decimal string (BigInt-safe).
 pub(super) fn decode_mantissa(bytes: &[u8]) -> Result<String, CodecError> {
@@ -33,23 +57,7 @@ pub(super) fn decode_mantissa(bytes: &[u8]) -> Result<String, CodecError> {
             "mantissa trailing zeros {zeros} exceeds maximum {MAX_TRAILING_ZEROS}"
         )));
     }
-
-    // Reconstruct value: mantissa_bytes is big-endian → U256
-    use ruint::aliases::U256;
-    if mantissa_bytes.len() > 32 {
-        return Err(CodecError::InvalidAmount(format!(
-            "mantissa varint too large: {} bytes exceeds U256",
-            mantissa_bytes.len()
-        )));
-    }
-    let mut be32 = [0u8; 32];
-    be32[32 - mantissa_bytes.len()..].copy_from_slice(&mantissa_bytes);
-    let mantissa = U256::from_be_bytes(be32);
-    let scale = U256::from(10u64).pow(U256::from(zeros));
-    let value = mantissa
-        .checked_mul(scale)
-        .ok_or_else(|| CodecError::InvalidAmount("amount overflow U256".to_string()))?;
-    Ok(value.to_string())
+    mantissa_to_decimal_string(&mantissa_bytes, zeros, "amount")
 }
 
 /// Decode packed items from Type 14 binary format (mirrors unpackItems from decode.ts).
@@ -126,21 +134,7 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
             )));
         }
 
-        use ruint::aliases::U256;
-        if mantissa_be.len() > 32 {
-            return Err(CodecError::InvalidAmount(format!(
-                "item {i} rate mantissa varint too large: {} bytes exceeds U256",
-                mantissa_be.len()
-            )));
-        }
-        let mut be32 = [0u8; 32];
-        be32[32 - mantissa_be.len()..].copy_from_slice(&mantissa_be);
-        let mantissa = U256::from_be_bytes(be32);
-        let scale = U256::from(10u64).pow(U256::from(zeros));
-        let rate = mantissa
-            .checked_mul(scale)
-            .ok_or_else(|| CodecError::InvalidAmount(format!("item {i} rate overflow U256")))?
-            .to_string();
+        let rate = mantissa_to_decimal_string(&mantissa_be, zeros, &format!("item {i} rate"))?;
 
         items.push(InvoiceItem {
             description,
