@@ -3,29 +3,34 @@
 
 use crate::error::CodecError;
 
-/// Decode a 0x-prefixed hex address to 20 raw bytes.
-pub(super) fn address_to_bytes(address: &str) -> Result<[u8; 20], CodecError> {
-    let hex = address.strip_prefix("0x").unwrap_or(address);
-    if hex.len() != 40 {
+fn hex_nibble(byte: u8) -> Result<u8, CodecError> {
+    match byte {
+        b'0'..=b'9' => Ok(byte - b'0'),
+        b'a'..=b'f' => Ok(byte - b'a' + 10),
+        b'A'..=b'F' => Ok(byte - b'A' + 10),
+        _ => Err(CodecError::InvalidAddress("invalid address hex".to_string())),
+    }
+}
+
+fn hex_decode_fixed<const N: usize>(hex: &str, label: &str) -> Result<[u8; N], CodecError> {
+    let hex = hex.strip_prefix("0x").unwrap_or(hex);
+    if hex.len() != N * 2 {
         return Err(CodecError::InvalidAddress(format!(
-            "address must be 40 hex chars (20 bytes), got {}",
+            "{label} must be {} hex chars ({N} bytes), got {}",
+            N * 2,
             hex.len()
         )));
     }
-    let hex_bytes = hex.as_bytes();
-    if !hex_bytes.iter().all(|b| b.is_ascii()) {
-        return Err(CodecError::InvalidAddress(
-            "invalid address hex".to_string(),
-        ));
-    }
-    let mut out = [0u8; 20];
-    for i in 0..20 {
-        let slice = std::str::from_utf8(&hex_bytes[i * 2..i * 2 + 2])
-            .map_err(|_| CodecError::InvalidAddress("invalid address hex".to_string()))?;
-        out[i] = u8::from_str_radix(slice, 16)
-            .map_err(|_| CodecError::InvalidAddress("invalid address hex".to_string()))?;
+    let mut out = [0u8; N];
+    for (i, pair) in hex.as_bytes().chunks_exact(2).enumerate() {
+        out[i] = (hex_nibble(pair[0])? << 4) | hex_nibble(pair[1])?;
     }
     Ok(out)
+}
+
+/// Decode a 0x-prefixed hex address to 20 raw bytes.
+pub(super) fn address_to_bytes(address: &str) -> Result<[u8; 20], CodecError> {
+    hex_decode_fixed::<20>(address, "address")
 }
 
 /// Token address → dict code (mirrors TOKEN_DICT in tlv-map.ts). Static: zero per-call alloc.
@@ -108,27 +113,7 @@ pub(super) fn encode_token_address(address: &str, network_id: u32) -> Result<Vec
 
 /// Decode a 32-char hex string (16 bytes) into raw bytes for salt.
 pub(super) fn hex_decode_salt(hex: &str) -> Result<Vec<u8>, CodecError> {
-    let hex = hex.strip_prefix("0x").unwrap_or(hex);
-    if hex.len() != 32 {
-        return Err(CodecError::InvalidAddress(format!(
-            "salt must be 32 hex chars (16 bytes), got {} chars",
-            hex.len()
-        )));
-    }
-    let hex_bytes = hex.as_bytes();
-    if !hex_bytes.iter().all(|b| b.is_ascii()) {
-        return Err(CodecError::InvalidAddress("invalid salt hex".to_string()));
-    }
-    let mut bytes = Vec::with_capacity(16);
-    for i in 0..16 {
-        let slice = std::str::from_utf8(&hex_bytes[i * 2..i * 2 + 2])
-            .map_err(|_| CodecError::InvalidAddress("invalid salt hex".to_string()))?;
-        bytes.push(
-            u8::from_str_radix(slice, 16)
-                .map_err(|_| CodecError::InvalidAddress("invalid salt hex".to_string()))?,
-        );
-    }
-    Ok(bytes)
+    hex_decode_fixed::<16>(hex, "salt").map(|a| a.to_vec())
 }
 
 #[cfg(test)]
