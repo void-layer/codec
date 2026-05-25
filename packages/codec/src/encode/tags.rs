@@ -45,7 +45,7 @@ pub(crate) const COMPRESSED_FLAG: u8 = 0x80;
 /// This list is the canonical registry: the decoder imports it directly so the
 /// encode and decode sides cannot silently diverge when new tags are added.
 ///
-/// Content tags (25) + TLV_DOMAIN_SEPARATOR (31) + TLV_FROM_TAX_ID (35) + TLV_CLIENT_TAX_ID (37) = 28 total.
+/// Content tags (23) + TLV_DOMAIN_SEPARATOR (31) + TLV_FROM_TAX_ID (35) + TLV_CLIENT_TAX_ID (37) = 26 total.
 pub(crate) const KNOWN_TAGS: &[u8] = &[
     TLV_TOKEN_ADDRESS,    // 1
     TLV_CHAIN_ID,         // 2
