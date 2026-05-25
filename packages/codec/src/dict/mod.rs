@@ -3,6 +3,11 @@ pub(crate) mod chain;
 pub(crate) mod currency;
 pub(crate) mod token;
 
+/// TLV value-prefix discriminator: dict-known code follows (spec §5.1/§5.2).
+pub(crate) const DICT_FORM: u8 = 0x00;
+/// TLV value-prefix discriminator: raw payload follows (spec §5.1/§5.2).
+pub(crate) const RAW_FORM: u8 = 0x01;
+
 #[cfg(test)]
 mod tests {
     use super::app::APP_DICT;

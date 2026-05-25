@@ -2,6 +2,7 @@
 // Mirrors applyDict from app-dict.ts and the chain-dict / CURRENCY_DICT schemes.
 
 use crate::dict::chain::CHAIN_DICT;
+use crate::dict::{DICT_FORM, RAW_FORM};
 use crate::error::CodecError;
 use crate::varint::write_varint;
 
@@ -74,9 +75,9 @@ pub(super) fn apply_dict(input: &str) -> Result<Vec<u8>, CodecError> {
 ///   0x01 <varint> — unknown chain (raw varint, 2+ bytes)
 pub(super) fn encode_chain_id(network_id: u32) -> Vec<u8> {
     if let Some(&code) = CHAIN_DICT.get(&network_id) {
-        vec![0x00, code]
+        vec![DICT_FORM, code]
     } else {
-        let mut buf = vec![0x01];
+        let mut buf = vec![RAW_FORM];
         write_varint(network_id as u64, &mut buf);
         buf
     }
@@ -91,9 +92,9 @@ pub(super) fn encode_currency(currency: &str) -> Vec<u8> {
         .iter()
         .find(|&&(_, sym)| sym == upper.as_str())
     {
-        vec![0x00, code]
+        vec![DICT_FORM, code]
     } else {
-        let mut val = vec![0x01];
+        let mut val = vec![RAW_FORM];
         val.extend_from_slice(currency.as_bytes());
         val
     }

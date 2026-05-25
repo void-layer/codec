@@ -2,6 +2,7 @@
 // app-level text substitution.
 
 use crate::dict::chain::CHAIN_DICT;
+use crate::dict::{DICT_FORM, RAW_FORM};
 use crate::error::CodecError;
 use crate::varint::read_varint;
 
@@ -34,7 +35,7 @@ pub(super) fn decode_chain_id(value: &[u8]) -> Result<u32, CodecError> {
         return Err(CodecError::Truncated { needed: 2, had: 0 });
     }
     let prefix = value[0];
-    if prefix == 0x00 {
+    if prefix == DICT_FORM {
         if value.len() < 2 {
             return Err(CodecError::Truncated { needed: 2, had: 1 });
         }
@@ -45,7 +46,7 @@ pub(super) fn decode_chain_id(value: &[u8]) -> Result<u32, CodecError> {
             .find_map(|(&k, &v)| (v == code).then_some(k))
             .ok_or(CodecError::UnknownExtension(code))?;
         Ok(chain_id)
-    } else if prefix == 0x01 {
+    } else if prefix == RAW_FORM {
         let (chain_id_u64, _) = read_varint(value, 1)?;
         // Reject chain IDs > u32::MAX instead of silently truncating.
         let chain_id = u32::try_from(chain_id_u64).map_err(|_| {
@@ -72,7 +73,7 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
     if value.is_empty() {
         return Err(CodecError::Truncated { needed: 2, had: 0 });
     }
-    if value[0] == 0x00 {
+    if value[0] == DICT_FORM {
         if value.len() < 2 {
             return Err(CodecError::Truncated { needed: 2, had: 1 });
         }
@@ -81,11 +82,11 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
             .iter()
             .find_map(|&(c, s)| (c == code).then_some(s.to_string()))
             .ok_or(CodecError::UnknownExtension(code))
-    } else if value[0] == 0x01 {
+    } else if value[0] == RAW_FORM {
         let currency = String::from_utf8(value[1..].to_vec())
             .map_err(|_| CodecError::InvalidData("invalid UTF-8 in currency".to_string()))?;
         // T6: reject non-canonical encoding — if this currency is in the dict,
-        // the encoder must have used dict form [0x00, code].
+        // the encoder must have used dict form [DICT_FORM, code].
         let upper = currency.to_uppercase();
         if crate::dict::currency::CURRENCY_DICT
             .iter()
@@ -108,7 +109,7 @@ pub(super) fn decode_token_address(value: &[u8]) -> Result<String, CodecError> {
     if value.is_empty() {
         return Err(CodecError::Truncated { needed: 2, had: 0 });
     }
-    if value[0] == 0x00 {
+    if value[0] == DICT_FORM {
         if value.len() < 2 {
             return Err(CodecError::Truncated { needed: 2, had: 1 });
         }
@@ -117,7 +118,7 @@ pub(super) fn decode_token_address(value: &[u8]) -> Result<String, CodecError> {
             .iter()
             .find_map(|&(c, addr)| (c == code).then_some(addr.to_string()))
             .ok_or(CodecError::UnknownExtension(code))
-    } else if value[0] == 0x01 {
+    } else if value[0] == RAW_FORM {
         bytes_to_address(&value[1..])
         // NOTE: T6 canonical-aliasing check is NOT applied here.
         // Token addresses may legitimately appear raw even when the address is

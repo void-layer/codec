@@ -38,6 +38,7 @@ pub(super) fn address_to_bytes(address: &str) -> Result<[u8; 20], CodecError> {
 ///   0x01 <20 bytes> — raw address
 pub(super) fn encode_token_address(address: &str, network_id: u32) -> Result<Vec<u8>, CodecError> {
     use crate::dict::token::{CHAIN_CODE_RANGES, TOKEN_DICT};
+    use crate::dict::{DICT_FORM, RAW_FORM};
 
     let addr_lower = address.to_lowercase();
 
@@ -51,12 +52,12 @@ pub(super) fn encode_token_address(address: &str, network_id: u32) -> Result<Vec
             .is_none_or(|&(_, min, max)| (min..=max).contains(&code));
 
         if in_range {
-            return Ok(vec![0x00, code]);
+            return Ok(vec![DICT_FORM, code]);
         }
     }
 
     let raw = address_to_bytes(address)?;
-    let mut val = vec![0x01];
+    let mut val = vec![RAW_FORM];
     val.extend_from_slice(&raw);
     Ok(val)
 }
