@@ -131,7 +131,7 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
             .iter()
             .find_map(|&(c, s)| (c == code).then_some(s.to_string()))
             .ok_or(CodecError::UnknownExtension(code))
-    } else {
+    } else if value[0] == 0x01 {
         let currency = String::from_utf8(value[1..].to_vec())
             .map_err(|_| CodecError::InvalidData("invalid UTF-8 in currency".to_string()))?;
         // T6: reject non-canonical encoding — if this currency is in the dict,
@@ -146,6 +146,8 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
             )));
         }
         Ok(currency)
+    } else {
+        Err(CodecError::UnknownExtension(value[0]))
     }
 }
 
@@ -249,6 +251,17 @@ mod tests {
         assert!(
             matches!(err, crate::error::CodecError::InvalidData(_)),
             "expected InvalidData for raw-encoded dict-known currency, got {err:?}"
+        );
+    }
+
+    /// P1-F2: decode_currency must reject any prefix that is neither 0x00 nor 0x01.
+    #[test]
+    fn decode_currency_rejects_unknown_prefix() {
+        let value = vec![0x02u8, b'X', b'Y', b'Z'];
+        let err = decode_currency(&value).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::UnknownExtension(0x02)),
+            "expected UnknownExtension(0x02) for unknown currency prefix, got {err:?}"
         );
     }
 
