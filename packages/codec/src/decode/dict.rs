@@ -47,10 +47,20 @@ pub(super) fn decode_chain_id(value: &[u8]) -> Result<u32, CodecError> {
             .ok_or(CodecError::UnknownExtension(code))?;
         Ok(chain_id)
     } else if prefix == 0x01 {
-        let (chain_id, _) = read_varint(value, 1)?;
+        let (chain_id_u64, _) = read_varint(value, 1)?;
         // Reject chain IDs > u32::MAX instead of silently truncating.
-        u32::try_from(chain_id)
-            .map_err(|_| CodecError::InvalidAmount(format!("chain ID {chain_id} overflows u32")))
+        let chain_id = u32::try_from(chain_id_u64).map_err(|_| {
+            CodecError::InvalidAmount(format!("chain ID {chain_id_u64} overflows u32"))
+        })?;
+        // T6: reject non-canonical encoding — if this chain_id is in the dict,
+        // the encoder must have used dict form [0x00, code]. Raw form for a known
+        // chain ID means the payload was not produced by the canonical encoder.
+        if CHAIN_DICT.contains_key(&chain_id) {
+            return Err(CodecError::InvalidData(format!(
+                "non-canonical chain encoding: chain {chain_id} must use dict form"
+            )));
+        }
+        Ok(chain_id)
     } else {
         Err(CodecError::UnknownExtension(prefix))
     }
@@ -124,8 +134,20 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
             .map(|&(_, s)| s.to_string())
             .ok_or(CodecError::UnknownExtension(code))
     } else {
-        String::from_utf8(value[1..].to_vec())
-            .map_err(|_| CodecError::InvalidData("invalid UTF-8 in currency".to_string()))
+        let currency = String::from_utf8(value[1..].to_vec())
+            .map_err(|_| CodecError::InvalidData("invalid UTF-8 in currency".to_string()))?;
+        // T6: reject non-canonical encoding — if this currency is in the dict,
+        // the encoder must have used dict form [0x00, code].
+        let upper = currency.to_uppercase();
+        if CURRENCY_CODE_TO_SYMBOL
+            .iter()
+            .any(|&(_, sym)| sym == upper.as_str())
+        {
+            return Err(CodecError::InvalidData(format!(
+                "non-canonical currency encoding: {currency} must use dict form"
+            )));
+        }
+        Ok(currency)
     }
 }
 
@@ -148,6 +170,12 @@ pub(super) fn decode_token_address(value: &[u8]) -> Result<String, CodecError> {
             .ok_or(CodecError::UnknownExtension(code))
     } else {
         bytes_to_address(&value[1..])
+        // NOTE: T6 canonical-aliasing check is NOT applied here.
+        // Token addresses may legitimately appear raw even when the address is
+        // "known" — e.g. WETH 0x4200…0006 on Base: dict code 24 is OP range,
+        // outside Base range → encoder emits raw. Applying a raw→dict rejection
+        // here would break valid cross-chain payloads. Chain ID and Currency
+        // have clean bijective dict mappings; token addresses do not.
     }
 }
 
@@ -185,5 +213,64 @@ mod tests {
         // 0x06 = "Invoice" dict code.
         let decoded = reverse_dict(&[0x06, b' ', b'#', b'1']).unwrap();
         assert_eq!(decoded, "Invoice #1");
+    }
+
+    // --- T6: decoder rejects raw-form for dict-known values ---
+
+    /// decode_chain_id must reject raw-varint form for a chain ID that exists in CHAIN_DICT.
+    #[test]
+    fn decode_chain_id_rejects_raw_for_dict_known() {
+        use crate::varint::write_varint;
+        // Ethereum (chain 1) is in CHAIN_DICT — must use dict form [0x00, 0x01], not raw.
+        let mut value = vec![0x01u8]; // raw prefix
+        write_varint(1u64, &mut value); // raw chain_id = 1
+        let err = decode_chain_id(&value).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::InvalidData(_)),
+            "expected InvalidData for raw-encoded dict-known chain, got {err:?}"
+        );
+    }
+
+    /// decode_chain_id must accept raw-varint form for an unknown chain (not in CHAIN_DICT).
+    #[test]
+    fn decode_chain_id_accepts_raw_for_unknown_chain() {
+        use crate::varint::write_varint;
+        // Chain 5 (Goerli) is not in CHAIN_DICT — raw form is correct.
+        let mut value = vec![0x01u8];
+        write_varint(5u64, &mut value);
+        let result = decode_chain_id(&value).unwrap();
+        assert_eq!(result, 5);
+    }
+
+    /// decode_currency must reject raw UTF-8 form for a currency that exists in the dict.
+    #[test]
+    fn decode_currency_rejects_raw_for_dict_known() {
+        // USDC is in CURRENCY_CODE_TO_SYMBOL — must use dict form [0x00, 0x01], not raw.
+        let mut value = vec![0x01u8]; // raw prefix
+        value.extend_from_slice(b"USDC");
+        let err = decode_currency(&value).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::InvalidData(_)),
+            "expected InvalidData for raw-encoded dict-known currency, got {err:?}"
+        );
+    }
+
+    /// decode_token_address must accept raw 20-byte form even for a dict-known address
+    /// because the canonical encoder legitimately emits raw when the dict code falls
+    /// outside the invoice's chain range (e.g. WETH 0x4200…0006 on Base — code 24 is
+    /// OP range, so encoder emits raw). T6 canonical-aliasing is scoped to chain_id
+    /// and currency only; token addresses have cross-chain collisions that make a
+    /// blanket raw→dict rejection unsound.
+    #[test]
+    fn decode_token_address_accepts_raw_for_dict_known_cross_chain() {
+        // WETH 0x4200…0006 on Base is legitimately raw-encoded by the canonical encoder.
+        let addr_bytes: [u8; 20] = [
+            0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x06,
+        ];
+        let mut value = vec![0x01u8];
+        value.extend_from_slice(&addr_bytes);
+        let result = decode_token_address(&value).unwrap();
+        assert_eq!(result, "0x4200000000000000000000000000000000000006");
     }
 }
