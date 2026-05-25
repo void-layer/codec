@@ -55,6 +55,10 @@ pub(super) fn mantissa_bytes(value_str: &str) -> Result<Vec<u8>, CodecError> {
     Ok(buf)
 }
 
+const QTY_EPS: f64 = 1e-9;
+const TWO_POW_64: f64 = 18_446_744_073_709_551_616.0;
+const MAX_SCALE: u8 = 9;
+
 /// Encode a fractional quantity as [scale: u8][scaled_value: varint].
 /// Mirrors writeQuantity from varint.ts.
 pub(super) fn write_quantity(buf: &mut Vec<u8>, qty: f64) -> Result<(), CodecError> {
@@ -72,13 +76,13 @@ pub(super) fn write_quantity(buf: &mut Vec<u8>, qty: f64) -> Result<(), CodecErr
     }
     let mut scale = 0u8;
     let mut scaled = qty;
-    while scale < 9 && (scaled.round() - scaled).abs() > 1e-9 {
+    while scale < MAX_SCALE && (scaled.round() - scaled).abs() > QTY_EPS {
         scale += 1;
         scaled = qty * 10f64.powi(scale as i32);
     }
-    // If scale exhausted (==9) and residual > tolerance, the value has more than
+    // If scale exhausted (==MAX_SCALE) and residual > tolerance, the value has more than
     // 9 significant decimals — reject instead of silently rounding.
-    if scale == 9 && (scaled.round() - scaled).abs() > 1e-9 {
+    if scale == MAX_SCALE && (scaled.round() - scaled).abs() > QTY_EPS {
         return Err(CodecError::InvalidAmount(format!(
             "quantity {qty} has more than 9 significant decimals; encode would lose precision"
         )));
@@ -87,7 +91,7 @@ pub(super) fn write_quantity(buf: &mut Vec<u8>, qty: f64) -> Result<(), CodecErr
     // Explicit range check before the cast: `f64 as u64` saturates a value above
     // u64::MAX silently. u64::MAX is not exactly representable as f64, so guard
     // against `2^64` (the smallest f64 strictly above the u64 range).
-    if !(0.0..18_446_744_073_709_551_616.0).contains(&rounded) {
+    if !(0.0..TWO_POW_64).contains(&rounded) {
         return Err(CodecError::InvalidAmount(format!(
             "quantity {qty} scaled to {rounded} exceeds u64 range"
         )));

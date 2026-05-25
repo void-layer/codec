@@ -8,7 +8,9 @@ fn hex_nibble(byte: u8) -> Result<u8, CodecError> {
         b'0'..=b'9' => Ok(byte - b'0'),
         b'a'..=b'f' => Ok(byte - b'a' + 10),
         b'A'..=b'F' => Ok(byte - b'A' + 10),
-        _ => Err(CodecError::InvalidAddress("invalid address hex".to_string())),
+        _ => Err(CodecError::InvalidAddress(
+            "invalid address hex".to_string(),
+        )),
     }
 }
 
@@ -88,17 +90,11 @@ pub(super) fn encode_token_address(address: &str, network_id: u32) -> Result<Vec
     {
         // Mirrors TS encodeTokenAddress: if CHAIN_CODE_RANGES has an entry for this
         // chain and the code is outside that range, encode as raw bytes.
-        // If the chain is unknown (not in CHAIN_CODE_RANGES), encode as dict — mirrors
-        // TS: `if (range && ...)` is falsy for undefined → returns entry → dict encode.
-        let maybe_range = CHAIN_CODE_RANGES
+        // Unknown chain → no range constraint → dict-encode (mirrors TS reference).
+        let in_range = CHAIN_CODE_RANGES
             .iter()
             .find(|&&(chain_id, _, _)| chain_id == network_id)
-            .map(|&(_, min, max)| (min, max));
-
-        let in_range = match maybe_range {
-            Some((min, max)) => code >= min && code <= max,
-            None => true, // unknown chain: no range constraint → dict-encode
-        };
+            .is_none_or(|&(_, min, max)| (min..=max).contains(&code));
 
         if in_range {
             return Ok(vec![0x00, code]);
