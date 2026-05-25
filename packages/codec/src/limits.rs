@@ -21,3 +21,7 @@ pub(crate) const MAX_TRAILING_ZEROS: u32 = 77;
 /// Maximum safe integer for f64 mantissa precision (2^53).
 /// scaled_value above this cannot be represented exactly in f64.
 pub(crate) const MAX_SAFE_F64_INT: u64 = 9_007_199_254_740_992; // 2^53
+
+/// Canonical quantity scale cap (wire: 1 byte). Encoder enforces; decoder rejects
+/// any scale above this as non-canonical (per D-Bx canonical contract — T6 family).
+pub(crate) const MAX_CANONICAL_QUANTITY_SCALE: u8 = 9;

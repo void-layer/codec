@@ -2,7 +2,9 @@
 
 use crate::error::CodecError;
 use crate::invoice::InvoiceItem;
-use crate::limits::{MAX_ITEMS, MAX_SAFE_F64_INT, MAX_TRAILING_ZEROS, MAX_VALUE_SIZE};
+use crate::limits::{
+    MAX_CANONICAL_QUANTITY_SCALE, MAX_ITEMS, MAX_SAFE_F64_INT, MAX_TRAILING_ZEROS, MAX_VALUE_SIZE,
+};
 use crate::varint::{read_bigint_varint, read_bounded_len, read_varint};
 
 use super::dict::reverse_dict;
@@ -101,10 +103,9 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
         }
         let scale = data[offset] as u32;
         offset += 1;
-        // Encoder caps at MAX_SCALE=9 (encode/amount.rs); reject anything above
-        // 9 as non-canonical — the decoder must not accept what the encoder cannot produce.
-        const MAX_CANONICAL_QUANTITY_SCALE: u32 = 9;
-        if scale > MAX_CANONICAL_QUANTITY_SCALE {
+        // Encoder caps at MAX_CANONICAL_QUANTITY_SCALE (limits.rs); reject anything above
+        // as non-canonical — the decoder must not accept what the encoder cannot produce.
+        if scale > MAX_CANONICAL_QUANTITY_SCALE as u32 {
             return Err(CodecError::InvalidData(format!(
                 "non-canonical quantity scale {scale}: encoder cap is {MAX_CANONICAL_QUANTITY_SCALE}"
             )));

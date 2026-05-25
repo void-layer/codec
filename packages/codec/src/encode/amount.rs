@@ -2,7 +2,7 @@
 // Mirrors writeMantissa / writeQuantity from varint.ts.
 
 use crate::error::CodecError;
-use crate::limits::MAX_TRAILING_ZEROS;
+use crate::limits::{MAX_CANONICAL_QUANTITY_SCALE, MAX_TRAILING_ZEROS};
 use crate::varint::{write_bigint_varint, write_varint};
 
 /// Encode a u32 as 4-byte big-endian.
@@ -57,7 +57,6 @@ pub(super) fn mantissa_bytes(value_str: &str) -> Result<Vec<u8>, CodecError> {
 
 const QTY_EPS: f64 = 1e-9;
 const TWO_POW_64: f64 = 18_446_744_073_709_551_616.0;
-const MAX_SCALE: u8 = 9;
 
 /// Encode a fractional quantity as [scale: u8][scaled_value: varint].
 /// Mirrors writeQuantity from varint.ts.
@@ -76,13 +75,13 @@ pub(super) fn write_quantity(buf: &mut Vec<u8>, qty: f64) -> Result<(), CodecErr
     }
     let mut scale = 0u8;
     let mut scaled = qty;
-    while scale < MAX_SCALE && (scaled.round() - scaled).abs() > QTY_EPS {
+    while scale < MAX_CANONICAL_QUANTITY_SCALE && (scaled.round() - scaled).abs() > QTY_EPS {
         scale += 1;
         scaled = qty * 10f64.powi(scale as i32);
     }
     // If scale exhausted (==MAX_SCALE) and residual > tolerance, the value has more than
     // 9 significant decimals — reject instead of silently rounding.
-    if scale == MAX_SCALE && (scaled.round() - scaled).abs() > QTY_EPS {
+    if scale == MAX_CANONICAL_QUANTITY_SCALE && (scaled.round() - scaled).abs() > QTY_EPS {
         return Err(CodecError::InvalidAmount(format!(
             "quantity {qty} has more than 9 significant decimals; encode would lose precision"
         )));
