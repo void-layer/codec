@@ -7,30 +7,26 @@ graph TD
     codec["<b>@void-layer/codec</b><br/>Rust + WASM<br/>canonical TLV codec<br/>(no deps)"]
     types["<b>@void-layer/types</b><br/>manual TS types<br/>(no deps)"]
     networks["<b>@void-layer/networks</b><br/>chain configs + tokens<br/>(no RPC keys)"]
-    codecSubpath["<i>@void-layer/codec/types</i><br/>auto-gen from wasm-bindgen + tsify"]
     consumers["Downstream consumers<br/>vl/app · merchant · frame · agent"]
 
     networks --> types
     consumers --> codec
     consumers --> types
     consumers --> networks
-    codec -. subpath export .-> codecSubpath
 
     classDef pkg fill:#1e293b,stroke:#64748b,color:#f1f5f9
-    classDef sub fill:#0f172a,stroke:#475569,color:#94a3b8,stroke-dasharray:3 3
     classDef ext fill:#020617,stroke:#334155,color:#cbd5e1
     class codec,types,networks pkg
-    class codecSubpath sub
     class consumers ext
 ```
 
 ## Dependency Rules (Immutable)
 
-- `@void-layer/codec` depends on: **nothing** (pure Rust + auto-gen TS bindings)
+- `@void-layer/codec` depends on: **nothing** (pure Rust + auto-gen TS bindings via `wasm-bindgen`)
 - `@void-layer/types` depends on: **nothing** (pure TS, no runtime deps)
 - `@void-layer/networks` depends on: `@void-layer/types` only
 - Downstream packages (agent, merchant, frame) depend on codec + types + networks
-- Auto-generated types from `wasm-bindgen` + `tsify` live in `@void-layer/codec/types` subpath export — NOT in `@void-layer/types`
+- `@void-layer/codec` exports a single `.` entry point (`dist/index.js`); there is no `/types` subpath export
 
 ## Build Pipeline (Phase 2+)
 

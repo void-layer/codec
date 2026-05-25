@@ -1,3 +1,6 @@
+> **SUPERSEDED** 2026-05-20 by B-v decision (Brotli moved to JS shim via `brotli-wasm` peerDep).
+> See `docs/bundle-budget.md` for current architecture. This spike is preserved as historical context.
+
 ---
 task: T-P2-0a
 date: 2026-05-19

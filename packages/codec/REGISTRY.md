@@ -41,7 +41,7 @@ Each spec's PR proposes specific Type IDs in the appropriate range:
 
 ## Allocated Entries
 
-_No entries yet. Phase 1 scaffolding._
+_No vendor entries (1000–9999) allocated yet. Phase 2 shipped; v1 core tags are in code._
 
 ## Breaking-change Policy
 
