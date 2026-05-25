@@ -1,6 +1,7 @@
 pub(crate) mod app;
 pub(crate) mod chain;
 pub(crate) mod currency;
+pub(crate) mod data;
 pub(crate) mod token;
 
 /// TLV value-prefix discriminator: dict-known code follows (spec §5.1/§5.2).
