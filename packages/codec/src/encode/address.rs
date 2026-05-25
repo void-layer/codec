@@ -3,14 +3,12 @@
 
 use crate::error::CodecError;
 
-fn hex_nibble(byte: u8) -> Result<u8, CodecError> {
+fn hex_nibble(byte: u8, label: &str) -> Result<u8, CodecError> {
     match byte {
         b'0'..=b'9' => Ok(byte - b'0'),
         b'a'..=b'f' => Ok(byte - b'a' + 10),
         b'A'..=b'F' => Ok(byte - b'A' + 10),
-        _ => Err(CodecError::InvalidAddress(
-            "invalid address hex".to_string(),
-        )),
+        _ => Err(CodecError::InvalidAddress(format!("invalid {label} hex"))),
     }
 }
 
@@ -25,7 +23,7 @@ fn hex_decode_fixed<const N: usize>(hex: &str, label: &str) -> Result<[u8; N], C
     }
     let mut out = [0u8; N];
     for (i, pair) in hex.as_bytes().chunks_exact(2).enumerate() {
-        out[i] = (hex_nibble(pair[0])? << 4) | hex_nibble(pair[1])?;
+        out[i] = (hex_nibble(pair[0], label)? << 4) | hex_nibble(pair[1], label)?;
     }
     Ok(out)
 }
