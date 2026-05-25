@@ -236,89 +236,75 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
 
     let salt_hex = bytes_to_hex(salt_bytes);
 
-    let token_address = if let Some(v) = records.get(&TLV_TOKEN_ADDRESS) {
-        Some(decode_token_address(v)?)
-    } else {
-        None
+    let token_address = records
+        .get(&TLV_TOKEN_ADDRESS)
+        .map(|v| decode_token_address(v))
+        .transpose()?;
+
+    let client_wallet_address = records
+        .get(&TLV_CLIENT_WALLET)
+        .map(|v| bytes_to_address(v))
+        .transpose()?;
+
+    let notes = records
+        .get(&TLV_NOTES)
+        .map(|v| reverse_dict(v))
+        .transpose()?;
+
+    let from_email = records
+        .get(&TLV_FROM_EMAIL)
+        .map(|v| reverse_dict(v))
+        .transpose()?;
+
+    let from_phone = records
+        .get(&TLV_FROM_PHONE)
+        .map(|v| reverse_dict(v))
+        .transpose()?;
+
+    let from_physical_address = records
+        .get(&TLV_FROM_ADDRESS)
+        .map(|v| reverse_dict(v))
+        .transpose()?;
+
+    let from_tax_id = records
+        .get(&TLV_FROM_TAX_ID)
+        .map(|v| reverse_dict(v))
+        .transpose()?;
+
+    let client_email = records
+        .get(&TLV_CLIENT_EMAIL)
+        .map(|v| reverse_dict(v))
+        .transpose()?;
+
+    let client_phone = records
+        .get(&TLV_CLIENT_PHONE)
+        .map(|v| reverse_dict(v))
+        .transpose()?;
+
+    let client_physical_address = records
+        .get(&TLV_CLIENT_ADDRESS)
+        .map(|v| reverse_dict(v))
+        .transpose()?;
+
+    let client_tax_id = records
+        .get(&TLV_CLIENT_TAX_ID)
+        .map(|v| reverse_dict(v))
+        .transpose()?;
+
+    let decode_utf8 = |v: &Vec<u8>, field: &'static str| -> Result<String, CodecError> {
+        String::from_utf8(v.clone())
+            .map_err(|_| CodecError::InvalidData(format!("invalid UTF-8 in {field}")))
     };
 
-    let client_wallet_address = if let Some(v) = records.get(&TLV_CLIENT_WALLET) {
-        Some(bytes_to_address(v)?)
-    } else {
-        None
-    };
+    let tax = records
+        .get(&TLV_TAX)
+        .map(|v| decode_utf8(v, "tax"))
+        .transpose()?;
 
-    let notes = if let Some(v) = records.get(&TLV_NOTES) {
-        Some(reverse_dict(v)?)
-    } else {
-        None
-    };
-
-    let from_email = if let Some(v) = records.get(&TLV_FROM_EMAIL) {
-        Some(reverse_dict(v)?)
-    } else {
-        None
-    };
-
-    let from_phone = if let Some(v) = records.get(&TLV_FROM_PHONE) {
-        Some(reverse_dict(v)?)
-    } else {
-        None
-    };
-
-    let from_physical_address = if let Some(v) = records.get(&TLV_FROM_ADDRESS) {
-        Some(reverse_dict(v)?)
-    } else {
-        None
-    };
-
-    let from_tax_id = if let Some(v) = records.get(&TLV_FROM_TAX_ID) {
-        Some(reverse_dict(v)?)
-    } else {
-        None
-    };
-
-    let client_email = if let Some(v) = records.get(&TLV_CLIENT_EMAIL) {
-        Some(reverse_dict(v)?)
-    } else {
-        None
-    };
-
-    let client_phone = if let Some(v) = records.get(&TLV_CLIENT_PHONE) {
-        Some(reverse_dict(v)?)
-    } else {
-        None
-    };
-
-    let client_physical_address = if let Some(v) = records.get(&TLV_CLIENT_ADDRESS) {
-        Some(reverse_dict(v)?)
-    } else {
-        None
-    };
-
-    let client_tax_id = if let Some(v) = records.get(&TLV_CLIENT_TAX_ID) {
-        Some(reverse_dict(v)?)
-    } else {
-        None
-    };
-
-    let tax = if let Some(v) = records.get(&TLV_TAX) {
-        Some(
-            String::from_utf8(v.clone())
-                .map_err(|_| CodecError::InvalidData("invalid UTF-8 in tax".to_string()))?,
-        )
-    } else {
-        None
-    };
-
-    let discount = if let Some(v) = records.get(&TLV_DISCOUNT) {
-        Some(
-            String::from_utf8(v.clone())
-                .map_err(|_| CodecError::InvalidData("invalid UTF-8 in discount".to_string()))?,
-        )
-    } else {
-        None
-    };
+    let discount = records
+        .get(&TLV_DISCOUNT)
+        .map(|v| decode_utf8(v, "discount"))
+        .transpose()?;
 
     Ok(Invoice {
         invoice_id,
