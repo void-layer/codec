@@ -19,6 +19,30 @@ pub(super) fn lookup_by_code<T: Clone>(table: &[(u8, T)], code: u8) -> Result<T,
         .ok_or(CodecError::UnknownExtension(code))
 }
 
+/// Shared prefix-dispatch for dict/raw TLV fields.
+///
+/// Audit C finding #6: eliminates parallel prefix-dispatch boilerplate across
+/// chain_id, currency, and token_address decoders.
+pub(super) fn decode_prefixed<T>(
+    value: &[u8],
+    dict_fn: impl FnOnce(u8) -> Result<T, CodecError>,
+    raw_fn: impl FnOnce(&[u8]) -> Result<T, CodecError>,
+) -> Result<T, CodecError> {
+    if value.is_empty() {
+        return Err(CodecError::Truncated { needed: 2, had: 0 });
+    }
+    match value[0] {
+        DICT_FORM => {
+            if value.len() < 2 {
+                return Err(CodecError::Truncated { needed: 2, had: 1 });
+            }
+            dict_fn(value[1])
+        }
+        RAW_FORM => raw_fn(&value[1..]),
+        prefix => Err(CodecError::UnknownExtension(prefix)),
+    }
+}
+
 /// Reverse app-level dictionary substitution (mirrors reverseDict from app-dict.ts).
 ///
 /// Reuses `encode::APP_DICT_ENTRIES` — the single ordered source of truth — so
@@ -41,98 +65,81 @@ pub(super) fn reverse_dict(bytes: &[u8]) -> Result<String, CodecError> {
 ///   [0x00, code] → dict lookup
 ///   [0x01, varint...] → raw chain ID
 pub(super) fn decode_chain_id(value: &[u8]) -> Result<u32, CodecError> {
-    if value.is_empty() {
-        return Err(CodecError::Truncated { needed: 2, had: 0 });
-    }
-    let prefix = value[0];
-    if prefix == DICT_FORM {
-        if value.len() < 2 {
-            return Err(CodecError::Truncated { needed: 2, had: 1 });
-        }
-        let code = value[1];
-        // Reverse lookup: code → chain_id
-        // CHAIN_DICT uses phf_map — different iterator shape; intentional non-uniformity per Audit C.
-        let chain_id = CHAIN_DICT
-            .entries()
-            .find_map(|(&k, &v)| (v == code).then_some(k))
-            .ok_or(CodecError::UnknownExtension(code))?;
-        Ok(chain_id)
-    } else if prefix == RAW_FORM {
-        let (chain_id_u64, _) = read_varint(value, 1)?;
-        // Reject chain IDs > u32::MAX instead of silently truncating.
-        let chain_id = u32::try_from(chain_id_u64).map_err(|_| {
-            CodecError::InvalidAmount(format!("chain ID {chain_id_u64} overflows u32"))
-        })?;
-        // T6: reject non-canonical encoding — if this chain_id is in the dict,
-        // the encoder must have used dict form [0x00, code]. Raw form for a known
-        // chain ID means the payload was not produced by the canonical encoder.
-        if CHAIN_DICT.contains_key(&chain_id) {
-            return Err(CodecError::InvalidData(format!(
-                "non-canonical chain encoding: chain {chain_id} must use dict form"
-            )));
-        }
-        Ok(chain_id)
-    } else {
-        Err(CodecError::UnknownExtension(prefix))
-    }
+    decode_prefixed(
+        value,
+        |code| {
+            // Reverse lookup: code → chain_id
+            // CHAIN_DICT uses phf_map — different iterator shape; intentional non-uniformity per Audit C.
+            CHAIN_DICT
+                .entries()
+                .find_map(|(&k, &v)| (v == code).then_some(k))
+                .ok_or(CodecError::UnknownExtension(code))
+        },
+        |raw| {
+            let (chain_id_u64, _) = read_varint(raw, 0)?;
+            // Reject chain IDs > u32::MAX instead of silently truncating.
+            let chain_id = u32::try_from(chain_id_u64).map_err(|_| {
+                CodecError::InvalidAmount(format!("chain ID {chain_id_u64} overflows u32"))
+            })?;
+            // T6: reject non-canonical encoding — if this chain_id is in the dict,
+            // the encoder must have used dict form [0x00, code]. Raw form for a known
+            // chain ID means the payload was not produced by the canonical encoder.
+            if CHAIN_DICT.contains_key(&chain_id) {
+                return Err(CodecError::InvalidData(format!(
+                    "non-canonical chain encoding: chain {chain_id} must use dict form"
+                )));
+            }
+            Ok(chain_id)
+        },
+    )
 }
 
 /// Decode currency from TLV value bytes:
 ///   [0x00, code] → dict lookup
 ///   [0x01, utf8...] → raw string
 pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
-    if value.is_empty() {
-        return Err(CodecError::Truncated { needed: 2, had: 0 });
-    }
-    if value[0] == DICT_FORM {
-        if value.len() < 2 {
-            return Err(CodecError::Truncated { needed: 2, had: 1 });
-        }
-        let code = value[1];
-        lookup_by_code(crate::dict::currency::CURRENCY_DICT, code).map(|s: &str| s.to_string())
-    } else if value[0] == RAW_FORM {
-        let currency = super::utf8_or(&value[1..], "currency")?;
-        // T6: reject non-canonical encoding — if this currency is in the dict,
-        // the encoder must have used dict form [DICT_FORM, code].
-        let upper = currency.to_uppercase();
-        if crate::dict::currency::CURRENCY_DICT
-            .iter()
-            .any(|&(_, sym)| sym == upper.as_str())
-        {
-            return Err(CodecError::InvalidData(format!(
-                "non-canonical currency encoding: {currency} must use dict form"
-            )));
-        }
-        Ok(currency)
-    } else {
-        Err(CodecError::UnknownExtension(value[0]))
-    }
+    decode_prefixed(
+        value,
+        |code| {
+            lookup_by_code(crate::dict::currency::CURRENCY_DICT, code).map(|s: &str| s.to_string())
+        },
+        |raw| {
+            let currency = super::utf8_or(raw, "currency")?;
+            // T6: reject non-canonical encoding — if this currency is in the dict,
+            // the encoder must have used dict form [DICT_FORM, code].
+            let upper = currency.to_uppercase();
+            if crate::dict::currency::CURRENCY_DICT
+                .iter()
+                .any(|&(_, sym)| sym == upper.as_str())
+            {
+                return Err(CodecError::InvalidData(format!(
+                    "non-canonical currency encoding: {currency} must use dict form"
+                )));
+            }
+            Ok(currency)
+        },
+    )
 }
 
 /// Decode token address from TLV value bytes:
 ///   [0x00, code] → dict reverse lookup
 ///   [0x01, 20 bytes] → raw hex address
 pub(super) fn decode_token_address(value: &[u8]) -> Result<String, CodecError> {
-    if value.is_empty() {
-        return Err(CodecError::Truncated { needed: 2, had: 0 });
-    }
-    if value[0] == DICT_FORM {
-        if value.len() < 2 {
-            return Err(CodecError::Truncated { needed: 2, had: 1 });
-        }
-        let code = value[1];
-        lookup_by_code(crate::dict::token::TOKEN_DICT, code).map(|addr: &str| addr.to_string())
-    } else if value[0] == RAW_FORM {
-        bytes_to_address(&value[1..])
-        // NOTE: T6 canonical-aliasing check is NOT applied here.
-        // Token addresses may legitimately appear raw even when the address is
-        // "known" — e.g. WETH 0x4200…0006 on Base: dict code 24 is OP range,
-        // outside Base range → encoder emits raw. Applying a raw→dict rejection
-        // here would break valid cross-chain payloads. Chain ID and Currency
-        // have clean bijective dict mappings; token addresses do not.
-    } else {
-        Err(CodecError::UnknownExtension(value[0]))
-    }
+    decode_prefixed(
+        value,
+        |code| {
+            lookup_by_code(crate::dict::token::TOKEN_DICT, code).map(|addr: &str| addr.to_string())
+        },
+        |raw| {
+            // NOTE: T6 canonical-aliasing check is NOT applied here.
+            // Token addresses may legitimately appear raw even when the address is
+            // "known" — e.g. WETH 0x4200…0006 on Base: dict code 24 is OP range,
+            // outside Base range → encoder emits raw. Applying a raw→dict rejection
+            // here would break valid cross-chain payloads. Chain ID and Currency
+            // have clean bijective dict mappings; token addresses do not.
+            bytes_to_address(raw)
+        },
+    )
 }
 
 #[cfg(test)]
