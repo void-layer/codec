@@ -76,6 +76,13 @@ pub(super) fn write_quantity(buf: &mut Vec<u8>, qty: f64) -> Result<(), CodecErr
         scale += 1;
         scaled = qty * 10f64.powi(scale as i32);
     }
+    // If scale exhausted (==9) and residual > tolerance, the value has more than
+    // 9 significant decimals — reject instead of silently rounding.
+    if scale == 9 && (scaled.round() - scaled).abs() > 1e-9 {
+        return Err(CodecError::InvalidAmount(format!(
+            "quantity {qty} has more than 9 significant decimals; encode would lose precision"
+        )));
+    }
     let rounded = scaled.round();
     // Explicit range check before the cast: `f64 as u64` saturates a value above
     // u64::MAX silently. u64::MAX is not exactly representable as f64, so guard
@@ -223,6 +230,32 @@ mod tests {
             matches!(err, crate::error::CodecError::InvalidAmount(_)),
             "expected InvalidAmount for -Inf quantity, got {err:?}"
         );
+    }
+
+    // --- T5: encode-side precision guard ---
+
+    /// A quantity with 10 significant decimal places must be rejected.
+    #[test]
+    fn write_quantity_rejects_10_decimals() {
+        let mut buf = Vec::new();
+        // 1.1234567891 — 10 decimal places, cannot be encoded losslessly in 9-scale scheme.
+        let err = write_quantity(&mut buf, 1.123_456_789_1_f64).unwrap_err();
+        assert!(
+            matches!(err, crate::error::CodecError::InvalidAmount(_)),
+            "expected InvalidAmount for >9 significant decimals, got {err:?}"
+        );
+        assert!(buf.is_empty(), "buf must remain empty on precision error");
+    }
+
+    /// A quantity with exactly 9 significant decimals must encode successfully.
+    #[test]
+    fn write_quantity_accepts_9_decimals_exact() {
+        let mut buf = Vec::new();
+        // 1.123456789 — exactly 9 decimal places.
+        write_quantity(&mut buf, 1.123_456_789_f64).expect("9 decimals must encode");
+        assert!(!buf.is_empty(), "buf must contain encoded bytes");
+        // scale=9, scaled_value=1_123_456_789
+        assert_eq!(buf[0], 9u8, "scale byte must be 9");
     }
 
     // --- #3: negative finite quantity guard ---
