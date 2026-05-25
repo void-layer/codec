@@ -34,6 +34,31 @@ use dict::{decode_chain_id, decode_currency, decode_token_address, reverse_dict}
 use hex::{bytes_to_address, bytes_to_hex};
 
 // ---------------------------------------------------------------------------
+// TLV helpers
+// ---------------------------------------------------------------------------
+
+/// Read an optional TLV field. Returns `None` if the tag is absent;
+/// applies `f` to the raw bytes and propagates errors if present.
+///
+/// Audit C finding #2: eliminates 11 repetitions of the
+/// `records.get(&TAG).map(|v| f(v)).transpose()?` pattern.
+pub(super) fn read_optional<T>(
+    records: &BTreeMap<u8, Vec<u8>>,
+    tag: u8,
+    f: impl FnOnce(&[u8]) -> Result<T, CodecError>,
+) -> Result<Option<T>, CodecError> {
+    records.get(&tag).map(|v| f(v.as_slice())).transpose()
+}
+
+/// UTF-8 decode with field-tagged InvalidData on failure. Standard substring contract.
+/// Audit C finding #3.
+pub(super) fn utf8_or(bytes: &[u8], field: &'static str) -> Result<String, CodecError> {
+    std::str::from_utf8(bytes)
+        .map(str::to_owned)
+        .map_err(|_| CodecError::InvalidData(format!("invalid UTF-8 in {field}")))
+}
+
+// ---------------------------------------------------------------------------
 // Test helpers (pub only under #[cfg(test)])
 // ---------------------------------------------------------------------------
 
@@ -232,8 +257,7 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
     let invoice_id_bytes = records
         .get(&TLV_INVOICE_ID)
         .ok_or(CodecError::Truncated { needed: 1, had: 0 })?;
-    let invoice_id = String::from_utf8(invoice_id_bytes.clone())
-        .map_err(|_| CodecError::InvalidData("invalid UTF-8 in invoice_id".to_string()))?;
+    let invoice_id = utf8_or(invoice_id_bytes, "invoice_id")?;
 
     let total_bytes = records
         .get(&TLV_TOTAL)
@@ -242,75 +266,19 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
 
     let salt_hex = bytes_to_hex(salt_bytes);
 
-    let token_address = records
-        .get(&TLV_TOKEN_ADDRESS)
-        .map(|v| decode_token_address(v))
-        .transpose()?;
-
-    let client_wallet_address = records
-        .get(&TLV_CLIENT_WALLET)
-        .map(|v| bytes_to_address(v))
-        .transpose()?;
-
-    let notes = records
-        .get(&TLV_NOTES)
-        .map(|v| reverse_dict(v))
-        .transpose()?;
-
-    let from_email = records
-        .get(&TLV_FROM_EMAIL)
-        .map(|v| reverse_dict(v))
-        .transpose()?;
-
-    let from_phone = records
-        .get(&TLV_FROM_PHONE)
-        .map(|v| reverse_dict(v))
-        .transpose()?;
-
-    let from_physical_address = records
-        .get(&TLV_FROM_ADDRESS)
-        .map(|v| reverse_dict(v))
-        .transpose()?;
-
-    let from_tax_id = records
-        .get(&TLV_FROM_TAX_ID)
-        .map(|v| reverse_dict(v))
-        .transpose()?;
-
-    let client_email = records
-        .get(&TLV_CLIENT_EMAIL)
-        .map(|v| reverse_dict(v))
-        .transpose()?;
-
-    let client_phone = records
-        .get(&TLV_CLIENT_PHONE)
-        .map(|v| reverse_dict(v))
-        .transpose()?;
-
-    let client_physical_address = records
-        .get(&TLV_CLIENT_ADDRESS)
-        .map(|v| reverse_dict(v))
-        .transpose()?;
-
-    let client_tax_id = records
-        .get(&TLV_CLIENT_TAX_ID)
-        .map(|v| reverse_dict(v))
-        .transpose()?;
-
-    let decode_utf8 = |v: &Vec<u8>, field: &'static str| -> Result<String, CodecError> {
-        String::from_utf8(v.clone())
-            .map_err(|_| CodecError::InvalidData(format!("invalid UTF-8 in {field}")))
-    };
-
-    let tax = records
-        .get(&TLV_TAX)
-        .map(|v| decode_utf8(v, "tax"))
-        .transpose()?;
-
-    let discount = records
-        .get(&TLV_DISCOUNT)
-        .map(|v| decode_utf8(v, "discount"))
-        .transpose()?;
+    let token_address = read_optional(&records, TLV_TOKEN_ADDRESS, decode_token_address)?;
+    let client_wallet_address = read_optional(&records, TLV_CLIENT_WALLET, bytes_to_address)?;
+    let notes = read_optional(&records, TLV_NOTES, reverse_dict)?;
+    let from_email = read_optional(&records, TLV_FROM_EMAIL, reverse_dict)?;
+    let from_phone = read_optional(&records, TLV_FROM_PHONE, reverse_dict)?;
+    let from_physical_address = read_optional(&records, TLV_FROM_ADDRESS, reverse_dict)?;
+    let from_tax_id = read_optional(&records, TLV_FROM_TAX_ID, reverse_dict)?;
+    let client_email = read_optional(&records, TLV_CLIENT_EMAIL, reverse_dict)?;
+    let client_phone = read_optional(&records, TLV_CLIENT_PHONE, reverse_dict)?;
+    let client_physical_address = read_optional(&records, TLV_CLIENT_ADDRESS, reverse_dict)?;
+    let client_tax_id = read_optional(&records, TLV_CLIENT_TAX_ID, reverse_dict)?;
+    let tax = read_optional(&records, TLV_TAX, |v| utf8_or(v, "tax"))?;
+    let discount = read_optional(&records, TLV_DISCOUNT, |v| utf8_or(v, "discount"))?;
 
     Ok(Invoice {
         invoice_id,

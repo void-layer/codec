@@ -16,8 +16,7 @@ pub(super) fn reverse_dict(bytes: &[u8]) -> Result<String, CodecError> {
     // Decode raw bytes as UTF-8 (matches the TS reference's TextDecoder).
     // Dict-code bytes (0x02–0x0F) are valid single-byte UTF-8 and survive as
     // single chars, so the expansion loop below works unchanged.
-    let mut text = String::from_utf8(bytes.to_vec())
-        .map_err(|_| CodecError::InvalidData("invalid UTF-8 in dict text".to_string()))?;
+    let mut text = super::utf8_or(bytes, "dict text")?;
 
     // Apply in reverse order (shortest first for reverse) — mirrors TS [...DICT_ENTRIES].reverse()
     for &(pattern, code) in crate::encode::APP_DICT_ENTRIES.iter().rev() {
@@ -83,8 +82,7 @@ pub(super) fn decode_currency(value: &[u8]) -> Result<String, CodecError> {
             .find_map(|&(c, s)| (c == code).then_some(s.to_string()))
             .ok_or(CodecError::UnknownExtension(code))
     } else if value[0] == RAW_FORM {
-        let currency = String::from_utf8(value[1..].to_vec())
-            .map_err(|_| CodecError::InvalidData("invalid UTF-8 in currency".to_string()))?;
+        let currency = super::utf8_or(&value[1..], "currency")?;
         // T6: reject non-canonical encoding — if this currency is in the dict,
         // the encoder must have used dict form [DICT_FORM, code].
         let upper = currency.to_uppercase();
