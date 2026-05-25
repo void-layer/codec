@@ -61,6 +61,21 @@ The domain separator (`keccak256("VOIDPAY_INVOICE_V1" || serialized records)`) c
 
 A type-safe `receiptHash(invoice: Invoice)` surface that performs the canonical encode internally is on the v0.2 roadmap. Until then, treat the byte-input signature as a layer boundary you own.
 
+## Known limitations (v1.0–v1.1)
+
+**Forward-compat for odd-tagged extensions (MAY_IGNORE) is NOT implemented.**
+
+The v1 decoder hard-rejects all unknown TLV tags (see "Unknown TLV tag" row in the table above). The BOLT12-style odd/even forward-compatibility mechanism — where odd-tagged extensions may be silently ignored by a receiver that does not understand them — is deferred to v1.2.
+
+Rationale for deferral:
+- The `Invoice` struct has no `extensions: Vec<(u8, Vec<u8>)>` field to retain unknown bytes for round-trip.
+- Without that field, a v1.1 reader that accepted an odd-tagged extension and re-encoded it would silently drop the extension, producing a different `canonical_bytes` and a different ERC-3009 nonce.
+- Correctness requires both the decoder change and an `Invoice` struct amendment before MAY_IGNORE can be safely activated.
+
+Implementation target: v1.2 (spec amendment + `Invoice` struct change to retain unknown extension bytes). See Kai decision memo [link to be filed when spec amendment is written].
+
+Until v1.2, producers MUST NOT emit unknown tags in v1 payloads. Any extension must go through the v1 spec amendment process to be assigned a known tag before deployment.
+
 ## Constitution VI
 
 RPC keys are server-side only. `@void-layer/*` packages NEVER contain RPC keys or PII.
