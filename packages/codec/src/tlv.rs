@@ -64,16 +64,30 @@ pub(crate) fn write_tlv(record: &TlvRecord, out: &mut Vec<u8>) {
 
 /// Reads a flat sequence of TLV records from `buf` (the entire slice).
 ///
-/// Returns a `BTreeMap<type, value>`. Duplicate types are rejected with
-/// `CodecError::InvalidData("duplicate TLV tag")` — last-write-wins would
-/// create divergent content_hash between readers with different tie-break policy.
+/// Returns a `BTreeMap<type, value>`. The wire stream MUST be strictly-monotone
+/// (each tag strictly greater than the previous) per BOLT-01 and the void-layer
+/// canonical TLV contract (decision: codec-bolt12-strict-monotone-decode).
+/// Non-monotone or duplicate tags are rejected with
+/// `CodecError::InvalidData("non-monotone TLV stream")` — two wire representations
+/// of the same logical invoice must never be accepted.
 ///
-/// Errors: propagated from `read_tlv`, or `InvalidData` on duplicate tag.
+/// Errors: propagated from `read_tlv`, or `InvalidData` on non-monotone / duplicate.
 pub(crate) fn read_tlv_stream(buf: &[u8]) -> Result<BTreeMap<u8, Vec<u8>>, CodecError> {
     let mut map = BTreeMap::new();
     let mut offset = 0;
+    let mut prev_type: Option<u8> = None;
     while offset < buf.len() {
         let (record, consumed) = read_tlv(buf, offset)?;
+        if let Some(prev) = prev_type {
+            if record.tlv_type <= prev {
+                return Err(CodecError::InvalidData(
+                    "non-monotone TLV stream".to_string(),
+                ));
+            }
+        }
+        prev_type = Some(record.tlv_type);
+        // Duplicate check is now structurally unreachable under strict-monotone
+        // (duplicate implies tlv_type == prev, caught above), but kept defensively.
         if map.contains_key(&record.tlv_type) {
             return Err(CodecError::InvalidData("duplicate TLV tag".to_string()));
         }

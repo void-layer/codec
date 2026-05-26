@@ -218,3 +218,61 @@ fn r2_tlv_length_just_above_max_value_size_errors() {
         "expected Truncated for length 4097 > MAX_VALUE_SIZE, got {err:?}"
     );
 }
+
+// --- Y2: strict-monotone TLV ordering (codec-bolt12-strict-monotone-decode) ---
+
+/// A TLV stream with tags in non-monotone order [5, 3, 7] must be rejected.
+/// Pre-fix: BTreeMap silently re-orders, accepting the malformed stream.
+/// Post-fix: strict-monotone check rejects on tag 3 after tag 5.
+#[test]
+fn y2_non_monotone_stream_rejected() {
+    // Build wire bytes for tags [5, 3, 7] — intentionally out of order.
+    // Each record: TYPE(1) | LENGTH_varint(1) | VALUE(1)
+    let buf = [
+        0x05u8, 0x01, 0xAA, // tag 5, len 1, value 0xAA
+        0x03u8, 0x01, 0xBB, // tag 3, len 1 — non-monotone (3 < 5)
+        0x07u8, 0x01, 0xCC, // tag 7, len 1
+    ];
+    let err = read_tlv_stream(&buf).unwrap_err();
+    assert!(
+        matches!(err, CodecError::InvalidData(_)),
+        "expected InvalidData for non-monotone TLV stream [5,3,7], got {err:?}"
+    );
+    // Verify error message is helpful
+    if let CodecError::InvalidData(msg) = err {
+        assert!(
+            msg.contains("non-monotone"),
+            "error message should mention 'non-monotone', got: {msg}"
+        );
+    }
+}
+
+/// A TLV stream with duplicate tags must also be rejected (defensively preserved).
+/// Under strict-monotone, a duplicate (tag == prev) triggers the <= check first.
+#[test]
+fn y2_duplicate_tag_still_rejected() {
+    let buf = [
+        0x01u8, 0x01, 0xAA, // tag 1
+        0x01u8, 0x01, 0xBB, // tag 1 again — duplicate / non-monotone
+    ];
+    let err = read_tlv_stream(&buf).unwrap_err();
+    assert!(
+        matches!(err, CodecError::InvalidData(_)),
+        "expected InvalidData for duplicate tag, got {err:?}"
+    );
+}
+
+/// A correctly-monotone stream must still decode successfully.
+#[test]
+fn y2_monotone_stream_accepted() {
+    let buf = [
+        0x01u8, 0x01, 0xAA, // tag 1
+        0x03u8, 0x01, 0xBB, // tag 3
+        0x05u8, 0x01, 0xCC, // tag 5
+    ];
+    let map = read_tlv_stream(&buf).unwrap();
+    assert_eq!(map.len(), 3);
+    assert_eq!(map[&1], vec![0xAA]);
+    assert_eq!(map[&3], vec![0xBB]);
+    assert_eq!(map[&5], vec![0xCC]);
+}
