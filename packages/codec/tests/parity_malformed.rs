@@ -94,3 +94,29 @@ fn parity_malformed_encode_input_over_u256() {
         "expected InvalidAmount, got {err:?}"
     );
 }
+
+/// Y1 forward-compat: a full invoice wire that embeds unknown odd TLV tag 39 must decode
+/// successfully. The domain separator is computed over all TLV bytes including the odd-tag
+/// bytes (excluding type 31). Tag 39 is silently ignored; all invoice fields are intact.
+/// Decision: codec-bolt12-odd-even-forward-compat (P1 fix, re-derived 2026-05-26).
+#[test]
+fn parity_y1_odd_tag_in_full_invoice_decodes_successfully() {
+    let file = load_vectors();
+    let v = file
+        .vectors
+        .iter()
+        .find(|v| v.name == "decode_unknown_odd_tag_in_full_invoice")
+        .expect("vector must exist");
+
+    let canonical_hex = v.canonical_hex.as_deref().expect("has canonical_hex");
+    let bytes = from_hex(canonical_hex);
+
+    let invoice = decode_invoice_canonical(&bytes)
+        .expect("unknown odd tag 39 must be silently ignored — decode must succeed");
+
+    let expected = to_invoice(v.decoded.as_ref().expect("has decoded"));
+    assert_eq!(
+        invoice, expected,
+        "decoded invoice must match vector decoded block"
+    );
+}

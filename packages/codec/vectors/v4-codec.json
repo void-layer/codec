@@ -636,10 +636,36 @@
       "expected_error": "Truncated"
     },
     {
-      "name": "malformed-unknown-content-tag",
-      "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be52702dead",
-      "diagnostic": "malformed:canonical — TLV tag 39 (0x27) is outside the v1 KNOWN_TAGS set. Decoder must reject with UnknownExtension before checksum validation.",
-      "expected_error": "UnknownExtension"
+      "name": "decode_unknown_odd_tag_in_full_invoice",
+      "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f2037e4c5c28ca49a1e1c851f159401a9a27812e1ecca7a63d4d4d0046dfe14b0652702dead",
+      "wire_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f2037e4c5c28ca49a1e1c851f159401a9a27812e1ecca7a63d4d4d0046dfe14b0652702dead",
+      "receipt_hash_hex": "81adb55e8e4e566d386b320fe0bf942ff54e8a1e75f41a4781b870937d95d364",
+      "decoded": {
+        "invoice_id": "INV-001",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Consulting",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": false,
+      "diagnostic": "Y1 forward-compat: unknown odd TLV tag 39 (0x27, value=0xDEAD) embedded in a full invoice is silently ignored per BOLT-12 odd/even rule. Domain separator (TLV type 31) is computed over ALL TLV bytes including the odd-tag bytes, excluding type 31 itself. Decoder produces the original Invoice struct unchanged. Decision: codec-bolt12-odd-even-forward-compat."
     },
     {
       "name": "demo-landing-eth-001",
