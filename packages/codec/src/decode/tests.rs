@@ -437,6 +437,150 @@ fn decode_mantissa_accepts_scale_9_safe_value() {
     assert!(q > 0.0, "quantity must be positive");
 }
 
+// --- Y1: odd/even forward-compat (codec-bolt12-odd-even-forward-compat) ---
+
+/// An unknown odd tag (type 39) must be ignored by the decoder.
+/// The invoice must decode successfully with the same field values as without the tag.
+/// Pre-fix: blanket KNOWN_TAGS check rejects with UnknownExtension(39).
+#[test]
+fn y1_unknown_odd_tag_ignored() {
+    use crate::encode::encode_invoice_canonical;
+    use crate::invoice::{Invoice, InvoiceClient, InvoiceFrom, InvoiceItem};
+
+    // Build a valid invoice, encode it, then inject a synthetic odd tag (39) into the wire.
+    let invoice = Invoice {
+        invoice_id: "INV-Y1-ODD".to_string(),
+        issued_at: 1_700_000_000,
+        due_at: 1_700_604_800,
+        network_id: 1,
+        currency: "USDC".to_string(),
+        decimals: 6,
+        from: InvoiceFrom {
+            name: "Alice".to_string(),
+            wallet_address: "0xaabbccddee0011223344556677889900aabbccdd".to_string(),
+            email: None,
+            phone: None,
+            physical_address: None,
+            tax_id: None,
+        },
+        client: InvoiceClient {
+            name: "Bob".to_string(),
+            wallet_address: None,
+            email: None,
+            phone: None,
+            physical_address: None,
+            tax_id: None,
+        },
+        items: vec![InvoiceItem {
+            description: "Work".to_string(),
+            quantity: 1.0,
+            rate: "1000000".to_string(),
+        }],
+        token_address: None,
+        notes: None,
+        tax: None,
+        discount: None,
+        total: "1000000".to_string(),
+        salt: "00112233445566778899aabbccddeeff".to_string(),
+    };
+    let base_bytes = encode_invoice_canonical(&invoice).unwrap();
+
+    // Rebuild the TLV map with an extra odd tag 39, recompute domain separator.
+    // We do this by parsing the canonical bytes, inserting the tag, and re-serialising.
+    let injected = inject_extra_tag_and_recompute(&base_bytes, 39, &[0xDE, 0xAD]);
+
+    // Decode must succeed with the odd tag present.
+    let decoded =
+        decode_invoice_canonical(&injected).expect("unknown odd tag 39 must be silently ignored");
+    assert_eq!(decoded.invoice_id, "INV-Y1-ODD");
+    assert_eq!(decoded.total, "1000000");
+}
+
+/// An unknown even tag (type 26) must be rejected by the decoder.
+/// Pre-fix: same blanket KNOWN_TAGS check — also rejects, but for the wrong reason.
+/// Post-fix: parity-aware logic must reject even tags with UnknownExtension.
+#[test]
+fn y1_unknown_even_tag_rejected() {
+    use crate::encode::encode_invoice_canonical;
+    use crate::invoice::{Invoice, InvoiceClient, InvoiceFrom, InvoiceItem};
+
+    let invoice = Invoice {
+        invoice_id: "INV-Y1-EVEN".to_string(),
+        issued_at: 1_700_000_000,
+        due_at: 1_700_604_800,
+        network_id: 1,
+        currency: "USDC".to_string(),
+        decimals: 6,
+        from: InvoiceFrom {
+            name: "Alice".to_string(),
+            wallet_address: "0xaabbccddee0011223344556677889900aabbccdd".to_string(),
+            email: None,
+            phone: None,
+            physical_address: None,
+            tax_id: None,
+        },
+        client: InvoiceClient {
+            name: "Bob".to_string(),
+            wallet_address: None,
+            email: None,
+            phone: None,
+            physical_address: None,
+            tax_id: None,
+        },
+        items: vec![InvoiceItem {
+            description: "Work".to_string(),
+            quantity: 1.0,
+            rate: "1000000".to_string(),
+        }],
+        token_address: None,
+        notes: None,
+        tax: None,
+        discount: None,
+        total: "1000000".to_string(),
+        salt: "00112233445566778899aabbccddeeff".to_string(),
+    };
+    let base_bytes = encode_invoice_canonical(&invoice).unwrap();
+
+    let injected = inject_extra_tag_and_recompute(&base_bytes, 26, &[0xBE, 0xEF]);
+
+    let err = decode_invoice_canonical(&injected).unwrap_err();
+    assert!(
+        matches!(err, crate::error::CodecError::UnknownExtension(26)),
+        "expected UnknownExtension(26) for unknown even tag, got {err:?}"
+    );
+}
+
+/// Helper: parse a canonical wire, insert an extra TLV record (recomputing the domain
+/// separator so the wire remains structurally valid), and re-serialise.
+///
+/// This function uses internal codec primitives and is test-only.
+fn inject_extra_tag_and_recompute(canonical: &[u8], extra_type: u8, extra_value: &[u8]) -> Vec<u8> {
+    use crate::canonical::compute_domain_separator;
+    use crate::encode::{MAGIC, TLV_DOMAIN_SEPARATOR, VERSION};
+    use crate::tlv::{read_tlv_stream, write_tlv_stream};
+
+    assert_eq!(canonical[0], MAGIC);
+    assert_eq!(canonical[1], VERSION);
+
+    let tlv_body = &canonical[3..];
+    let mut records = read_tlv_stream(tlv_body).unwrap();
+
+    // Insert the extra tag.
+    records.insert(extra_type, extra_value.to_vec());
+
+    // Recompute domain separator over the new full records set (excluding type 31).
+    let new_sep = compute_domain_separator(&records).to_vec();
+    records.insert(TLV_DOMAIN_SEPARATOR, new_sep);
+
+    // Serialise.
+    let mut out = Vec::new();
+    out.push(MAGIC);
+    out.push(VERSION);
+    out.push(records.len() as u8); // tlv_count
+    write_tlv_stream(&records, &mut out);
+    out
+}
+
 // --- P1-F4: TLV_DECIMALS strict length ---
 
 /// decode_invoice_canonical must reject a TLV_DECIMALS field with length != 1.

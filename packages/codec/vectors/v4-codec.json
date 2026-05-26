@@ -933,6 +933,58 @@
       },
       "roundtrip": true,
       "diagnostic": "Video demo: Base (chain 8453), USDC, VoidPay treasury, total includes Magic Dust (+187 atomic units). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+    },
+    {
+      "name": "decode_unknown_odd_tag_ignored",
+      "canonical_hex": "56010e0202000104046553f100060380f5240801060a14aabbccddee0011223344556677889900aabbccdd0c0200010e0a0104576f726b000101061005416c6963651203426f62141000112233445566778899aabbccddeeff160a494e562d59312d4f4444180201061f209de8af9d9acf4160b757b5cbab1c7cc689d59faa005d4c7d9236c1391b1670bd2702dead",
+      "wire_hex": "56010e0202000104046553f100060380f5240801060a14aabbccddee0011223344556677889900aabbccdd0c0200010e0a0104576f726b000101061005416c6963651203426f62141000112233445566778899aabbccddeeff160a494e562d59312d4f4444180201061f209de8af9d9acf4160b757b5cbab1c7cc689d59faa005d4c7d9236c1391b1670bd2702dead",
+      "receipt_hash_hex": "8d9d17f0f58ea529d1c25529301af4e2e4c55f3832d3781f421ed2157723759e",
+      "decoded": {
+        "invoice_id": "INV-Y1-ODD",
+        "issued_at": 1700000000,
+        "due_at": 1700604800,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xaabbccddee0011223344556677889900aabbccdd"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Work",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "00112233445566778899aabbccddeeff"
+      },
+      "roundtrip": false,
+      "diagnostic": "Y1 forward-compat: unknown odd tag 39 (value=0xDEAD) is silently ignored per BOLT-12 odd/even rule. Domain separator is computed over ALL TLV bytes including the odd-tag bytes. Decoder produces identical Invoice struct to a wire without the extra tag. Odd tags = optional extension (safe to ignore); decision: codec-bolt12-odd-even-forward-compat."
+    },
+    {
+      "name": "decode_unknown_even_tag_rejected",
+      "canonical_hex": "56010e0202000104046553f100060380f5240801060a14aabbccddee0011223344556677889900aabbccdd0c0200010e0a0104576f726b000101061005416c6963651203426f62141000112233445566778899aabbccddeeff160a494e562d59312d4f4444180201061a02beef1f20dd277bd57ddc0068331e1c0a2ad36d110d7625068d26e94c3c34606917253a8d",
+      "wire_hex": "56010e0202000104046553f100060380f5240801060a14aabbccddee0011223344556677889900aabbccdd0c0200010e0a0104576f726b000101061005416c6963651203426f62141000112233445566778899aabbccddeeff160a494e562d59312d4f4444180201061a02beef1f20dd277bd57ddc0068331e1c0a2ad36d110d7625068d26e94c3c34606917253a8d",
+      "receipt_hash_hex": null,
+      "decoded": null,
+      "roundtrip": false,
+      "expected_error": "UnknownExtension(26)",
+      "diagnostic": "Y1 forward-compat: unknown even tag 26 (value=0xBEEF) must be rejected with UnknownExtension(26). Even tags = mandatory schema change — decoder MUST fail if unknown (schema_version bump required). Decision: codec-bolt12-odd-even-forward-compat."
+    },
+    {
+      "name": "decode_non_monotone_rejected",
+      "canonical_hex": "5601030501aa0301bb0701cc",
+      "wire_hex": "5601030501aa0301bb0701cc",
+      "receipt_hash_hex": null,
+      "decoded": null,
+      "roundtrip": false,
+      "expected_error": "InvalidData(\"non-monotone TLV stream\")",
+      "diagnostic": "Y2 strict-monotone: TLV stream with tags [5, 3, 7] — tag 3 appears after tag 5, violating strict-monotone ordering. Decoder must reject with InvalidData. Pre-fix: BTreeMap silently re-canonicalized to {3,5,7} and accepted the wire. Decision: codec-bolt12-strict-monotone-decode."
     }
   ]
 }

@@ -163,12 +163,20 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
         }
     }
 
-    // C-2: reject any tag outside the known v1 set before checksum validation.
-    // An unknown tag means unread bytes are part of the accepted payload, which
-    // creates semantic divergence between readers — different content_hash values.
+    // Forward-compat per BOLT-12 odd/even rule (decision: codec-bolt12-odd-even-forward-compat):
+    // Unknown odd tags (tag & 1 == 1) MUST be silently ignored — they represent optional
+    // extensions. Their bytes remain in `records` and flow into compute_domain_separator
+    // unchanged, so content_hash is stable across readers that know different tag sets.
+    // Unknown even tags (tag & 1 == 0) MUST fail — they represent mandatory schema changes
+    // that this decoder does not understand (a schema_version bump is required).
     for &tag in records.keys() {
         if !KNOWN_TAGS.contains(&tag) {
-            return Err(CodecError::UnknownExtension(tag));
+            if tag & 1 == 0 {
+                // Even = MUST fail (mandatory schema change — decoder cannot skip)
+                return Err(CodecError::UnknownExtension(tag));
+            }
+            // Odd = MUST ignore (optional extension). Bytes remain in `records`
+            // and flow through compute_domain_separator unchanged — content_hash stable.
         }
     }
 
