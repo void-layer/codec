@@ -47,7 +47,8 @@ The v1 decoder is **fail-loud**. A successful `Ok(Invoice)` means every byte was
 | Reject | Error | Why it's a security invariant |
 |--------|-------|------------------------------|
 | Duplicate TLV tag | `InvalidData("duplicate TLV tag")` | A `last-write-wins` decoder agrees with a `first-write-wins` decoder only by accident. Without this guard, a producer-crafted duplicate-`TLV_TOTAL` payload could make Rust and TS surfaces read different totals — a fund-loss class. |
-| Unknown TLV tag (tag ∉ v1 set of 26) | `UnknownExtension(tag)` | v1 has a closed tag set (Constitution IV — schema LOCKED). An unknown tag in an `Ok(Invoice)` payload would be silently dropped by a v1 reader but read by a v2-or-other-platform reader. The BOLT12 odd/even extensibility mechanism activates only from v2+. |
+| Unknown EVEN tag (tag ∉ v1 set, tag & 1 == 0) | `UnknownExtension(tag)` | Even tags are mandatory extensions — a decoder that does not understand them cannot safely skip them (schema version bump required). |
+| Unknown ODD tag (tag ∉ v1 set, tag & 1 == 1) | silently ignored per BOLT-12 | Odd tags are optional extensions. Their bytes are retained in the TLV map and **included in the domain separator**, so `content_hash` is stable across readers with different tag sets — on decode. See the re-encode hazard below. |
 | Non-canonical LEB128 varint | `InvalidData("non-canonical varint")` | Same value encoded as `0x00` vs `0x80 0x00` must not coexist. Defense-in-depth against producers whose receipt-hash consumer hashes received bytes instead of canonical bytes. |
 | Raw-form encoding of a dict-known chain ID | `InvalidData("non-canonical chain encoding: …")` | The canonical encoder always uses dict form for known chains. A payload using raw form for a known chain ID has a different byte sequence → different `keccak256(canonical)`. |
 | Raw-form encoding of a dict-known currency symbol | `InvalidData("non-canonical currency encoding: …")` | Same rationale as chain ID: dict and raw forms of the same currency must not coexist across readers. |
@@ -66,20 +67,15 @@ The domain separator (`keccak256("VOIDPAY_INVOICE_V1" || serialized records)`) c
 
 A type-safe `receiptHash(invoice: Invoice)` surface that performs the canonical encode internally is on the v0.2 roadmap. Until then, treat the byte-input signature as a layer boundary you own.
 
-## Known limitations (v1.0–v1.1)
+## Live hazard: odd-tag forward-compat and re-encode lossiness (v1.0+)
 
-**Forward-compat for odd-tagged extensions (MAY_IGNORE) is NOT implemented.**
+**Odd-tag forward-compat IS active (v1.0+). Re-encode is LOSSY for unknown odd tags.**
 
-The v1 decoder hard-rejects all unknown TLV tags (see "Unknown TLV tag" row in the table above). The BOLT12-style odd/even forward-compatibility mechanism — where odd-tagged extensions may be silently ignored by a receiver that does not understand them — is deferred to v1.2.
+The decoder silently ignores unknown odd-tagged TLVs and retains their bytes only within the decode-time TLV map. The `Invoice` struct has no `extensions` field, so a decode → re-encode cycle **DROPS** any unknown odd-tag bytes, producing different `canonical_bytes` and a different ERC-3009 nonce / receipt hash.
 
-Rationale for deferral:
-- The `Invoice` struct has no `extensions: Vec<(u8, Vec<u8>)>` field to retain unknown bytes for round-trip.
-- Without that field, a v1.1 reader that accepted an odd-tagged extension and re-encoded it would silently drop the extension, producing a different `canonical_bytes` and a different ERC-3009 nonce.
-- Correctness requires both the decoder change and an `Invoice` struct amendment before MAY_IGNORE can be safely activated.
+This is a fund-loss class hazard: **NEVER re-encode an invoice that decoded with unknown odd tags and reuse the nonce.** Integrators receiving a URL with unknown odd tags MUST treat the originally-received canonical bytes as the identity, not a re-encoded form.
 
-Implementation target: v1.2 (spec amendment + `Invoice` struct change to retain unknown extension bytes). See Kai decision memo [link to be filed when spec amendment is written].
-
-Until v1.2, producers MUST NOT emit unknown tags in v1 payloads. Any extension must go through the v1 spec amendment process to be assigned a known tag before deployment.
+A round-trip-safe `extensions` field is on the v0.2 roadmap.
 
 ## Constitution VI
 
