@@ -53,7 +53,7 @@ jobs:
       - name: TS/JS parity (vitest)
         run: pnpm -C packages/codec exec vitest run tests/parity.test.ts
       - name: Rust parity (cargo)
-        run: cargo test --manifest-path packages/codec/Cargo.toml --test parity
+        run: cargo test --manifest-path packages/codec/Cargo.toml --test parity_roundtrip --test parity_malformed
   ts-rust-parity:
     # Requires VOIDPAY_READ_TOKEN secret (fine-grained PAT: contents:read on ignromanov/voidpay).
     # Skipped automatically on fork PRs where the secret is absent.
