@@ -9,7 +9,7 @@ jobs:
   lint-and-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd      # v6.0.2
       - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa     # v4
         with: { version: 10.24.0 }
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020    # v4
@@ -37,7 +37,7 @@ jobs:
     needs: [lint-and-build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd      # v6.0.2
       - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa     # v4
         with: { version: 10.24.0 }
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020    # v4
@@ -62,9 +62,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ vars.TS_RUST_PARITY_ENABLED == 'true' }}
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd      # v6.0.2
       - name: Checkout vl/app at pinned SHA (sparse — codec files only)
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd      # v6.0.2
         with:
           repository: ignromanov/voidpay
           ref: e4926b7f7b08ca4f72b707df8796bfd4a4b0a3b3
@@ -90,7 +90,7 @@ jobs:
   macos-sanity:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd      # v6.0.2
       - uses: actions-rust-lang/setup-rust-toolchain@46268bd060767258de96ed93c1251119784f2ab6  # v1
       - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
       - run: cargo test --manifest-path packages/codec/Cargo.toml
@@ -98,7 +98,7 @@ jobs:
     needs: [lint-and-build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd      # v6.0.2
       - uses: actions-rust-lang/setup-rust-toolchain@46268bd060767258de96ed93c1251119784f2ab6  # v1
         with: { rustflags: "" }
       - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
