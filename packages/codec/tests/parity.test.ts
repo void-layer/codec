@@ -49,7 +49,7 @@ const ERROR_SUBSTRINGS: Record<string, string> = {
   VarintOverflow: 'varint overflow',
   Truncated: 'truncated payload',
   ChecksumMismatch: 'checksum mismatch',
-  CompressionFailed: 'Brotli decompress failed',
+  CompressionFailed: 'decompress failed',
   InvalidAmount: 'invalid amount',
   UnsupportedVersion: 'unsupported version',
   DictionaryMismatch: 'dictionary mismatch',

@@ -86,6 +86,70 @@ export async function encodeInvoiceWire(invoice: Invoice): Promise<Uint8Array> {
 // Mirrors: decompressPayload() in tlv-codec/compress.ts
 // ---------------------------------------------------------------------------
 
+/**
+ * Bounded streaming Brotli decompression.
+ *
+ * Uses `DecompressStream` to decompress in chunks of `chunkSize` bytes,
+ * checking the accumulated total BEFORE appending each chunk. Aborts as soon
+ * as `total > MAX_DECOMPRESSED_BYTES` — the bomb never fully materialises in
+ * memory.
+ */
+function decompressBounded(
+  brotli: BrotliWasmType,
+  input: Uint8Array,
+  maxBytes: number,
+): Uint8Array {
+  // Output chunk size: use the cap itself as the chunk size so we can detect
+  // overrun in a single iteration for valid payloads, while still catching
+  // multi-chunk bombs on the second iteration.
+  const CHUNK = maxBytes
+  const stream = new brotli.DecompressStream()
+  const chunks: Uint8Array[] = []
+  let total = 0
+  let inputOffset = 0
+
+  // Feed all input; loop over output chunks.
+  // BrotliStreamResultCode: ResultSuccess=0, NeedsMoreInput=1, NeedsMoreOutput=2
+  // The brotli-wasm DecompressStream API: corrupt input throws synchronously.
+  // code=1 (NeedsMoreInput) with all input consumed = terminal success state.
+  // code=2 (NeedsMoreOutput) = more output available; loop with same/empty input.
+  while (true) {
+    const slice = input.slice(inputOffset)
+    const result = stream.decompress(slice, CHUNK)
+    inputOffset += result.input_offset
+
+    if (result.buf.length > 0) {
+      total += result.buf.length
+      // Check BEFORE accumulating this chunk — bomb guard fires here.
+      if (total > maxBytes) {
+        throw new Error(
+          `decompressed wire body exceeds MAX_DECOMPRESSED_BYTES (${maxBytes})`,
+        )
+      }
+      chunks.push(result.buf)
+    }
+
+    // code=0 (ResultSuccess) — stream fully closed.
+    if (result.code === 0) break
+
+    // code=1 (NeedsMoreInput) — all input consumed; this is the normal terminal
+    // state for a single-chunk decompress (ResultSuccess is only emitted when
+    // the underlying Brotli stream closes, which may not happen here).
+    if (result.code === 1) break
+
+    // code=2 (NeedsMoreOutput) — continue the loop to drain more output chunks.
+  }
+
+  // Concatenate all chunks into a single Uint8Array.
+  const out = new Uint8Array(total)
+  let pos = 0
+  for (const chunk of chunks) {
+    out.set(chunk, pos)
+    pos += chunk.length
+  }
+  return out
+}
+
 export async function decodeInvoiceWire(bytes: Uint8Array): Promise<Invoice> {
   // decodeInvoiceCanonical is statically re-exported above — no dynamic import.
   if (bytes.length < 3 || !(bytes[1]! & COMPRESSED_FLAG)) {
@@ -94,16 +158,11 @@ export async function decodeInvoiceWire(bytes: Uint8Array): Promise<Invoice> {
 
   const brotli = await getBrotli()
   const compressedBody = bytes.slice(2)
-  const decompressed = brotli.decompress(compressedBody)
 
-  // Decompression-bomb guard: reject a body that expands past the cap before
-  // allocating the canonical buffer.
-  if (decompressed.length > MAX_DECOMPRESSED_BYTES) {
-    throw new Error(
-      `decompressed wire body ${decompressed.length} bytes exceeds ` +
-        `MAX_DECOMPRESSED_BYTES (${MAX_DECOMPRESSED_BYTES})`,
-    )
-  }
+  // Decompression-bomb guard: streaming bounded decompress — the check fires
+  // INSIDE the loop before each chunk is accumulated, so the bomb never fully
+  // allocates. JS Error (not CodecError — this is the JS shim layer).
+  const decompressed = decompressBounded(brotli, compressedBody, MAX_DECOMPRESSED_BYTES)
 
   const canonical = new Uint8Array(2 + decompressed.length)
   canonical[0] = bytes[0]! // MAGIC
