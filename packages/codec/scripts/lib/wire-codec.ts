@@ -43,6 +43,9 @@ export async function wireDecode(bytes: Uint8Array): Promise<unknown> {
   while (true) {
     const result = stream.decompress(input.slice(inputOffset), CHUNK)
     inputOffset += result.input_offset
+    if (result.buf.length === 0 && result.input_offset === 0) {
+      throw new Error('truncated or corrupt brotli stream (no progress)')
+    }
     if (result.buf.length > 0) {
       total += result.buf.length
       if (total > MAX_DECOMPRESSED_BYTES) {

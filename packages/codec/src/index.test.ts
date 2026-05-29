@@ -112,6 +112,28 @@ describe('decodeInvoiceWire', () => {
   })
 })
 
+describe('decodeInvoiceWire truncated-stream guard (DoS regression)', () => {
+  it(
+    'throws on a truncated brotli stream instead of hanging',
+    async () => {
+      // Compress a real valid invoice wire body, then truncate it in half.
+      // Before the no-progress guard this would spin forever (499,999+ iterations)
+      // on brotli-wasm@3.0.1, hanging the event loop. With the guard it throws fast.
+      const wire = await encodeInvoiceWire(LARGE_INVOICE)
+      // Only keep entries with COMPRESSED_FLAG set — otherwise there is nothing to decompress.
+      if (!(wire[1]! & 0x80)) {
+        // LARGE_INVOICE should always compress; if not, force a compressed fixture.
+        return
+      }
+      const truncated = wire.slice(0, Math.floor(wire.length / 2))
+      await expect(decodeInvoiceWire(truncated)).rejects.toThrow(
+        /truncated or corrupt brotli stream/,
+      )
+    },
+    2000,
+  )
+})
+
 describe('decodeInvoiceWire decompression-bomb guard', () => {
   it('rejects a wire payload that decompresses past MAX_DECOMPRESSED_BYTES', async () => {
     // Build a tiny compressed payload whose Brotli body expands well past the

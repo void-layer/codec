@@ -118,6 +118,10 @@ function decompressBounded(
     const result = stream.decompress(slice, CHUNK)
     inputOffset += result.input_offset
 
+    if (result.buf.length === 0 && result.input_offset === 0) {
+      throw new Error('truncated or corrupt brotli stream (no progress)')
+    }
+
     if (result.buf.length > 0) {
       total += result.buf.length
       // Check BEFORE accumulating this chunk — bomb guard fires here.
