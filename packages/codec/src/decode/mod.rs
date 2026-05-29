@@ -218,7 +218,14 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
     let due_at_bytes = records
         .get(&TLV_DUE_AT)
         .ok_or(CodecError::Truncated { needed: 1, had: 0 })?;
-    let (due_delta, _) = read_varint(due_at_bytes, 0)?;
+    let (due_delta, consumed) = read_varint(due_at_bytes, 0)?;
+    // T2-2: trailing bytes inside TLV value — full consumption required.
+    if consumed != due_at_bytes.len() {
+        return Err(CodecError::InvalidData(format!(
+            "trailing bytes in due_at TLV value: consumed {consumed} of {} bytes",
+            due_at_bytes.len()
+        )));
+    }
     let due_delta_u32 = u32::try_from(due_delta).map_err(|_| {
         CodecError::InvalidAmount(format!("due_at delta {due_delta} overflows u32"))
     })?;

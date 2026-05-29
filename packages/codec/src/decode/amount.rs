@@ -57,6 +57,43 @@ pub(super) fn decode_mantissa(bytes: &[u8]) -> Result<String, CodecError> {
             "mantissa trailing zeros {zeros} exceeds maximum {MAX_TRAILING_ZEROS}"
         )));
     }
+    // T2-2: trailing bytes inside TLV value — full consumption required.
+    if zeros_offset + 1 != bytes.len() {
+        return Err(CodecError::InvalidData(format!(
+            "trailing bytes in amount TLV value: expected {} bytes, got {}",
+            zeros_offset + 1,
+            bytes.len()
+        )));
+    }
+    // T2-1: mantissa scale-aliasing reject — canonical encoder always strips
+    // trailing zeros into the zeros byte. mantissa%10==0 with mantissa!=0
+    // means a trailing zero is in the mantissa instead of zeros.
+    // mantissa==0 must have zeros==0 (canonical zero is [0x00, 0x00]).
+    let mantissa_is_zero = mantissa_bytes.iter().all(|&b| b == 0);
+    if mantissa_is_zero && zeros != 0 {
+        return Err(CodecError::InvalidData(
+            "non-canonical zero amount: mantissa=0 must have zeros=0".to_string(),
+        ));
+    }
+    if !mantissa_is_zero {
+        // Check if the last byte of the big-endian mantissa has trailing decimal
+        // zeros. Since mantissa_bytes is big-endian, we need to check the numeric
+        // value mod 10 — but we can do a fast check: last byte (LE digit) mod 10.
+        // For a big-endian number, divisibility by 10 means divisible by 2 and 5.
+        // We delegate to the U256 check via a simple last-nibble approach:
+        // any number whose decimal form ends in 0 has last byte even AND divisible
+        // by 5 in decimal. Rather than recomputing, parse via U256:
+        use ruint::aliases::U256;
+        let mut be32 = [0u8; 32];
+        let start = 32usize.saturating_sub(mantissa_bytes.len());
+        be32[start..].copy_from_slice(&mantissa_bytes[mantissa_bytes.len().saturating_sub(32)..]);
+        let m = U256::from_be_bytes(be32);
+        if m % U256::from(10u64) == U256::ZERO {
+            return Err(CodecError::InvalidData(
+                "non-canonical mantissa: trailing decimal zero must be in zeros byte".to_string(),
+            ));
+        }
+    }
     mantissa_to_decimal_string(&mantissa_bytes, zeros, "amount")
 }
 
@@ -135,6 +172,25 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
                 "item {i} rate zeros {zeros} exceeds max {MAX_TRAILING_ZEROS}"
             )));
         }
+        // T2-1: scale-aliasing reject for item rate mantissa.
+        let mantissa_is_zero = mantissa_be.iter().all(|&b| b == 0);
+        if mantissa_is_zero && zeros != 0 {
+            return Err(CodecError::InvalidData(format!(
+                "non-canonical zero rate in item {i}: mantissa=0 must have zeros=0"
+            )));
+        }
+        if !mantissa_is_zero {
+            use ruint::aliases::U256;
+            let mut be32 = [0u8; 32];
+            let start = 32usize.saturating_sub(mantissa_be.len());
+            be32[start..].copy_from_slice(&mantissa_be[mantissa_be.len().saturating_sub(32)..]);
+            let m = U256::from_be_bytes(be32);
+            if m % U256::from(10u64) == U256::ZERO {
+                return Err(CodecError::InvalidData(format!(
+                    "non-canonical mantissa in item {i} rate: trailing decimal zero must be in zeros byte"
+                )));
+            }
+        }
 
         let rate = mantissa_to_decimal_string(&mantissa_be, zeros, &format!("item {i} rate"))?;
 
@@ -143,6 +199,13 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
             quantity,
             rate,
         });
+    }
+    // T2-2: trailing bytes inside TLV value — full consumption required.
+    if offset != data.len() {
+        return Err(CodecError::InvalidData(format!(
+            "trailing bytes in items TLV value: consumed {offset} of {} bytes",
+            data.len()
+        )));
     }
     Ok(items)
 }

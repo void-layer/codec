@@ -76,7 +76,15 @@ pub(super) fn decode_chain_id(value: &[u8]) -> Result<u32, CodecError> {
                 .ok_or(CodecError::UnknownExtension(code))
         },
         |raw| {
-            let (chain_id_u64, _) = read_varint(raw, 0)?;
+            let (chain_id_u64, consumed) = read_varint(raw, 0)?;
+            // T2-2: trailing bytes inside TLV value — full consumption required.
+            // `raw` is `value[1..]`; consumed bytes must equal raw.len().
+            if consumed != raw.len() {
+                return Err(CodecError::InvalidData(format!(
+                    "trailing bytes in chain_id TLV value: consumed {consumed} of {} bytes",
+                    raw.len()
+                )));
+            }
             // Reject chain IDs > u32::MAX instead of silently truncating.
             let chain_id = u32::try_from(chain_id_u64).map_err(|_| {
                 CodecError::InvalidAmount(format!("chain ID {chain_id_u64} overflows u32"))

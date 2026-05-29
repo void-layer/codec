@@ -98,6 +98,45 @@ fn decode_mantissa_large_value_above_u128() {
     assert_eq!(decoded, large);
 }
 
+// --- T2-1: mantissa scale-aliasing reject ---
+
+/// Non-canonical: mantissa=10,zeros=0 encodes the same value as mantissa=1,zeros=1.
+/// The encoder always strips trailing zeros into the `zeros` byte, so mantissa%10==0
+/// (with mantissa!=0) is non-canonical and must be rejected.
+#[test]
+fn decode_mantissa_rejects_trailing_zero_in_mantissa() {
+    // mantissa=10 (LEB128=0x0A), zeros=0 — non-canonical (should be mantissa=1, zeros=1)
+    let err = decode_mantissa(&[0x0A, 0x00]).unwrap_err();
+    assert!(
+        matches!(err, CodecError::InvalidData(_)),
+        "expected InvalidData for non-canonical mantissa trailing zero, got {err:?}"
+    );
+}
+
+/// Non-canonical: mantissa=0,zeros=5 — the zero amount must encode as mantissa=0,zeros=0.
+#[test]
+fn decode_mantissa_rejects_nonzero_zeros_when_mantissa_is_zero() {
+    // mantissa=0 (0x00), zeros=5 — non-canonical (canonical zero is [0x00, 0x00])
+    let err = decode_mantissa(&[0x00, 0x05]).unwrap_err();
+    assert!(
+        matches!(err, CodecError::InvalidData(_)),
+        "expected InvalidData for non-canonical zero-mantissa with nonzero zeros, got {err:?}"
+    );
+}
+
+// --- T2-2: trailing-bytes-inside-TLV-value reject (decode_mantissa) ---
+
+/// Extra bytes after the mantissa+zeros pair must be rejected.
+#[test]
+fn decode_mantissa_rejects_trailing_bytes() {
+    // mantissa=1 (0x01), zeros=6 — valid — then one spurious byte 0xFF
+    let err = decode_mantissa(&[0x01, 0x06, 0xFF]).unwrap_err();
+    assert!(
+        matches!(err, CodecError::InvalidData(_)),
+        "expected InvalidData for trailing bytes in mantissa TLV value, got {err:?}"
+    );
+}
+
 #[test]
 fn decode_mantissa_wire_payload_exceeding_u256_errors() {
     // Craft a wire payload whose mantissa varint decodes to 33 bytes (> 32) — must error
