@@ -661,4 +661,3 @@ fn decode_rejects_non_canonical_decimals_length() {
         "expected InvalidData or ChecksumMismatch for 2-byte TLV_DECIMALS, got {err:?}"
     );
 }
-

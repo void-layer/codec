@@ -170,6 +170,10 @@ pub fn decode_invoice_canonical(bytes: &[u8]) -> Result<Invoice, CodecError> {
     // Unknown even tags (tag & 1 == 0) MUST fail — they represent mandatory schema changes
     // that this decoder does not understand (a schema_version bump is required).
     for &tag in records.keys() {
+        #[expect(
+            clippy::collapsible_if,
+            reason = "nested form keeps the even-reject / odd-ignore BOLT-12 branches documented separately"
+        )]
         if !KNOWN_TAGS.contains(&tag) {
             if tag & 1 == 0 {
                 // Even = MUST fail (mandatory schema change — decoder cannot skip)
