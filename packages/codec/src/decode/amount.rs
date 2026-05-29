@@ -13,6 +13,35 @@ use super::dict::reverse_dict;
 /// Bounds the per-item slice read against hostile varint lengths.
 const MAX_DESC_LEN: usize = MAX_VALUE_SIZE;
 
+/// Reject a mantissa that still contains a trailing decimal zero.
+///
+/// Canonical encoding requires all trailing decimal zeros to be moved into the
+/// `zeros` byte. A mantissa divisible by 10 (and non-zero) is therefore
+/// non-canonical. Precondition: `mantissa_bytes.len() <= 32`; callers with
+/// longer slices are already rejected upstream by `mantissa_to_decimal_string`.
+fn check_mantissa_canonical(mantissa_bytes: &[u8]) -> Result<(), CodecError> {
+    if mantissa_bytes.len() > 32 {
+        // >32-byte mantissas are rejected by mantissa_to_decimal_string; this
+        // function's precondition is <=32 bytes. Return Ok so the downstream
+        // check produces the authoritative error.
+        return Ok(());
+    }
+    let mantissa_is_zero = mantissa_bytes.iter().all(|&b| b == 0);
+    if mantissa_is_zero {
+        return Ok(()); // zeros==0 constraint is checked at call sites.
+    }
+    use ruint::aliases::U256;
+    let mut be32 = [0u8; 32];
+    be32[32 - mantissa_bytes.len()..].copy_from_slice(mantissa_bytes);
+    let m = U256::from_be_bytes(be32);
+    if m % U256::from(10u64) == U256::ZERO {
+        return Err(CodecError::InvalidData(
+            "non-canonical mantissa: trailing decimal zero must be in zeros byte".to_string(),
+        ));
+    }
+    Ok(())
+}
+
 /// Convert a big-endian mantissa byte slice + trailing-zero count to a decimal string.
 /// `overflow_ctx` is used verbatim in error messages to identify the call site.
 fn mantissa_to_decimal_string(
@@ -75,25 +104,7 @@ pub(super) fn decode_mantissa(bytes: &[u8]) -> Result<String, CodecError> {
             "non-canonical zero amount: mantissa=0 must have zeros=0".to_string(),
         ));
     }
-    if !mantissa_is_zero {
-        // Check if the last byte of the big-endian mantissa has trailing decimal
-        // zeros. Since mantissa_bytes is big-endian, we need to check the numeric
-        // value mod 10 — but we can do a fast check: last byte (LE digit) mod 10.
-        // For a big-endian number, divisibility by 10 means divisible by 2 and 5.
-        // We delegate to the U256 check via a simple last-nibble approach:
-        // any number whose decimal form ends in 0 has last byte even AND divisible
-        // by 5 in decimal. Rather than recomputing, parse via U256:
-        use ruint::aliases::U256;
-        let mut be32 = [0u8; 32];
-        let start = 32usize.saturating_sub(mantissa_bytes.len());
-        be32[start..].copy_from_slice(&mantissa_bytes[mantissa_bytes.len().saturating_sub(32)..]);
-        let m = U256::from_be_bytes(be32);
-        if m % U256::from(10u64) == U256::ZERO {
-            return Err(CodecError::InvalidData(
-                "non-canonical mantissa: trailing decimal zero must be in zeros byte".to_string(),
-            ));
-        }
-    }
+    check_mantissa_canonical(&mantissa_bytes)?;
     mantissa_to_decimal_string(&mantissa_bytes, zeros, "amount")
 }
 
@@ -179,18 +190,7 @@ pub(super) fn unpack_items(data: &[u8]) -> Result<Vec<InvoiceItem>, CodecError> 
                 "non-canonical zero rate in item {i}: mantissa=0 must have zeros=0"
             )));
         }
-        if !mantissa_is_zero {
-            use ruint::aliases::U256;
-            let mut be32 = [0u8; 32];
-            let start = 32usize.saturating_sub(mantissa_be.len());
-            be32[start..].copy_from_slice(&mantissa_be[mantissa_be.len().saturating_sub(32)..]);
-            let m = U256::from_be_bytes(be32);
-            if m % U256::from(10u64) == U256::ZERO {
-                return Err(CodecError::InvalidData(format!(
-                    "non-canonical mantissa in item {i} rate: trailing decimal zero must be in zeros byte"
-                )));
-            }
-        }
+        check_mantissa_canonical(&mantissa_be)?;
 
         let rate = mantissa_to_decimal_string(&mantissa_be, zeros, &format!("item {i} rate"))?;
 
