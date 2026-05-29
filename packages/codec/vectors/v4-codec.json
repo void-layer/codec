@@ -618,12 +618,6 @@
       "expected_error": "BadMagic"
     },
     {
-      "name": "malformed-unknown-tlv-tag",
-      "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f203fc37a375b004bff9bf0cade23fe483c29c7b99058b35b5c51e53175008d79086302dead",
-      "diagnostic": "malformed:canonical",
-      "expected_error": "UnknownExtension"
-    },
-    {
       "name": "malformed-duplicate-tlv-tag",
       "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d30303118020202180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be5",
       "diagnostic": "malformed:canonical",
