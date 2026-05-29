@@ -1,0 +1,152 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa     # v4
+        with: { version: 10.24.0 }
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020    # v4
+        with: { node-version: 24, cache: pnpm }
+      - uses: actions-rust-lang/setup-rust-toolchain@46268bd060767258de96ed93c1251119784f2ab6  # v1
+        with: { rustflags: "" }
+      - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
+      - run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack 0.14.0
+        run: cargo install wasm-pack --version 0.14.0 --locked
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - run: pnpm -r lint
+      - run: pnpm -r test
+      - run: cargo build --manifest-path packages/codec/Cargo.toml --release
+      - run: cargo test --manifest-path packages/codec/Cargo.toml
+      - name: Assert size budgets
+        run: bash scripts/assert-size.sh
+        working-directory: packages/codec
+      - run: |
+          for dir in packages/codec packages/types packages/networks; do
+            (cd "$dir" && npm pack --dry-run)
+          done
+  vector-parity:
+    needs: [lint-and-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa     # v4
+        with: { version: 10.24.0 }
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020    # v4
+        with: { node-version: 24, cache: pnpm }
+      - uses: actions-rust-lang/setup-rust-toolchain@46268bd060767258de96ed93c1251119784f2ab6  # v1
+        with: { rustflags: "" }
+      - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
+      - run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack 0.14.0
+        run: cargo install wasm-pack --version 0.14.0 --locked
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - name: TS/JS parity (vitest)
+        run: pnpm -C packages/codec exec vitest run tests/parity.test.ts --coverage.enabled=false
+      - name: Rust parity (cargo)
+        run: cargo test --manifest-path packages/codec/Cargo.toml --test parity_roundtrip --test parity_malformed
+  ts-rust-parity:
+    # Requires VOIDPAY_READ_TOKEN secret (fine-grained PAT: contents:read on ignromanov/voidpay).
+    # Skipped automatically on fork PRs where the secret is absent.
+    # To enable: set vars.TS_RUST_PARITY_ENABLED=true AND add secret VOIDPAY_READ_TOKEN in repo Settings.
+    needs: [lint-and-build]
+    runs-on: ubuntu-latest
+    if: ${{ vars.TS_RUST_PARITY_ENABLED == 'true' }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - name: Checkout vl/app at pinned SHA (sparse — codec files only)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+        with:
+          repository: ignromanov/voidpay
+          ref: e4926b7f7b08ca4f72b707df8796bfd4a4b0a3b3
+          token: ${{ secrets.VOIDPAY_READ_TOKEN }}
+          path: vl-app
+          sparse-checkout: |
+            src/features/invoice-codec
+            src/shared/lib/tlv-codec
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa     # v4
+        with: { version: 10.24.0 }
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020    # v4
+        with: { node-version: 24, cache: pnpm }
+      - uses: actions-rust-lang/setup-rust-toolchain@46268bd060767258de96ed93c1251119784f2ab6  # v1
+        with: { rustflags: "" }
+      - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
+      - run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack 0.14.0
+        run: cargo install wasm-pack --version 0.14.0 --locked
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - name: Run cross-impl parity (Rust WASM vs TS reference)
+        run: VL_APP_PATH=${{ github.workspace }}/vl-app pnpm -C packages/codec run test:ts-rust-parity
+  macos-sanity:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - uses: actions-rust-lang/setup-rust-toolchain@46268bd060767258de96ed93c1251119784f2ab6  # v1
+      - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
+      - run: cargo test --manifest-path packages/codec/Cargo.toml
+  test-wasm-node:
+    needs: [lint-and-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5      # v4
+      - uses: actions-rust-lang/setup-rust-toolchain@46268bd060767258de96ed93c1251119784f2ab6  # v1
+        with: { rustflags: "" }
+      - uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae   # v2
+      - run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack 0.14.0
+        run: cargo install wasm-pack --version 0.14.0 --locked
+      - name: Run wasm-pack test --node (AC-9 boundary tests)
+        run: wasm-pack test --node packages/codec
+  ci-gate:
+    # Single required branch-protection check. All non-parity jobs must succeed;
+    # ts-rust-parity may be SKIPPED only when vars.TS_RUST_PARITY_ENABLED != 'true'
+    # (opt-out for forks or repos without VOIDPAY_READ_TOKEN secret).
+    needs: [lint-and-build, macos-sanity, vector-parity, test-wasm-node, ts-rust-parity]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs (parity opt-out aware)
+        run: |
+          fail=0
+
+          check() {
+            local name=$1 result=$2
+            if [ "$result" != "success" ]; then
+              echo "❌ $name: $result"
+              fail=1
+            else
+              echo "✅ $name: $result"
+            fi
+          }
+
+          check "lint-and-build" "${{ needs.lint-and-build.result }}"
+          check "macos-sanity"   "${{ needs.macos-sanity.result }}"
+          check "vector-parity"  "${{ needs.vector-parity.result }}"
+          check "test-wasm-node" "${{ needs.test-wasm-node.result }}"
+
+          parity_result="${{ needs.ts-rust-parity.result }}"
+          parity_enabled="${{ vars.TS_RUST_PARITY_ENABLED }}"
+
+          if [ "$parity_enabled" = "true" ]; then
+            check "ts-rust-parity (enabled)" "$parity_result"
+          else
+            # opt-out path: skipped or success both acceptable
+            if [ "$parity_result" = "skipped" ] || [ "$parity_result" = "success" ]; then
+              echo "✅ ts-rust-parity ($parity_result; disabled via vars.TS_RUST_PARITY_ENABLED)"
+            else
+              echo "❌ ts-rust-parity: $parity_result"
+              fail=1
+            fi
+          fi
+
+          exit $fail
