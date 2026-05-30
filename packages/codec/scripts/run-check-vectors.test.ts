@@ -14,6 +14,7 @@
  */
 import { test, expect } from 'vitest'
 import * as fs from 'node:fs'
+import * as os from 'node:os'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { runFreezeCheck } from './check-vectors.js'
@@ -71,20 +72,17 @@ test('freeze-gate rejects mutated vector (gate has teeth)', async () => {
     original_hex.slice(5)
   target.canonical_hex = mutated_hex
 
-  const mutatedPath = path.resolve(_dirname, '../vectors/v4-codec-mutated-test.json')
+  // Write mutated content to a temp file — never overwrite the live oracle.
+  // A process kill between write and restore would otherwise corrupt v4-codec.json.
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'codec-freeze-gate-'))
+  const mutatedPath = path.join(tmpDir, 'v4-codec.json')
   fs.writeFileSync(mutatedPath, JSON.stringify(parsed, null, 2))
 
   try {
-    // Temporarily point the checker at the mutated file by monkey-patching
-    // the environment. We do this by writing the mutated file over the real
-    // path, running the check, then restoring.
-    fs.writeFileSync(VECTORS_PATH, JSON.stringify(parsed, null, 2))
-    const mismatches = await runFreezeCheck()
+    const mismatches = await runFreezeCheck(mutatedPath)
     expect(mismatches.length).toBeGreaterThan(0)
     expect(mismatches.some((m) => m.includes('CANONICAL_MISMATCH'))).toBe(true)
   } finally {
-    // Always restore the original file
-    fs.writeFileSync(VECTORS_PATH, original)
-    fs.rmSync(mutatedPath, { force: true })
+    fs.rmSync(tmpDir, { recursive: true, force: true })
   }
 })

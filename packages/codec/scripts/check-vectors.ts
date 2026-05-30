@@ -60,15 +60,15 @@ async function deriveVectors(): Promise<Vector[]> {
  *
  * Exported so the vitest runner can assert without process.exit().
  */
-export async function runFreezeCheck(): Promise<string[]> {
+export async function runFreezeCheck(committedPath: string = OUT_PATH): Promise<string[]> {
   const derived = await deriveVectors()
   const mismatches: string[] = []
 
-  if (!fs.existsSync(OUT_PATH)) {
+  if (!fs.existsSync(committedPath)) {
     return ['vectors/v4-codec.json does not exist — run pnpm check-vectors -- --write']
   }
 
-  const committed = JSON.parse(fs.readFileSync(OUT_PATH, 'utf-8')) as {
+  const committed = JSON.parse(fs.readFileSync(committedPath, 'utf-8')) as {
     vectors: Vector[]
     content_hash?: string
     frozen?: boolean
@@ -128,15 +128,18 @@ export async function runFreezeCheck(): Promise<string[]> {
     }
   }
 
-  // Immutability gate: sha256 is computed over the COMMITTED vectors array as
+  // Integrity gate: sha256 is computed over the COMMITTED vectors array as
   // stored in the frozen JSON — not over WASM-derived output. decode-only
   // fixtures (roundtrip===false) are part of the frozen oracle and must be
-  // included in the hash. This detects any tampering with the committed file.
+  // included in the hash. This detects accidental corruption (bitrot, bad
+  // merge, unintended manual edit). It is NOT a tamper-proof security
+  // boundary — a malicious editor can edit the vectors and re-stamp the hash.
+  // Real cross-impl byte identity is enforced by the codec-drift gate (check a).
   if (committed.content_hash) {
     const expectedHash = computeContentHash(committedVectors)
     if (committed.content_hash !== expectedHash) {
       mismatches.push(
-        `CONTENT_HASH_MISMATCH (tamper detected)\n` +
+        `CONTENT_HASH_MISMATCH (integrity check failed — vectors edited without re-stamping hash)\n` +
         `  committed: ${committed.content_hash}\n` +
         `  recomputed: ${expectedHash}`,
       )
