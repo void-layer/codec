@@ -15,7 +15,7 @@
  */
 
 import { execSync, execFileSync } from 'node:child_process'
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
@@ -112,15 +112,25 @@ try {
     env: { ...process.env, NODE_OPTIONS: '' },
   })
   smokePassed = true
-} catch (err) {
+} catch {
+  // execFileSync throws on non-zero exit; the child's stderr is already
+  // forwarded via stdio:'inherit' above, so no additional logging needed.
   console.error('\nB2 SMOKE FAIL — Node ESM import failed (see above)')
 } finally {
-  // Always clean up tarball
-  try { execSync(`rm -f "${tarballPath}"`) } catch (_) {}
+  // Always clean up tarball; ignore errors (e.g. already deleted)
+  try {
+    execSync(`rm -f "${tarballPath}"`)
+  } catch {
+    // intentional: cleanup failure must not mask smoke failure
+  }
 }
 
 // Clean up tmp dir
-try { execSync(`rm -rf "${tmpDir}"`) } catch (_) {}
+try {
+  execSync(`rm -rf "${tmpDir}"`)
+} catch {
+  // intentional: cleanup failure must not mask smoke failure
+}
 
 if (!smokePassed) process.exit(1)
 
