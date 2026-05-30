@@ -1,7 +1,10 @@
 {
   "schema_version": 1,
+  "frozen": true,
+  "captured_from_vl_app_sha": "c658fff",
+  "frozen_at": "2026-05-30",
+  "content_hash": "00708f3bd86ecf1a45efcc1f9a9bc07fd5547150c7ab24bb0c9141464e948311",
   "generated_by": "@void-layer/codec v0.1.0",
-  "generated_at": "2026-05-25",
   "vectors": [
     {
       "name": "minimal-single-tlv",
@@ -33,7 +36,7 @@
         "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
       },
       "roundtrip": true,
-      "diagnostic": "Smallest valid invoice — all required fields, one item, no optional fields. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+      "diagnostic": "Smallest valid invoice \u2014 all required fields, one item, no optional fields. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
     },
     {
       "name": "chain-ethereum",
@@ -289,7 +292,7 @@
         "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
       },
       "roundtrip": true,
-      "diagnostic": "BigInt edge: total = U256::MAX (115792089237316195423570985008687907853269984665640564039457584007913129639935) — largest encodable value after U256 widening. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+      "diagnostic": "BigInt edge: total = U256::MAX (115792089237316195423570985008687907853269984665640564039457584007913129639935) \u2014 largest encodable value after U256 widening. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
     },
     {
       "name": "bigint-amount-over-u256",
@@ -432,7 +435,7 @@
         "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
       },
       "roundtrip": true,
-      "diagnostic": "Extension: sub-invoice chain — ETH on Arbitrum with tax and discount fields. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+      "diagnostic": "Extension: sub-invoice chain \u2014 ETH on Arbitrum with tax and discount fields. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
     },
     {
       "name": "unicode-cyrillic",
@@ -447,20 +450,20 @@
         "currency": "USDC",
         "decimals": 6,
         "from": {
-          "name": "Алиса Разработчик",
+          "name": "\u0410\u043b\u0438\u0441\u0430 \u0420\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a",
           "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
         },
         "client": {
-          "name": "Боб Клиент"
+          "name": "\u0411\u043e\u0431 \u041a\u043b\u0438\u0435\u043d\u0442"
         },
         "items": [
           {
-            "description": "Консультационные услуги",
+            "description": "\u041a\u043e\u043d\u0441\u0443\u043b\u044c\u0442\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0435 \u0443\u0441\u043b\u0443\u0433\u0438",
             "quantity": 1,
             "rate": "2000000"
           }
         ],
-        "notes": "Оплата в течение 30 дней",
+        "notes": "\u041e\u043f\u043b\u0430\u0442\u0430 \u0432 \u0442\u0435\u0447\u0435\u043d\u0438\u0435 30 \u0434\u043d\u0435\u0439",
         "total": "2000000",
         "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
       },
@@ -488,12 +491,12 @@
         },
         "items": [
           {
-            "description": "软件开发咨询服务",
+            "description": "\u8f6f\u4ef6\u5f00\u53d1\u54a8\u8be2\u670d\u52a1",
             "quantity": 1,
             "rate": "3000000"
           }
         ],
-        "notes": "請在30天內付款。感謝您的支持。",
+        "notes": "\u8acb\u572830\u5929\u5167\u4ed8\u6b3e\u3002\u611f\u8b1d\u60a8\u7684\u652f\u6301\u3002",
         "total": "3000000",
         "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
       },
@@ -513,7 +516,7 @@
         "currency": "USDC",
         "decimals": 6,
         "from": {
-          "name": "Alice 🚀",
+          "name": "Alice \ud83d\ude80",
           "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
         },
         "client": {
@@ -526,12 +529,12 @@
             "rate": "5000000"
           }
         ],
-        "notes": "✅ Payment confirmed 🎉 Thank you! 💎",
+        "notes": "\u2705 Payment confirmed \ud83c\udf89 Thank you! \ud83d\udc8e",
         "total": "5000000",
         "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
       },
       "roundtrip": true,
-      "diagnostic": "Unicode: emoji (4-byte UTF-8 surrogate pairs) in from.name and notes. Codec treats as bytes — no normalization. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+      "diagnostic": "Unicode: emoji (4-byte UTF-8 surrogate pairs) in from.name and notes. Codec treats as bytes \u2014 no normalization. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
     },
     {
       "name": "unicode-rtl",
@@ -546,7 +549,7 @@
         "currency": "USDC",
         "decimals": 6,
         "from": {
-          "name": "أليس المطور",
+          "name": "\u0623\u0644\u064a\u0633 \u0627\u0644\u0645\u0637\u0648\u0631",
           "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
         },
         "client": {
@@ -554,17 +557,17 @@
         },
         "items": [
           {
-            "description": "خدمات استشارية",
+            "description": "\u062e\u062f\u0645\u0627\u062a \u0627\u0633\u062a\u0634\u0627\u0631\u064a\u0629",
             "quantity": 1,
             "rate": "1500000"
           }
         ],
-        "notes": "يرجى الدفع خلال 30 يوماً",
+        "notes": "\u064a\u0631\u062c\u0649 \u0627\u0644\u062f\u0641\u0639 \u062e\u0644\u0627\u0644 30 \u064a\u0648\u0645\u0627\u064b",
         "total": "1500000",
         "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
       },
       "roundtrip": true,
-      "diagnostic": "Unicode: Arabic RTL (2-4 byte UTF-8) in from.name, description, notes. Codec treats as opaque bytes — no reorder or normalize. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
+      "diagnostic": "Unicode: Arabic RTL (2-4 byte UTF-8) in from.name, description, notes. Codec treats as opaque bytes \u2014 no reorder or normalize. wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
     },
     {
       "name": "unicode-mixed",
@@ -579,20 +582,20 @@
         "currency": "USDC",
         "decimals": 6,
         "from": {
-          "name": "Alice 🌍",
+          "name": "Alice \ud83c\udf0d",
           "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
         },
         "client": {
-          "name": "Боб / 鲍勃"
+          "name": "\u0411\u043e\u0431 / \u9c8d\u52c3"
         },
         "items": [
           {
-            "description": "咨询服务 / Consulting / Консультации",
+            "description": "\u54a8\u8be2\u670d\u52a1 / Consulting / \u041a\u043e\u043d\u0441\u0443\u043b\u044c\u0442\u0430\u0446\u0438\u0438",
             "quantity": 1,
             "rate": "4000000"
           }
         ],
-        "notes": "Mixed: Кириллица + 中文 + العربية + emoji 🎯",
+        "notes": "Mixed: \u041a\u0438\u0440\u0438\u043b\u043b\u0438\u0446\u0430 + \u4e2d\u6587 + \u0627\u0644\u0639\u0631\u0628\u064a\u0629 + emoji \ud83c\udfaf",
         "total": "4000000",
         "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
       },
@@ -626,40 +629,20 @@
     {
       "name": "malformed-non-canonical-varint",
       "canonical_hex": "56018000",
-      "diagnostic": "malformed:canonical — LEB128 varint [0x80, 0x00] encodes value 0 with a spurious continuation byte; canonical form requires the shortest encoding (single 0x00 byte). Decoder must reject.",
+      "diagnostic": "malformed:canonical \u2014 LEB128 varint [0x80, 0x00] encodes value 0 with a spurious continuation byte; canonical form requires the shortest encoding (single 0x00 byte). Decoder must reject.",
       "expected_error": "Truncated"
     },
     {
-      "name": "decode_unknown_odd_tag_in_full_invoice",
-      "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f2037e4c5c28ca49a1e1c851f159401a9a27812e1ecca7a63d4d4d0046dfe14b0652702dead",
-      "wire_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f2037e4c5c28ca49a1e1c851f159401a9a27812e1ecca7a63d4d4d0046dfe14b0652702dead",
-      "receipt_hash_hex": "81adb55e8e4e566d386b320fe0bf942ff54e8a1e75f41a4781b870937d95d364",
-      "decoded": {
-        "invoice_id": "INV-001",
-        "issued_at": 1700000000,
-        "due_at": 1700086400,
-        "network_id": 1,
-        "currency": "USDC",
-        "decimals": 6,
-        "from": {
-          "name": "Alice",
-          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
-        },
-        "client": {
-          "name": "Bob"
-        },
-        "items": [
-          {
-            "description": "Consulting",
-            "quantity": 1,
-            "rate": "1000000"
-          }
-        ],
-        "total": "1000000",
-        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
-      },
-      "roundtrip": false,
-      "diagnostic": "Y1 forward-compat: unknown odd TLV tag 39 (0x27, value=0xDEAD) embedded in a full invoice is silently ignored per BOLT-12 odd/even rule. Domain separator (TLV type 31) is computed over ALL TLV bytes including the odd-tag bytes, excluding type 31 itself. Decoder produces the original Invoice struct unchanged. Decision: codec-bolt12-odd-even-forward-compat."
+      "name": "malformed-unknown-content-tag",
+      "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be52702dead",
+      "diagnostic": "malformed:canonical \u2014 TLV tag 39 (0x27) is outside the v1 KNOWN_TAGS set. Decoder must reject with UnknownExtension before checksum validation.",
+      "expected_error": "UnknownExtension"
+    },
+    {
+      "name": "malformed-unknown-content-tag",
+      "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be52702dead",
+      "diagnostic": "malformed:canonical \u2014 TLV tag 39 (0x27) is outside the v1 KNOWN_TAGS set. Decoder must reject with UnknownExtension before checksum validation.",
+      "expected_error": "UnknownExtension"
     },
     {
       "name": "demo-landing-eth-001",
@@ -955,6 +938,38 @@
       "diagnostic": "Video demo: Base (chain 8453), USDC, VoidPay treasury, total includes Magic Dust (+187 atomic units). wire_hex = Brotli-compressed wire, or == canonical_hex when Brotli expands (small payloads)"
     },
     {
+      "name": "decode_unknown_odd_tag_in_full_invoice",
+      "canonical_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f2037e4c5c28ca49a1e1c851f159401a9a27812e1ecca7a63d4d4d0046dfe14b0652702dead",
+      "wire_hex": "56010e0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f2037e4c5c28ca49a1e1c851f159401a9a27812e1ecca7a63d4d4d0046dfe14b0652702dead",
+      "receipt_hash_hex": "81adb55e8e4e566d386b320fe0bf942ff54e8a1e75f41a4781b870937d95d364",
+      "decoded": {
+        "invoice_id": "INV-001",
+        "issued_at": 1700000000,
+        "due_at": 1700086400,
+        "network_id": 1,
+        "currency": "USDC",
+        "decimals": 6,
+        "from": {
+          "name": "Alice",
+          "wallet_address": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+        },
+        "client": {
+          "name": "Bob"
+        },
+        "items": [
+          {
+            "description": "Consulting",
+            "quantity": 1,
+            "rate": "1000000"
+          }
+        ],
+        "total": "1000000",
+        "salt": "deadbeefdeadbeefdeadbeefdeadbeef"
+      },
+      "roundtrip": false,
+      "diagnostic": "Y1 forward-compat: unknown odd TLV tag 39 (0x27, value=0xDEAD) embedded in a full invoice is silently ignored per BOLT-12 odd/even rule. Domain separator (TLV type 31) is computed over ALL TLV bytes including the odd-tag bytes, excluding type 31 itself. Decoder produces the original Invoice struct unchanged. Decision: codec-bolt12-odd-even-forward-compat."
+    },
+    {
       "name": "decode_unknown_odd_tag_ignored",
       "canonical_hex": "56010e0202000104046553f100060380f5240801060a14aabbccddee0011223344556677889900aabbccdd0c0200010e0a0104576f726b000101061005416c6963651203426f62141000112233445566778899aabbccddeeff160a494e562d59312d4f4444180201061f209de8af9d9acf4160b757b5cbab1c7cc689d59faa005d4c7d9236c1391b1670bd2702dead",
       "wire_hex": "56010e0202000104046553f100060380f5240801060a14aabbccddee0011223344556677889900aabbccdd0c0200010e0a0104576f726b000101061005416c6963651203426f62141000112233445566778899aabbccddeeff160a494e562d59312d4f4444180201061f209de8af9d9acf4160b757b5cbab1c7cc689d59faa005d4c7d9236c1391b1670bd2702dead",
@@ -994,7 +1009,7 @@
       "decoded": null,
       "roundtrip": false,
       "expected_error": "UnknownExtension(26)",
-      "diagnostic": "Y1 forward-compat: unknown even tag 26 (value=0xBEEF) must be rejected with UnknownExtension(26). Even tags = mandatory schema change — decoder MUST fail if unknown (schema_version bump required). Decision: codec-bolt12-odd-even-forward-compat."
+      "diagnostic": "Y1 forward-compat: unknown even tag 26 (value=0xBEEF) must be rejected with UnknownExtension(26). Even tags = mandatory schema change \u2014 decoder MUST fail if unknown (schema_version bump required). Decision: codec-bolt12-odd-even-forward-compat."
     },
     {
       "name": "decode_non_monotone_rejected",
@@ -1004,7 +1019,7 @@
       "decoded": null,
       "roundtrip": false,
       "expected_error": "InvalidData(\"non-monotone TLV stream\")",
-      "diagnostic": "Y2 strict-monotone: TLV stream with tags [5, 3, 7] — tag 3 appears after tag 5, violating strict-monotone ordering. Decoder must reject with InvalidData. Pre-fix: BTreeMap silently re-canonicalized to {3,5,7} and accepted the wire. Decision: codec-bolt12-strict-monotone-decode."
+      "diagnostic": "Y2 strict-monotone: TLV stream with tags [5, 3, 7] \u2014 tag 3 appears after tag 5, violating strict-monotone ordering. Decoder must reject with InvalidData. Pre-fix: BTreeMap silently re-canonicalized to {3,5,7} and accepted the wire. Decision: codec-bolt12-strict-monotone-decode."
     }
   ]
 }

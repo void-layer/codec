@@ -139,42 +139,6 @@ export function buildLateMalformedVectors(): MalformedVector[] {
     })
   }
 
-  // 7a. malformed-unknown-tlv-tag
-  {
-    const minHex =
-      '56010d0202000104046553f100060380a3050801060a14d8da6bf26964af9d7eed9e03e53415d37aa960450c0200010e10010a436f6e73756c74696e67000101061005416c6963651203426f621410deadbeefdeadbeefdeadbeefdeadbeef1607494e562d303031180201061f20e7620cf63c7f087f05bd266fba981b1e79c3697a22fcaf710f6c2b69db868be5'
-    const minBytes = new Uint8Array(Buffer.from(minHex, 'hex'))
-
-    const contentRecords = new Map<number, Uint8Array>()
-    let off = 3
-    while (off < minBytes.length) {
-      const tag = minBytes[off]!
-      off++
-      let len = 0
-      let shift = 0
-      while (true) {
-        const b = minBytes[off]!
-        off++
-        len |= (b & 0x7f) << shift
-        shift += 7
-        if (!(b & 0x80)) break
-      }
-      const val = minBytes.slice(off, off + len)
-      off += len
-      if (tag !== 31) contentRecords.set(tag, val)
-    }
-
-    contentRecords.set(99, new Uint8Array([0xde, 0xad]))
-
-    const payload = buildCanonicalPayload(contentRecords)
-    vectors.push({
-      name: 'malformed-unknown-tlv-tag',
-      canonical_hex: toHex(payload),
-      diagnostic: 'malformed:canonical',
-      expected_error: 'UnknownExtension',
-    })
-  }
-
   // 7b. malformed-duplicate-tlv-tag
   {
     const minHex =

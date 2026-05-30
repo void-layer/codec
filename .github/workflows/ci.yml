@@ -29,6 +29,8 @@ jobs:
       - name: Assert size budgets
         run: bash scripts/assert-size.sh
         working-directory: packages/codec
+      - name: Freeze-gate (golden vector oracle check)
+        run: pnpm -C packages/codec check-vectors
       - run: |
           for dir in packages/codec packages/types packages/networks; do
             (cd "$dir" && npm pack --dry-run)
