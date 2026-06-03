@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@types/node": "25.9.1",
-    "@vitest/coverage-v8": "3.2.4",
+    "@vitest/coverage-v8": "4.1.8",
     "brotli-wasm": "^3.0.1",
     "typescript": "^5.9.3",
     "vite-plugin-top-level-await": "^1.4.4",
