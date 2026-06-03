@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import * as rootBarrel from './index.js';
 import { SUPPORTED_CHAINS, CHAINS, getPublicRpcUrl } from './index.js';
 
 describe('CHAINS / SUPPORTED_CHAINS', () => {
@@ -37,6 +38,29 @@ describe('CHAINS / SUPPORTED_CHAINS', () => {
     for (const url of chain.publicRpcUrls) {
       expect(url).not.toMatch(/alchemy|infura|quicknode/i);
     }
+  });
+});
+
+describe('root barrel viem isolation', () => {
+  it('does not export wagmi symbols', () => {
+    expect((rootBarrel as Record<string, unknown>)['ethereumWagmi']).toBeUndefined();
+    expect((rootBarrel as Record<string, unknown>)['baseWagmi']).toBeUndefined();
+    expect((rootBarrel as Record<string, unknown>)['arbitrumWagmi']).toBeUndefined();
+    expect((rootBarrel as Record<string, unknown>)['optimismWagmi']).toBeUndefined();
+    expect((rootBarrel as Record<string, unknown>)['polygonWagmi']).toBeUndefined();
+    expect((rootBarrel as Record<string, unknown>)['ALL_WAGMI_CHAINS']).toBeUndefined();
+  });
+
+  it('exports the viem-free surface', () => {
+    expect(rootBarrel.CHAINS).toBeDefined();
+    expect(rootBarrel.SUPPORTED_CHAINS).toBeDefined();
+    expect(rootBarrel.TOKENS).toBeDefined();
+    expect(rootBarrel.SUPPORTED_TOKENS).toBeDefined();
+    expect(typeof rootBarrel.getPublicRpcUrl).toBe('function');
+    expect(typeof rootBarrel.getChainConfig).toBe('function');
+    expect(typeof rootBarrel.tryGetChainConfig).toBe('function');
+    expect(typeof rootBarrel.getExplorerTxUrl).toBe('function');
+    expect(typeof rootBarrel.getExplorerAddressUrl).toBe('function');
   });
 });
 
