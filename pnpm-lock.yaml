@@ -28,10 +28,6 @@ importers:
         version: 8.60.1(eslint@10.4.1)(typescript@6.0.3)
 
   packages/codec:
-    dependencies:
-      '@void-layer/types':
-        specifier: workspace:^
-        version: link:../types
     devDependencies:
       '@types/node':
         specifier: 25.9.1
@@ -39,6 +35,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 4.1.8
         version: 4.1.8(vitest@4.1.8)
+      '@void-layer/types':
+        specifier: workspace:^
+        version: link:../types
       brotli-wasm:
         specifier: ^3.0.1
         version: 3.0.1

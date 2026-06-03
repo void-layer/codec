@@ -25,6 +25,10 @@ export default defineConfig({
         'dist/**',
         'docs/**',
         'scripts/**',
+        // index.node.ts is the Node-target entry (node export condition).
+        // It is exercised by pnpm test:pack (pack-and-import smoke test), not
+        // by vitest which runs under the bundler resolver path via vite-plugin-wasm.
+        'src/index.node.ts',
       ],
       thresholds: {
         lines: 80,

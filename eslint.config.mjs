@@ -17,6 +17,24 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    // scripts/ are Node.js ESM tooling (not published). Declare Node globals so
+    // no-undef doesn't fire on console/process/URL/etc., and relax TS rules
+    // that are irrelevant for plain .mjs scripts.
+    files: ['packages/*/scripts/**/*.mjs', 'packages/*/scripts/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        URL: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
     files: ['packages/*/src/**/*.ts'],
     languageOptions: {
       ecmaVersion: 2022,
