@@ -10,6 +10,8 @@ updates:
         patterns: ["@changesets/*"]
       typescript:
         patterns: ["typescript", "@types/*"]
+      vitest:
+        patterns: ["vitest", "@vitest/*"]
   - package-ecosystem: "cargo"
     directory: "/packages/codec"
     schedule:
