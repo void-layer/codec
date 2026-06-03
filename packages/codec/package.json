@@ -57,6 +57,7 @@
     "test:wasm": "wasm-pack test --node",
     "test:pack": "node scripts/test-pack.mjs",
     "generate-vectors": "vitest run --config scripts/generate-vectors.config.ts",
+    "check-vectors": "vitest run --config scripts/check-vectors.config.ts --coverage.enabled=false",
     "test:ts-rust-parity": "tsx scripts/ts-rust-parity.ts",
     "lint": "cargo clippy --all-targets --all-features --locked -- -D warnings && cargo fmt --manifest-path Cargo.toml -- --check && eslint src",
     "size": "ls -la pkg/void_layer_codec_bg.wasm"
