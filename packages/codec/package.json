@@ -1,7 +1,7 @@
 {
   "name": "@void-layer/codec",
   "version": "0.1.0",
-  "description": "Canonical Invoice codec — TLV + Brotli wire format. v1 schema LOCKED.",
+  "description": "Canonical Invoice codec \u2014 TLV + Brotli wire format. v1 schema LOCKED.",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -28,9 +28,23 @@
   "license": "MIT",
   "author": "void-layer",
   "homepage": "https://github.com/void-layer/codec/tree/main/packages/codec#readme",
-  "bugs": { "url": "https://github.com/void-layer/codec/issues" },
-  "keywords": ["invoice","codec","tlv","brotli","wasm","web3","voidpay","void-layer"],
-  "publishConfig": { "access": "public", "provenance": true },
+  "bugs": {
+    "url": "https://github.com/void-layer/codec/issues"
+  },
+  "keywords": [
+    "invoice",
+    "codec",
+    "tlv",
+    "brotli",
+    "wasm",
+    "web3",
+    "voidpay",
+    "void-layer"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "wasm-pack build --target bundler --release --out-dir pkg && rm -f pkg/.gitignore && tsc",
     "build:wasm": "wasm-pack build --target bundler --release --out-dir pkg && rm -f pkg/.gitignore",
@@ -54,7 +68,7 @@
     "@types/node": "25.9.1",
     "@vitest/coverage-v8": "4.1.8",
     "brotli-wasm": "^3.0.1",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-plugin-wasm": "^3.4.1",
     "vitest": "^4.1.8"
