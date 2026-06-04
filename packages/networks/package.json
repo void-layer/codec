@@ -23,9 +23,10 @@
   "homepage": "https://github.com/void-layer/codec/tree/main/packages/networks#readme",
   "bugs": { "url": "https://github.com/void-layer/codec/issues" },
   "keywords": ["voidpay","void-layer","ethereum","chains","tokens","web3"],
+  "sideEffects": false,
   "publishConfig": { "access": "public", "provenance": true },
   "dependencies": {
-    "@void-layer/types": "workspace:*"
+    "@void-layer/types": "workspace:^"
   },
   "peerDependencies": {
     "viem": ">=2.0.0 <3.0.0"

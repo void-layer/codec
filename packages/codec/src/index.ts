@@ -15,15 +15,20 @@ import type { BrotliWasmType } from 'brotli-wasm'
 import type { Invoice } from '@void-layer/types'
 import { encodeWire, decodeWire } from './wire.js'
 
-// Import the canonical WASM functions for use in the wire shim below, and
-// re-export them as part of the public API.
-import {
-  encodeInvoiceCanonical,
-  decodeInvoiceCanonical,
-  receiptHash,
-} from '../pkg/void_layer_codec.js'
+// Import the canonical WASM module and cast to a typed surface so that
+// consumers get proper Invoice types (not `any`) in the generated .d.ts.
+// Runtime behaviour is unchanged — these are the same WASM functions.
+import * as _wasmPkg from '../pkg/void_layer_codec.js'
 
-export { encodeInvoiceCanonical, decodeInvoiceCanonical, receiptHash }
+const _wasm = _wasmPkg as unknown as {
+  encodeInvoiceCanonical: (invoice: Invoice) => Uint8Array
+  decodeInvoiceCanonical: (bytes: Uint8Array) => Invoice
+  receiptHash: (canonical_bytes: Uint8Array) => Uint8Array
+}
+
+export const encodeInvoiceCanonical = _wasm.encodeInvoiceCanonical
+export const decodeInvoiceCanonical = _wasm.decodeInvoiceCanonical
+export const receiptHash = _wasm.receiptHash
 
 // ---------------------------------------------------------------------------
 // Brotli lazy init (mirrors compressPayload reference pattern)

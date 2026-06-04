@@ -156,11 +156,11 @@ describe('decodeInvoiceWire decompression-bomb guard', () => {
 })
 
 // ---------------------------------------------------------------------------
-// G-11 T5: write_quantity rejects > 9 significant decimals (PrecisionLoss).
-// T5 changed silent clamp → explicit CodecError::PrecisionLoss throw.
+// G-11 T5: write_quantity rejects > 9 significant decimals (InvalidAmount).
+// T5 changed silent clamp → explicit CodecError::InvalidAmount throw.
 // ---------------------------------------------------------------------------
 
-describe('G-11: write_quantity PrecisionLoss on >9 decimals (T5)', () => {
+describe('G-11: write_quantity InvalidAmount on >9 decimals (T5)', () => {
   it('G-11: write_quantity rejects > 9 significant decimals (T5)', () => {
     const inv: Invoice = {
       ...MINIMAL_INVOICE,
