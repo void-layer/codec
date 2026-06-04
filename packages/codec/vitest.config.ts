@@ -16,7 +16,8 @@ export default defineConfig({
       // enabled: true → `vitest run` always collects + gates coverage, so the
       // 80% threshold (Constitution X) is enforced by plain `pnpm -r test` in CI.
       enabled: true,
-      include: ['src/**'],
+      include: ['src/**/*.ts'],
+      reporter: ['text', 'lcov'],
       exclude: [
         'target/**',
         'pkg/**',
