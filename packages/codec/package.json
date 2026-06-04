@@ -43,6 +43,7 @@
     "voidpay",
     "void-layer"
   ],
+  "sideEffects": ["*.wasm", "pkg/**", "pkg-node/**"],
   "publishConfig": {
     "access": "public",
     "provenance": true
@@ -62,11 +63,13 @@
     "lint": "cargo clippy --all-targets --all-features --locked -- -D warnings && cargo fmt --manifest-path Cargo.toml -- --check && eslint src",
     "size": "ls -la pkg/void_layer_codec_bg.wasm"
   },
+  "dependencies": {
+    "@void-layer/types": "workspace:^"
+  },
   "peerDependencies": {
     "brotli-wasm": "^3.0.1"
   },
   "devDependencies": {
-    "@void-layer/types": "workspace:^",
     "@types/node": "25.9.1",
     "@vitest/coverage-v8": "4.1.8",
     "brotli-wasm": "^3.0.1",
@@ -76,6 +79,6 @@
     "vitest": "^4.1.8"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=20"
   }
 }
