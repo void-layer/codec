@@ -6,7 +6,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ---
 
-## [Unreleased] — 0.1.0 pre-publish (PR #7 in review)
+## 0.1.0
 
 ### Added
 
@@ -51,9 +51,3 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 - Unit tests: ~135 → 211 (post R1-R9 + T6 hardening).
 - Golden vectors: 27 (Tier 1 frozen) + 54 corpus entries (Tier 2 parametric).
-
----
-
-## [0.1.0] — Unreleased
-
-Initial package structure. No published npm or crates.io release yet (Phase 3 target).
