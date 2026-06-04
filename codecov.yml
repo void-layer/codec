@@ -1,0 +1,16 @@
+coverage:
+  status:
+    patch:
+      rust:
+        informational: true
+    project:
+      rust:
+        informational: true
+
+flags:
+  rust:
+    paths:
+      - packages/codec/src/
+  ts:
+    paths:
+      - packages/codec/src/
