@@ -6,23 +6,21 @@ Canonical Invoice codec — TLV + Brotli wire format. v1 schema LOCKED forever.
 
 ## Status
 
-Phase 2 complete — Rust + WASM codec shipped (0.1.0). Phase 3: npm publish + voidpay.xyz cutover.
+Phase 2 complete — Rust + WASM codec shipped. Phase 3: npm publish done (0.1.0 live). Remaining: voidpay.xyz cutover (C1 / vl-app #120).
 
 ## Packages
 
 | Package | Status | Description |
 |---------|--------|-------------|
-| `@void-layer/codec` | 0.1.0 ready | Rust + WASM canonical TLV codec |
-| `@void-layer/types` | 0.1.0 ready | Manual TypeScript types (zero runtime deps) |
-| `@void-layer/networks` | 0.1.0 ready | EVM chain configs + token list (no RPC keys) |
+| `@void-layer/codec` | 0.1.0 — live on npm | Rust + WASM canonical TLV codec |
+| `@void-layer/types` | 0.1.0 — live on npm | Manual TypeScript types (zero runtime deps) |
+| `@void-layer/networks` | 0.1.0 — live on npm | EVM chain configs + token list (no RPC keys) |
 
 ## Quick Install
 
 ```bash
 pnpm add @void-layer/codec
 ```
-
-> Not yet published — Phase 3
 
 ## Why
 
