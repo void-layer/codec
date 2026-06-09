@@ -70,7 +70,7 @@
     "brotli-wasm": "^3.0.1"
   },
   "devDependencies": {
-    "@types/node": "25.9.1",
+    "@types/node": "25.9.2",
     "@vitest/coverage-v8": "4.1.8",
     "brotli-wasm": "^3.0.1",
     "typescript": "^6.0.3",
