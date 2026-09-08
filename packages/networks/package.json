@@ -40,9 +40,9 @@
     "lint": "eslint src"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/coverage-v8": "5.0.0",
     "viem": "^2.56.3",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "engines": { "node": ">=18" }
 }
