@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "4.1.11",
-    "viem": "^2.56.3",
+    "viem": "^2.56.8",
     "vitest": "^4.1.11"
   },
   "engines": { "node": ">=18" }
