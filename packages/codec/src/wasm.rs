@@ -8,8 +8,6 @@
 //! Wire encoding (Brotli + COMPRESSED_FLAG) lives in the JS shim
 //! (`src/index.ts`) which wraps these and calls `brotli-wasm` as peerDep.
 
-#![cfg(target_arch = "wasm32")]
-
 use serde::Serialize;
 use serde_wasm_bindgen::Serializer;
 use wasm_bindgen::prelude::*;
