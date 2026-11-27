@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1    # v7.1.0
         with: { node-version: 24, cache: pnpm }
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
-        with: { rustflags: "", components: "llvm-tools-preview" }
+        with: { rustflags: "", components: "llvm-tools-preview", cache: false }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
         with: { workspaces: packages/codec }
       - run: rustup target add wasm32-unknown-unknown
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1    # v7.1.0
         with: { node-version: 24, cache: pnpm }
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
-        with: { rustflags: "" }
+        with: { rustflags: "", cache: false }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
         with: { workspaces: packages/codec }
       - run: rustup target add wasm32-unknown-unknown
@@ -101,7 +101,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1    # v7.1.0
         with: { node-version: 24, cache: pnpm }
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
-        with: { rustflags: "" }
+        with: { rustflags: "", cache: false }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
         with: { workspaces: packages/codec }
       - run: rustup target add wasm32-unknown-unknown
@@ -116,6 +116,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1      # v7.0.1
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
+        with: { cache: false }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
         with: { workspaces: packages/codec }
       - run: cargo test
@@ -126,7 +127,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1      # v7.0.1
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
-        with: { rustflags: "" }
+        with: { rustflags: "", cache: false }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
         with: { workspaces: packages/codec }
       - run: rustup target add wasm32-unknown-unknown
