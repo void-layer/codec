@@ -3,9 +3,15 @@
 ## Dev Setup
 
 ```bash
-# Requires Node >=24 and pnpm >=10
+# Requires Node >=24 and pnpm >=11
 pnpm install
 ```
+
+### Rust / WASM toolchain
+
+- The Rust toolchain is pinned by `packages/codec/rust-toolchain.toml` (1.85.0, `wasm32-unknown-unknown` target); rustup picks it up automatically inside `packages/codec`.
+- CI installs wasm-pack 0.14.0 (`.github/workflows/ci.yml`). Building wasm-pack 0.14.0 from source needs rustc >= 1.88, so install it with an up-to-date stable toolchain: `rustup update stable && cargo +stable install wasm-pack --version 0.14.0 --locked`.
+- The gated WASM size depends on the wasm-pack and wasm-opt (binaryen) versions; wasm-pack uses a wasm-opt found on PATH if present. Treat CI's `scripts/assert-size.sh` output as authoritative.
 
 ## Making Changes
 

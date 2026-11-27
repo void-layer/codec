@@ -6,12 +6,13 @@
 
 | Component | Bytes | Cap | Margin |
 |-----------|-------|-----|--------|
-| `void_layer_codec_bg.wasm` raw | 180,017 | — | — |
-| `void_layer_codec_bg.wasm` gzip | 78,412 | 81,920 (80 KB) | ~4.3% |
-| Package tarball (`pkg/` + `dist/`) | 92,160 | 204,800 (200 KB) | ~55% |
+| `void_layer_codec_bg.wasm` raw | 182,321 | — | — |
+| `void_layer_codec_bg.wasm` gzip | 79,405 | 81,920 (80 KB) | ~3.1% (2,515 B) |
+| Package tarball (`pkg/` + `dist/`) | 102,400 | 204,800 (200 KB) | ~50% |
 
-> Measured 2026-05-25 post R1-R9 DRY refactor. gzip figure uses `gzip -c` (the
-> `scripts/assert-size.sh` gate method).
+> Measured 2026-11-27 on main `06018c2` with wasm-pack 0.13.1 + wasm-opt 130. gzip
+> figure uses `gzip -c` (the `scripts/assert-size.sh` gate method). CI (wasm-pack
+> 0.14.0) may differ by tens of bytes.
 
 ## Recent Deltas
 
@@ -20,6 +21,7 @@
 | U256 widening (ruint, D-B8) | +6 KB |
 | T6 decoder strictness gates (4 checks) | +~0.7 KB |
 | R1-R9 intra-codec DRY refactor | ~0 net |
+| Net drift 2026-05-25 → 2026-11-27 (code + dependency bumps) | +993 B |
 
 ## Notes
 
