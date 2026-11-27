@@ -16,6 +16,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
         with: { rustflags: "", components: "llvm-tools-preview" }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
+        with: { workspaces: packages/codec }
       - run: rustup target add wasm32-unknown-unknown
       - name: Show pinned Rust toolchain
         run: rustc --version
@@ -63,6 +64,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
         with: { rustflags: "" }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
+        with: { workspaces: packages/codec }
       - run: rustup target add wasm32-unknown-unknown
       - name: Install wasm-pack 0.14.0
         run: cargo install wasm-pack --version 0.14.0 --locked
@@ -98,6 +100,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
         with: { rustflags: "" }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
+        with: { workspaces: packages/codec }
       - run: rustup target add wasm32-unknown-unknown
       - name: Install wasm-pack 0.14.0
         run: cargo install wasm-pack --version 0.14.0 --locked
@@ -111,6 +114,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1      # v7.0.1
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
+        with: { workspaces: packages/codec }
       - run: cargo test
         working-directory: packages/codec
   test-wasm-node:
@@ -121,6 +125,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
         with: { rustflags: "" }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
+        with: { workspaces: packages/codec }
       - run: rustup target add wasm32-unknown-unknown
       - name: Install wasm-pack 0.14.0
         run: cargo install wasm-pack --version 0.14.0 --locked
