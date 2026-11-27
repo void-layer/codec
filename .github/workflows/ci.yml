@@ -17,6 +17,9 @@ jobs:
         with: { rustflags: "", components: "llvm-tools-preview" }
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
       - run: rustup target add wasm32-unknown-unknown
+      - name: Show pinned Rust toolchain
+        run: rustc --version
+        working-directory: packages/codec
       - name: Install wasm-pack 0.14.0
         run: cargo install wasm-pack --version 0.14.0 --locked
       - name: Install cargo-llvm-cov
@@ -26,9 +29,14 @@ jobs:
       - run: pnpm -r build
       - run: pnpm -r lint
       - run: pnpm -r test
-      - run: cargo build --manifest-path packages/codec/Cargo.toml --release
+      - run: cargo build --release
+        working-directory: packages/codec
+      - name: Add llvm-tools-preview to the pinned toolchain
+        run: rustup component add llvm-tools-preview
+        working-directory: packages/codec
       - name: Rust coverage gate (Constitution X — 80% line coverage)
-        run: cargo llvm-cov --manifest-path packages/codec/Cargo.toml --all-features --fail-under-lines 80 --lcov --output-path rust-lcov.info
+        run: cargo llvm-cov --all-features --fail-under-lines 80 --lcov --output-path ../../rust-lcov.info
+        working-directory: packages/codec
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5  # v7.1.1
         with:
@@ -63,7 +71,8 @@ jobs:
       - name: TS/JS parity (vitest)
         run: pnpm -C packages/codec exec vitest run tests/parity.test.ts --coverage.enabled=false
       - name: Rust parity (cargo)
-        run: cargo test --manifest-path packages/codec/Cargo.toml --test parity_roundtrip --test parity_malformed
+        run: cargo test --test parity_roundtrip --test parity_malformed
+        working-directory: packages/codec
   ts-rust-parity:
     # Requires VOIDPAY_READ_TOKEN secret (fine-grained PAT: contents:read on ignromanov/voidpay).
     # Skipped automatically on fork PRs where the secret is absent.
@@ -102,7 +111,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1      # v7.0.1
       - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f  # v2.0.0
       - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266   # v2
-      - run: cargo test --manifest-path packages/codec/Cargo.toml
+      - run: cargo test
+        working-directory: packages/codec
   test-wasm-node:
     needs: [lint-and-build]
     runs-on: ubuntu-latest
