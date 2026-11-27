@@ -8,9 +8,10 @@
 |-----------|-------|-----|--------|
 | `void_layer_codec_bg.wasm` raw (local) | 182,321 | — | — |
 | `void_layer_codec_bg.wasm` gzip (CI) | 79,968 | 81,920 (80 KB) | ~2.4% (1,952 B) |
-| Package tarball (`pkg/` + `dist/`, CI) | 91,994 | 204,800 (200 KB) | ~55% |
+| Package tarball (`pkg/` + `dist/`, CI) | 91,873 | 204,800 (200 KB) | ~55% |
 
-> Measured 2026-11-27 on main `06018c2`. gzip and tarball are the CI
+> Measured 2026-11-27 on main `06018c2`; gzip 79,968 re-confirmed on main `8e3ba05`
+> (tarball 91,873 there, after dependency bumps). gzip and tarball are the CI
 > `scripts/assert-size.sh` output (ubuntu, wasm-pack 0.14.0) and are authoritative.
 > A local macOS build (wasm-pack 0.13.1 + wasm-opt 130) gives 79,405 B gzip,
 > ~560 B less than CI, so local numbers under-estimate the gated size.
@@ -32,6 +33,12 @@
 - **No brotli-decompressor row**: Brotli decompression is NOT in the WASM (B-v
   decision, 2026-05-20). The JS shim (`dist/index.js`) imports `brotli-wasm` as a
   peer dependency and handles compression/decompression outside the WASM boundary.
+- **Toolchain sensitivity** (measured locally 2026-11-27, not adopted): the same source
+  built with rustc 1.100 gives 65,135 B gzip vs 79,410 B on the pinned 1.85.0 (-14.3 KB),
+  mostly because newer std compresses the Unicode case-mapping tables. Bumping the pin is
+  an open question: Rust >= 1.87 enables the bulk-memory and nontrapping-fptoint wasm
+  features by default (wasm-opt needs matching --enable flags, runtime support must be
+  checked) and codegen changes require a full golden-vector byte-identity run.
 - **Anti-stop guard**: if a future change pushes gzip over 81,920 bytes, halt and
   report to Kai. Do NOT raise the cap unilaterally.
 
