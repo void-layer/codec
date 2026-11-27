@@ -34,7 +34,8 @@ pub(super) fn mantissa_bytes(value_str: &str) -> Result<Vec<u8>, CodecError> {
         return Ok(buf);
     }
 
-    // A U256 value has at most 77 decimal digits, so at most 77 trailing zeros.
+    // U256::MAX has 78 decimal digits, but the largest power of ten in range is 10^77,
+    // so a value has at most 77 trailing zeros.
     // Decode accepts a zeros byte in 0..=MAX_TRAILING_ZEROS; encode must never emit more.
     let ten = U256::from(10u64);
     let mut mantissa = value;
