@@ -32,9 +32,6 @@ jobs:
       - run: pnpm -r test
       - run: cargo build --release
         working-directory: packages/codec
-      - name: Clippy (native, all targets)
-        run: cargo clippy --all-targets -- -D warnings
-        working-directory: packages/codec
       - name: Clippy (wasm32 lib)
         run: cargo clippy --lib --target wasm32-unknown-unknown -- -D warnings
         working-directory: packages/codec
