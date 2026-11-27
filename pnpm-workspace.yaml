@@ -7,3 +7,7 @@ allowBuilds:
 
 overrides:
   uuid: ">=11.1.1"
+  # Dev-tooling advisories: vite/esbuild are transitive via vitest and were pinned by
+  # the lockfile as auto-installed peers, so a plain update does not move them.
+  "esbuild@<0.28.1": "^0.28.1"
+  "vite@<7.3.7": "^7.3.7"
