@@ -101,4 +101,4 @@ These packages are intentionally decoupled: `networks` does NOT import from `cod
 
 ## Reference
 
-Design: [spec 056](https://github.com/ignromanov/voidpay-ai/tree/main/ops/specs/056-void-layer-codec-extraction)
+Design: [architecture overview](https://github.com/void-layer/codec/blob/main/docs/architecture-overview.md)

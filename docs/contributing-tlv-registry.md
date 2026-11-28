@@ -57,7 +57,7 @@ Magicians-style governance forum is deferred until ≥3 external implementations
 
 ## Phase 1 Editor
 
-- @ignromanov
+- The void-layer/codec maintainers
 
 ## Future (Phase 3+)
 
