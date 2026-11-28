@@ -5,7 +5,7 @@
 > [`architecture.canvas`](./architecture.canvas) (spatial). Read this in one
 > sitting. Skim once for shape, re-read once for detail.
 >
-> **Audience**: you (Ignat), after a few weeks away from the code, wanting to
+> **Audience**: a maintainer returning after a few weeks away from the code, wanting to
 > trace any user-visible payment URL operation down to a specific line and back
 > up.
 

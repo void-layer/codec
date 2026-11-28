@@ -16,7 +16,7 @@ authored_by: exec.atlas-dev
 
 Phase 2 pre-implementation spike (T-P2-0a). Goal: validate which Brotli variant fits the 200 KB
 total-package cap (D-B9) and whether compressed invoice payloads exceed 400 B median (Plan-C
-trigger). Ignat pre-decision: B-iv (decode-only Rust; encode via native JS `CompressionStream`).
+trigger). Maintainer pre-decision: B-iv (decode-only Rust; encode via native JS `CompressionStream`).
 This spike provides the evidentiary record.
 
 **Corpus**: synthetic-content — 20 invoice objects generated from the vl/app TS reference codec.
@@ -123,7 +123,7 @@ Probe: `spike_decompress(data: &[u8]) -> Vec<u8>` using `brotli_decompressor::De
 This is with the minimal Phase 1 scaffold; the Phase 2 production build will add more exports
 (encode, decode, compute_content_hash) which may add a few KB. The 80 KB wasm sub-cap is flagged
 under review per dispatch brief — not treated as hard fail. The 200 KB cap is a soft design
-target; Ignat should confirm tolerance at T-P2-1.
+target; the maintainer should confirm tolerance at T-P2-1.
 
 Note: the pre-decision reference figure of ~137.8 KB for B-iv was from a different measurement
 context (possibly smaller probe or different opt settings). Measured figure is ~196 KB with this
@@ -166,7 +166,7 @@ linked regardless of `features = []`. Variant C ≈ Variant B (~953 KB) and was 
 > gate exists in brotli v7; Variant C ≈ Variant B.
 >
 > **B-iv CONFIRMED** — `brotli-decompressor = "4"` decoder-only produces ~196 KB WASM blob /
-> ~201 KB pkg total. Matches Ignat pre-decision. Encode-wire is native JS-side via
+> ~201 KB pkg total. Matches the maintainer pre-decision. Encode-wire is native JS-side via
 > `CompressionStream('deflate')` or `brotli-wasm` in the consumer layer. Rust ships only the
 > decompressor.
 >
@@ -182,7 +182,7 @@ linked regardless of `features = []`. Variant C ≈ Variant B (~953 KB) and was 
 
 | Item | Owner | When |
 |------|-------|------|
-| Confirm 200 KB cap tolerance (~201 KB measured) | Ignat / Kai | T-P2-1 |
+| Confirm 200 KB cap tolerance (~201 KB measured) | Maintainer / Kai | T-P2-1 |
 | Re-measure with real `/history` export | Atlas | Before v1.2 ship |
 | Wire `brotli-decompressor = "4"` dep permanently | Atlas (T-P2-1) | After T-P2-0b verdict |
 | Investigate ~137.8 KB reference figure discrepancy | Kai | Advisory only |
@@ -194,5 +194,5 @@ linked regardless of `features = []`. Variant C ≈ Variant B (~953 KB) and was 
 - wasm-pack 0.13.1 installed via `cargo install wasm-pack --version 0.13.1 --locked`
   (latest wasm-pack 0.15.0 requires Rust 1.86+; project toolchain is 1.85.0)
 - wasm-opt found at `/usr/local/bin/wasm-opt` (pre-installed)
-- Corpus runner: `bun run` from `/Users/ignat/code/vl/app` (brotli-wasm + path-alias resolution)
+- Corpus runner: `bun run` from the vl/app repo root (brotli-wasm + path-alias resolution)
 - Throwaway branches `spike/brotli-A-readonly` and `spike/brotli-B-full` deleted after measurement

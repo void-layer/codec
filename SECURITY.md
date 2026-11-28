@@ -13,7 +13,7 @@ Latest published version on npm only (Phase 3+).
 
 **Preferred**: open a private advisory at https://github.com/void-layer/codec/security/advisories/new
 
-**Email fallback**: `ign.romanov@gmail.com` with subject prefix `[security][@void-layer/codec]`
+**Email fallback**: `hello@voidpay.xyz` with subject prefix `[security][@void-layer/codec]`
 
 **Response SLA**: 72 hours initial acknowledgment.
 

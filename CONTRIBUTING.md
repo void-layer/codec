@@ -46,7 +46,7 @@ Maintainers run `pnpm version` to bump versions and `pnpm release` to publish.
 
 ## Design Rationale
 
-See [spec 056](https://github.com/ignromanov/voidpay-ai/blob/master/ops/specs/056-void-layer-codec-extraction/spec.md).
+See [docs/architecture-overview.md](docs/architecture-overview.md).
 
 The decision to rewrite the codec from TypeScript to Rust+WASM is documented in:
 `voidpay-ai/agent-memory/advisors/decisions/2026-05-09-kai-cto-codec-rust-supersedes-ts-first.md`

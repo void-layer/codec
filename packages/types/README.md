@@ -67,7 +67,7 @@ const invoice: Invoice = {
 
 - Types only — zero runtime code, zero `const`, zero functions
 - No dependencies
-- Part of the `@void-layer/codec` monorepo — see [spec 056](https://github.com/ignromanov/voidpay-ai) for design rationale
+- Part of the `@void-layer/codec` monorepo — see the [architecture overview](https://github.com/void-layer/codec/blob/main/docs/architecture-overview.md) for design rationale
 
 ## License
 

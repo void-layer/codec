@@ -49,7 +49,7 @@ pub fn decode_invoice_canonical_js(bytes: &[u8]) -> Result<JsValue, JsError> {
 /// Input MUST be the canonical pre-compression TLV bytes — the output of
 /// `encodeInvoiceCanonical`. Returns a 32-byte Keccak-256 digest.
 ///
-/// Decision: receipt_hash ships in Phase 2 (plan-2c C6, Ignat 2026-05-20).
+/// Decision: receipt_hash ships in Phase 2 (plan-2c C6, 2026-05-20).
 #[wasm_bindgen(js_name = receiptHash)]
 pub fn receipt_hash_js(canonical_bytes: &[u8]) -> Vec<u8> {
     compute_content_hash(canonical_bytes).to_vec()

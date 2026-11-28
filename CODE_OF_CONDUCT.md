@@ -6,7 +6,7 @@ Please read the full text at the link above before contributing.
 
 ## Reporting
 
-Report unacceptable behavior to **ign.romanov@gmail.com** with subject prefix `[code-of-conduct][@void-layer/codec]`.
+Report unacceptable behavior to **hello@voidpay.xyz** with subject prefix `[code-of-conduct][@void-layer/codec]`.
 
 Reports are reviewed within 72 hours. Confidentiality is maintained for reporters.
 

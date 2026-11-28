@@ -17,7 +17,9 @@ import * as path from 'node:path'
 
 const require = createRequire(import.meta.url)
 
-const VOIDPAY_SRC = path.resolve(process.env['VOIDPAY_SRC'] ?? '/Users/ignat/code/voidpay/src')
+const voidpaySrc = process.env['VOIDPAY_SRC']
+if (!voidpaySrc) throw new Error('VOIDPAY_SRC must be set to the absolute path of voidpay/src')
+const VOIDPAY_SRC = path.resolve(voidpaySrc)
 
 export default defineConfig({
   plugins: [wasm(), topLevelAwait()],

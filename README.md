@@ -45,10 +45,6 @@ See [SECURITY.md](SECURITY.md)
 
 See [docs/architecture-overview.md](docs/architecture-overview.md)
 
-## Spec
-
-Full design: [spec 056 in voidpay-ai](https://github.com/ignromanov/voidpay-ai/blob/master/ops/specs/056-void-layer-codec-extraction/spec.md) (private — internal reference)
-
 ---
 
-Built by [Ignat Romanov](https://github.com/ignromanov) · MIT License
+Maintained by [void-layer](https://github.com/void-layer) · [MIT License](LICENSE)
